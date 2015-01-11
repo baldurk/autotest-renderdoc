@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="d3d11\d3d11_simple_triangle.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d11_common.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\gl_simple_triangle.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_common.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="glew\glew.c">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="D3D11">
+      <UniqueIdentifier>{2d925e41-46b9-4fc8-bed8-38f94377d4ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D11\tests">
+      <UniqueIdentifier>{ab751575-8361-4303-9660-a511267f4a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{067b0d96-2253-4f97-b4e9-9a398e73698f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\tests">
+      <UniqueIdentifier>{1da9ebf5-0432-4265-b118-9ffa5857a317}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d3d11_common.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="test_common.h" />
+    <ClInclude Include="gl_common.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

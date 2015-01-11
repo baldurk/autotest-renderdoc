@@ -1,0 +1,9 @@
+Debug/
+ipch/
+*.opensdf
+*.sdf
+*.suo
+*.user
+*.pdb
+*.exe
+*.ilk
