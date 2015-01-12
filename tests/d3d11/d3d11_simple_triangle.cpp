@@ -46,13 +46,15 @@ int impl::main(int argc, char **argv)
 	if(!Init(argc, argv))
 		return 3;
 
-	ID3DBlobPtr vs = Compile(common + vertex, "main", "vs_5_0");
-	ID3DBlobPtr ps = Compile(common + pixel, "main", "ps_5_0");
+	//ID3DBlobPtr vs = Compile(common + vertex, "main", "vs_5_0");
+	//ID3DBlobPtr ps = Compile(common + pixel, "main", "ps_5_0");
 
 	// make shaders, resources, etc here.
 
 	while(Running())
 	{
+		float col[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		ctx->ClearRenderTargetView(bbRTV, col);
 		Present();
 	}
 

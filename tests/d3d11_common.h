@@ -35,6 +35,8 @@
 #include <d3d11_1.h>
 #include <d3d11_2.h>
 
+#include <d3dcompiler.h>
+
 #define COM_SMARTPTR(classname) _COM_SMARTPTR_TYPEDEF(classname, __uuidof(classname))
 
 COM_SMARTPTR(ID3DBlob);
@@ -51,15 +53,31 @@ COM_SMARTPTR(ID3D11DeviceContext2);
 COM_SMARTPTR(ID3D11VertexShader);
 COM_SMARTPTR(ID3D11PixelShader);
 
+COM_SMARTPTR(ID3D11Texture1D);
+COM_SMARTPTR(ID3D11Texture2D);
+COM_SMARTPTR(ID3D11Texture3D);
+COM_SMARTPTR(ID3D11RenderTargetView);
+COM_SMARTPTR(ID3D11ShaderResourceView);
+COM_SMARTPTR(ID3D11UnorderedAccessView);
+COM_SMARTPTR(ID3D11DepthStencilView);
+
+#ifndef SAFE_RELEASE
+#define SAFE_RELEASE(p)      do { if (p) { (p)->Release(); (p)=NULL; } } while(0)
+#endif
+
 struct D3D11GraphicsTest : public GraphicsTest
 {
 	D3D11GraphicsTest()
 		: backbufferFmt(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB),
 		  backbufferCount(2),
 			backbufferMSAA(1),
-		  d3d11_1(false)
+		  d3d11_1(false),
+		  d3d11_2(false),
+			wnd(NULL)
 	{
 	}
+
+	~D3D11GraphicsTest();
 
 	bool Init(int argc, char **argv);
 
@@ -72,8 +90,14 @@ struct D3D11GraphicsTest : public GraphicsTest
 	int backbufferCount;
 	int backbufferMSAA;
 	bool d3d11_1;
+	bool d3d11_2;
+
+	HWND wnd;
 
 	IDXGISwapChainPtr swap;
+
+	ID3D11Texture2DPtr bbTex;
+	ID3D11RenderTargetViewPtr bbRTV;
 
 	ID3D11DevicePtr dev;
 	ID3D11Device1Ptr dev1;
