@@ -164,6 +164,242 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile)
 	return blob;
 }
 
+int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt, void *data, ID3D11Buffer **buf,
+								ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv)
+{
+	if((type & BufMajorType) == eCBuffer)
+	{
+		byteSize = (byteSize + 15) & ~0xf;
+	}
+
+	D3D11_BUFFER_DESC bufDesc;
+	bufDesc.ByteWidth = byteSize;
+	bufDesc.MiscFlags = flags;
+	bufDesc.StructureByteStride = structSize;
+
+	if(structSize > 0 && fmt == DXGI_FORMAT_UNKNOWN)
+		bufDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	else
+		bufDesc.StructureByteStride = 0;
+
+	if(structSize > 0 && (byteSize % structSize) != 0)
+		TEST_FATAL("Invalid structure size - not divisor of byte size");
+
+	switch(type & BufMajorType)
+	{
+		case eCBuffer:
+			bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+			break;
+		case eStageBuffer:
+			bufDesc.BindFlags = 0;
+			bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;
+			bufDesc.Usage = D3D11_USAGE_STAGING;
+			break;
+		case eVBuffer:
+			bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+			break;
+		case eIBuffer:
+			bufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+			break;
+		case eBuffer:
+			bufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+			break;
+		case eSOBuffer:
+			bufDesc.BindFlags = D3D11_BIND_STREAM_OUTPUT;
+			bufDesc.CPUAccessFlags = 0;
+			bufDesc.Usage = D3D11_USAGE_DEFAULT;
+			break;
+		case eCompBuffer:
+			bufDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
+			bufDesc.CPUAccessFlags = 0;
+			bufDesc.Usage = D3D11_USAGE_DEFAULT;
+			break;
+	}
+
+	if(srv)
+		bufDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+	if(uav)
+		bufDesc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+	if(rtv)
+		bufDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+
+	D3D11_SUBRESOURCE_DATA initdata;
+	initdata.pSysMem = data;
+	initdata.SysMemPitch = byteSize;
+	initdata.SysMemSlicePitch = byteSize;
+
+	ID3D11Buffer *releaseme = NULL;
+	if(buf == NULL)
+		buf = &releaseme;
+
+	HRESULT hr = S_OK;
+	
+	CHECK_HR(dev->CreateBuffer(&bufDesc, data ? &initdata : NULL, buf));
+
+	if(srv)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+
+		desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+		desc.Format = fmt;
+		desc.Buffer.FirstElement = 0;
+		desc.Buffer.NumElements = byteSize/max(structSize, 1);
+
+		if(structSize == 0)
+			desc.Buffer.NumElements = byteSize/16;
+
+		CHECK_HR(dev->CreateShaderResourceView(*buf, &desc, srv));
+	}
+
+	if(uav)
+	{
+		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
+		desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		desc.Format = fmt;
+		desc.Buffer.FirstElement = 0;
+		desc.Buffer.Flags = (type & BufUAVType) == eAppend ? D3D11_BUFFER_UAV_FLAG_APPEND : 0;
+		desc.Buffer.NumElements = byteSize/max(structSize, 1);
+
+		CHECK_HR(dev->CreateUnorderedAccessView(*buf, &desc, uav));
+	}
+
+	if(rtv)
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC desc;
+
+		desc.ViewDimension = D3D11_RTV_DIMENSION_BUFFER;
+		desc.Format = fmt;
+		desc.Buffer.FirstElement = 0;
+		desc.Buffer.NumElements = byteSize/max(structSize, 1);
+
+		CHECK_HR(dev->CreateRenderTargetView(*buf, &desc, rtv));
+	}
+
+	SAFE_RELEASE(releaseme);
+
+	return 0;
+}
+
+int D3D11GraphicsTest::MakeTexture2D(UINT w, UINT h, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+									ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
+									ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv)
+{
+	return MakeTexture2DMS(w, h, 1, fmt, tex, srv, uav, rtv, dsv);
+}
+
+int D3D11GraphicsTest::MakeTexture2DMS(UINT w, UINT h, UINT sampleCount, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+									ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
+									ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv)
+{
+	D3D11_TEXTURE2D_DESC texdesc;
+
+	texdesc.Width = w;
+	texdesc.Height = h;
+	texdesc.ArraySize = 1;
+	texdesc.MipLevels = 1;
+	texdesc.MiscFlags = 0;
+	texdesc.CPUAccessFlags = 0;
+	texdesc.Usage = D3D11_USAGE_DEFAULT;
+	texdesc.BindFlags = 0;
+	texdesc.Format = fmt;
+	texdesc.SampleDesc.Count = sampleCount;
+	texdesc.SampleDesc.Quality = 0;
+
+	if(srv)
+		texdesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+	if(rtv)
+		texdesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+	if(dsv)
+		texdesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
+	if(uav)
+		texdesc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+	
+	HRESULT hr = S_OK;
+	
+	CHECK_HR(dev->CreateTexture2D(&texdesc, NULL, tex));
+
+	if(srv && srv != (ID3D11ShaderResourceView **)0x1)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+		
+		if(sampleCount > 1)
+		{
+			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+			desc.Format = fmt;
+		}
+		else
+		{
+			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+			desc.Format = fmt;
+			desc.Texture2D.MipLevels = 1;
+			desc.Texture2D.MostDetailedMip = 0;
+		}
+
+		CHECK_HR(dev->CreateShaderResourceView(*tex, &desc, srv));
+	}
+
+	if(uav && sampleCount == 1)
+	{
+		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
+
+		desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+		desc.Format = fmt;
+		desc.Texture2D.MipSlice = 0;
+
+		CHECK_HR(dev->CreateUnorderedAccessView(*tex, &desc, uav));
+	}
+
+	if(rtv && rtv != (ID3D11RenderTargetView **)0x1)
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC desc;
+
+		if(sampleCount > 1)
+		{
+			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+			desc.Format = fmt;
+		}
+		else
+		{
+			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			desc.Format = fmt;
+			desc.Texture2D.MipSlice = 0;
+		}
+
+		CHECK_HR(dev->CreateRenderTargetView(*tex, &desc, rtv));
+	}
+
+	if(dsv && dsv != (ID3D11DepthStencilView **)0x1)
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC desc;
+		
+		if(sampleCount > 1)
+		{
+			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+			desc.Flags = 0;
+			desc.Format = fmt;
+		}
+		else
+		{
+			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			desc.Flags = 0;
+			desc.Format = fmt;
+			desc.Texture2D.MipSlice = 0;
+		}
+
+		CHECK_HR(dev->CreateDepthStencilView(*tex, &desc, dsv));
+	}
+
+	return 0;
+}
+
 bool D3D11GraphicsTest::Running()
 {
 	MSG msg;

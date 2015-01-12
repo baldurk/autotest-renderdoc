@@ -50,8 +50,16 @@ COM_SMARTPTR(ID3D11DeviceContext);
 COM_SMARTPTR(ID3D11DeviceContext1);
 COM_SMARTPTR(ID3D11DeviceContext2);
 
+COM_SMARTPTR(ID3D11InputLayout);
+
+COM_SMARTPTR(ID3D11Buffer);
+
 COM_SMARTPTR(ID3D11VertexShader);
 COM_SMARTPTR(ID3D11PixelShader);
+COM_SMARTPTR(ID3D11HullShader);
+COM_SMARTPTR(ID3D11DomainShader);
+COM_SMARTPTR(ID3D11GeometryShader);
+COM_SMARTPTR(ID3D11ComputeShader);
 
 COM_SMARTPTR(ID3D11Texture1D);
 COM_SMARTPTR(ID3D11Texture2D);
@@ -64,6 +72,8 @@ COM_SMARTPTR(ID3D11DepthStencilView);
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p)      do { if (p) { (p)->Release(); (p)=NULL; } } while(0)
 #endif
+
+#define CHECK_HR(expr)       { hr = (expr); if( FAILED(hr) ) { TEST_ERROR( "Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, L#expr ); return 8; } }
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
@@ -80,8 +90,40 @@ struct D3D11GraphicsTest : public GraphicsTest
 	~D3D11GraphicsTest();
 
 	bool Init(int argc, char **argv);
+	
+	enum BufType
+	{
+		eCBuffer = 0x0,
+		eStageBuffer = 0x1,
+		eVBuffer = 0x2,
+		eIBuffer = 0x4,
+		eBuffer = 0x8,
+		eCompBuffer = 0x10,
+		eSOBuffer = 0x20,
+		BufMajorType = 0xff,
+
+		eAppend = 0x100,
+		BufUAVType = 0xf00,
+	};
 
 	ID3DBlobPtr Compile(string src, string entry, string profile);
+	
+	int MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt, void *data, ID3D11Buffer **buf,
+					ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv);
+	
+	int MakeTexture2D(UINT w, UINT h, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+						ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
+						ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
+	int MakeTexture2DMS(UINT w, UINT h, UINT sampleCount, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+						ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
+						ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
+	
+	D3D11_MAPPED_SUBRESOURCE Map(ID3D11Resource *res, UINT sub, D3D11_MAP type)
+	{
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		ctx->Map(res, sub, type, 0, &mapped);
+		return mapped;
+	}
 
 	bool Running();
 	void Present();
