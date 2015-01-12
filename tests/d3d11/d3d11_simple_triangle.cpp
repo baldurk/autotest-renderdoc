@@ -26,18 +26,64 @@
 
 namespace {
 
+struct a2v
+{
+	Vec3f pos;
+	Vec4f col;
+	Vec2f uv;
+};
+
 string common = R"EOSHADER(
+
+struct a2v
+{
+	float3 pos : POSITION;
+	float4 col : COLOR0;
+	float2 uv : TEXCOORD0;
+};
+
+struct v2f
+{
+	float4 pos : SV_POSITION;
+	float4 col : COLOR0;
+	float4 uv : TEXCOORD0;
+};
+
 )EOSHADER";
 
 string vertex = R"EOSHADER(
+
+v2f main(a2v IN, uint vid : SV_VertexID)
+{
+	v2f OUT = (v2f)0;
+
+	OUT.pos = float4(IN.pos.xyz, 1);
+	OUT.col = IN.col;
+	OUT.uv = float4(IN.uv, 0, 1);
+
+	return OUT;
+}
+
 )EOSHADER";
 
 string pixel = R"EOSHADER(
+
+float4 main(v2f IN) : SV_Target0
+{
+	return IN.col;
+}
+
 )EOSHADER";
 
 struct impl : D3D11GraphicsTest
 {
 	int main(int argc, char **argv);
+
+	ID3D11InputLayoutPtr layout;
+	ID3D11BufferPtr vb;
+
+	ID3D11VertexShaderPtr vs;
+	ID3D11PixelShaderPtr ps;
 };
 
 int impl::main(int argc, char **argv)
@@ -46,15 +92,55 @@ int impl::main(int argc, char **argv)
 	if(!Init(argc, argv))
 		return 3;
 
-	//ID3DBlobPtr vs = Compile(common + vertex, "main", "vs_5_0");
-	//ID3DBlobPtr ps = Compile(common + pixel, "main", "ps_5_0");
+	HRESULT hr = S_OK;
 
-	// make shaders, resources, etc here.
+	ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
+	ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
+	
+	D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                            D3D11_INPUT_PER_VERTEX_DATA, 0, },
+		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
+	};
+
+	CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &layout));
+
+	CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
+	CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+
+	a2v triangle[] = {
+		{ Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
+		{ Vec3f( 0.0f,  0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
+		{ Vec3f( 0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
+	};
+
+	if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL, NULL))
+	{
+		TEST_ERROR("Failed to create triangle VB");
+		return 8;
+	}
 
 	while(Running())
 	{
-		float col[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
 		ctx->ClearRenderTargetView(bbRTV, col);
+
+		UINT stride = sizeof(a2v);
+		UINT offset = 0;
+		ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+		ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ctx->IASetInputLayout(layout);
+
+		ctx->VSSetShader(vs, NULL, 0);
+		ctx->PSSetShader(ps, NULL, 0);
+
+		D3D11_VIEWPORT view = { 0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f };
+		ctx->RSSetViewports(1, &view);
+
+		ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
+
+		ctx->Draw(3, 0);
+
 		Present();
 	}
 
