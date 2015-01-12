@@ -73,17 +73,17 @@ COM_SMARTPTR(ID3D11DepthStencilView);
 #define SAFE_RELEASE(p)      do { if (p) { (p)->Release(); (p)=NULL; } } while(0)
 #endif
 
-#define CHECK_HR(expr)       { hr = (expr); if( FAILED(hr) ) { TEST_ERROR( "Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, L#expr ); return 8; } }
+#define CHECK_HR(expr)       { hr = (expr); if( FAILED(hr) ) { TEST_ERROR( "Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, L#expr ); return 1; } }
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
 	D3D11GraphicsTest()
-		: backbufferFmt(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB),
-		  backbufferCount(2),
-			backbufferMSAA(1),
-		  d3d11_1(false),
-		  d3d11_2(false),
-			wnd(NULL)
+		: backbufferFmt(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB)
+		, backbufferCount(2)
+		, backbufferMSAA(1)
+		, d3d11_1(false)
+		, d3d11_2(false)
+		, wnd(NULL)
 	{
 	}
 

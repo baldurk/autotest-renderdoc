@@ -33,8 +33,32 @@
 
 struct OpenGLGraphicsTest : public GraphicsTest
 {
+	OpenGLGraphicsTest()
+		: glMajor(4)
+		, glMinor(3)
+	{
+#ifdef WIN32
+		wnd = NULL;
+		dc = NULL;
+		rc = NULL;
+#endif
+	}
+
+	~OpenGLGraphicsTest();
+
 	bool Init(int argc, char **argv);
+	
+	GLuint MakeProgram(string vertSrc, string fragSrc);
 
 	bool Running();
 	void Present();
+
+	int glMajor;
+	int glMinor;
+
+#ifdef WIN32
+	HWND wnd;
+	HDC dc;
+	HGLRC rc;
+#endif
 };

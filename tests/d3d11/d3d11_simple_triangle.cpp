@@ -117,7 +117,7 @@ int impl::main(int argc, char **argv)
 	if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL, NULL))
 	{
 		TEST_ERROR("Failed to create triangle VB");
-		return 8;
+		return 1;
 	}
 
 	while(Running())

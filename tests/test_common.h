@@ -101,7 +101,7 @@ struct GraphicsTest
 #define ARRAY_COUNT(arr) (sizeof(arr)/sizeof(arr[0]))
 #endif
 
-#define TEST_ERROR(fmt, ...) do { fprintf(stderr, "Error: " fmt, __VA_ARGS__); fflush(stderr); } while(0)
-#define TEST_WARN(fmt, ...) do { fprintf(stderr, "Warning: " fmt, __VA_ARGS__); fflush(stderr); } while(0)
-#define TEST_FATAL(fmt, ...) do { fprintf(stderr, "Fatal Error: " fmt, __VA_ARGS__); fflush(stderr); exit(0); } while(0)
-#define TEST_UNIMPLEMENTED(fmt, ...) do { fprintf(stderr, "Unimplemented: " fmt, __VA_ARGS__); fflush(stderr); exit(0); } while(0)
+#define TEST_ERROR(fmt, ...) do { fprintf(stdout, "Error: " fmt, __VA_ARGS__); fflush(stdout); } while(0)
+#define TEST_WARN(fmt, ...) do { fprintf(stdout, "Warning: " fmt, __VA_ARGS__); fflush(stdout); } while(0)
+#define TEST_FATAL(fmt, ...) do { fprintf(stdout, "Fatal Error: " fmt, __VA_ARGS__); fflush(stdout); exit(0); } while(0)
+#define TEST_UNIMPLEMENTED(fmt, ...) do { fprintf(stdout, "Unimplemented: " fmt, __VA_ARGS__); fflush(stdout); exit(0); } while(0)
