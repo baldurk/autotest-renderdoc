@@ -55,6 +55,7 @@ int main(int argc, char **argv)
 	// particular API use
 	TEST(D3D11_Simple_Triangle);
 	TEST(D3D11_Overdraw_Stress);
+	TEST(D3D11_Debug_InfNAN);
 
 	// OpenGL tests
 	TEST(GL_Simple_Triangle);
