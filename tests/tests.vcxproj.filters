@@ -17,6 +17,9 @@
     <ClCompile Include="glew\glew.c">
       <Filter>OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_overdraw_stress.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
