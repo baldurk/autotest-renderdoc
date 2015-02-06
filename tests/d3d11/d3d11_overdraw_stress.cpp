@@ -86,6 +86,8 @@ struct impl : D3D11GraphicsTest
 	ID3D11PixelShaderPtr ps;
 
 	ID3D11RasterizerStatePtr rs;
+	ID3D11DepthStencilStatePtr ds;
+	ID3D11BlendStatePtr bs;
 
 	ID3D11Texture2DPtr bbDepth;
 	ID3D11DepthStencilViewPtr bbDSV;
@@ -119,6 +121,28 @@ int impl::main(int argc, char **argv)
 	rd.CullMode = D3D11_CULL_NONE;
 	
 	CHECK_HR(dev->CreateRasterizerState(&rd, &rs));
+	
+	CD3D11_BLEND_DESC bd = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
+	bd.IndependentBlendEnable = TRUE;
+	bd.RenderTarget[0].BlendEnable = TRUE;
+	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_MIN;
+	bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MIN;
+	bd.RenderTarget[0].RenderTargetWriteMask = 0xf;
+	
+	CHECK_HR(dev->CreateBlendState(&bd, &bs));
+	
+	CD3D11_DEPTH_STENCIL_DESC dd = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+	dd.DepthEnable = FALSE;
+	dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dd.DepthFunc = D3D11_COMPARISON_LESS;
+	dd.StencilEnable = FALSE;
+	dd.StencilWriteMask = dd.StencilReadMask = 0xff;
+	
+	CHECK_HR(dev->CreateDepthStencilState(&dd, &ds));
 
 	srand(0U);
 
@@ -163,7 +187,10 @@ int impl::main(int argc, char **argv)
 		ctx->RSSetViewports(1, &view);
 		ctx->RSSetState(rs);
 
-		ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), bbDSV.GetInterfacePtr());
+		ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
+		float bf[] = { 1.0f, 0.0f, 1.0f, 0.0f };
+		ctx->OMSetBlendState(bs, bf, ~0U);
+		ctx->OMSetDepthStencilState(ds, 0);
 
 		ctx->Draw(numVerts, 0);
 
