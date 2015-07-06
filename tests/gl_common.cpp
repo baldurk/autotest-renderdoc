@@ -31,7 +31,7 @@ static void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum
 	// too much spam on these types
 	if(type != GL_DEBUG_TYPE_PERFORMANCE && type != GL_DEBUG_TYPE_OTHER)
 	{
-		TEST_ERROR("Debug message: %s\n", message);
+		TEST_ERROR("Debug message: %s", message);
 	}
 }
 
@@ -177,7 +177,7 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	GLenum err = glewInit();
 	if(err != GLEW_OK)
 	{
-		TEST_ERROR("Error initialising glew. Error: %s\n", glewGetErrorString(err));
+		TEST_ERROR("Error initialising glew. Error: %s", glewGetErrorString(err));
 	}
 	
 	ShowWindow(wnd, SW_SHOW);

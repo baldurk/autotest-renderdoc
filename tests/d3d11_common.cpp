@@ -251,7 +251,7 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 		desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 		desc.Format = fmt;
 		desc.Buffer.FirstElement = 0;
-		desc.Buffer.NumElements = byteSize/max(structSize, 1);
+		desc.Buffer.NumElements = byteSize/std::max(structSize, 1U);
 
 		if(structSize == 0)
 			desc.Buffer.NumElements = byteSize/16;
@@ -266,7 +266,7 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 		desc.Format = fmt;
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.Flags = (type & BufUAVType) == eAppend ? D3D11_BUFFER_UAV_FLAG_APPEND : 0;
-		desc.Buffer.NumElements = byteSize/max(structSize, 1);
+		desc.Buffer.NumElements = byteSize/std::max(structSize, 1U);
 
 		CHECK_HR(dev->CreateUnorderedAccessView(*buf, &desc, uav));
 	}
@@ -278,7 +278,7 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 		desc.ViewDimension = D3D11_RTV_DIMENSION_BUFFER;
 		desc.Format = fmt;
 		desc.Buffer.FirstElement = 0;
-		desc.Buffer.NumElements = byteSize/max(structSize, 1);
+		desc.Buffer.NumElements = byteSize/std::max(structSize, 1U);
 
 		CHECK_HR(dev->CreateRenderTargetView(*buf, &desc, rtv));
 	}

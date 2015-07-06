@@ -26,8 +26,21 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 using std::string;
 using std::vector;
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#include <stdint.h>
+
+typedef uint8_t byte;
 
 #include <math.h>
 
@@ -101,7 +114,19 @@ struct GraphicsTest
 #define ARRAY_COUNT(arr) (sizeof(arr)/sizeof(arr[0]))
 #endif
 
-#define TEST_ERROR(fmt, ...) do { fprintf(stdout, "Error: " fmt, __VA_ARGS__); fflush(stdout); } while(0)
-#define TEST_WARN(fmt, ...) do { fprintf(stdout, "Warning: " fmt, __VA_ARGS__); fflush(stdout); } while(0)
-#define TEST_FATAL(fmt, ...) do { fprintf(stdout, "Fatal Error: " fmt, __VA_ARGS__); fflush(stdout); exit(0); } while(0)
-#define TEST_UNIMPLEMENTED(fmt, ...) do { fprintf(stdout, "Unimplemented: " fmt, __VA_ARGS__); fflush(stdout); exit(0); } while(0)
+#if defined(WIN32)
+#define DEBUG_BREAK() __debugbreak()
+#elif defined(__linux__)
+#define DEBUG_BREAK() raise(SIGTRAP)
+#else
+#error "unknown OS"
+#endif
+
+#define TEST_ASSERT(cond, fmt, ...) if(!(cond)) { fprintf(stdout, "%s:%d Assert Failure '%s': " fmt "\n", __FILE__, __LINE__, #cond, __VA_ARGS__); fflush(stdout); DEBUG_BREAK(); }
+
+#define TEST_LOG(fmt, ...) do { fprintf(stdout, "%s:%d Log: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); fflush(stdout); } while(0)
+
+#define TEST_ERROR(fmt, ...) do { fprintf(stdout, "%s:%d Error: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); fflush(stdout); } while(0)
+#define TEST_WARN(fmt, ...) do { fprintf(stdout, "%s:%d Warning: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); fflush(stdout); } while(0)
+#define TEST_FATAL(fmt, ...) do { fprintf(stdout, "%s:%d Fatal Error: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); fflush(stdout); DEBUG_BREAK(); exit(0); } while(0)
+#define TEST_UNIMPLEMENTED(fmt, ...) do { fprintf(stdout, "%s:%d Unimplemented: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); fflush(stdout); DEBUG_BREAK(); exit(0); } while(0)
