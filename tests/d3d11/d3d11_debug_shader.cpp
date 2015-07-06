@@ -29,8 +29,9 @@ namespace {
 struct a2v
 {
 	Vec3f pos;
-	Vec4f col;
-	Vec2f uv;
+	float zero;
+	float one;
+	float negone;
 };
 
 string common = R"EOSHADER(
@@ -38,28 +39,40 @@ string common = R"EOSHADER(
 struct a2v
 {
 	float3 pos : POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
+	float zeroVal : ZERO;
+	float oneVal : ONE;
+	float negoneVal : NEGONE;
 };
 
 struct v2f
 {
 	float4 pos : SV_POSITION;
-	float4 col : COLOR0;
-	float4 uv : TEXCOORD0;
+	float zeroVal : ZERO;
+	float oneVal : ONE;
+	float negoneVal : NEGONE;
+	uint tri : TRIANGLE;
 };
 
 )EOSHADER";
 
 string vertex = R"EOSHADER(
 
-v2f main(a2v IN, uint vid : SV_VertexID)
+v2f main(a2v IN, uint tri : SV_InstanceID)
 {
 	v2f OUT = (v2f)0;
 
-	OUT.pos = float4(IN.pos.xyz, 1);
-	OUT.col = float4(float(vid)+0.2f, 1.0f/IN.col.x, -1.0f/IN.col.x, IN.col.x/IN.col.y);
-	OUT.uv = float4(-1.0f, 1.0f, 0.0f, 1.0f);
+	OUT.pos = float4(IN.pos.xyz * 0.1f, 1);
+
+	uint row = tri / 10;
+	uint col = tri % 10;
+
+	OUT.pos.x += -0.9f + col*0.2f;
+	OUT.pos.y +=  0.85f - row*0.3f;
+
+	OUT.zeroVal = IN.zeroVal;
+	OUT.oneVal = IN.oneVal;
+	OUT.negoneVal = IN.negoneVal;
+	OUT.tri = tri;
 
 	return OUT;
 }
@@ -70,32 +83,42 @@ string pixel = R"EOSHADER(
 
 float4 main(v2f IN) : SV_Target0
 {
-	uint vid = uint(IN.col.x);
+  float	posinf = IN.oneVal/IN.zeroVal;
+  float	neginf = IN.negoneVal/IN.zeroVal;
+  float	nan = IN.zeroVal/IN.zeroVal;
 
-  float	posinf = IN.col.y;
-  float	neginf = IN.col.z;
-  float	nan = IN.col.w;
+	float negone = IN.negoneVal;
+	float posone = IN.oneVal;
+	float zero = IN.zeroVal;
 
-	float negone = IN.uv.x;
-	float posone = IN.uv.y;
-	float zero = IN.uv.z;
-
-	if(vid == 0)
+	if(IN.tri == 0)
 		return float4(log(negone), log(zero), log(posone), 1.0f);
-	if(vid == 1)
+	if(IN.tri == 1)
 		return float4(log(posinf), log(neginf), log(nan), 1.0f);
-	if(vid == 2)
+	if(IN.tri == 2)
 		return float4(exp(negone), exp(zero), exp(posone), 1.0f);
-	if(vid == 3)
+	if(IN.tri == 3)
 		return float4(exp(posinf), exp(neginf), exp(nan), 1.0f);
-	if(vid == 4)
+	if(IN.tri == 4)
 		return float4(sqrt(negone), sqrt(zero), sqrt(posone), 1.0f);
-	if(vid == 5)
+	if(IN.tri == 5)
 		return float4(sqrt(posinf), sqrt(neginf), sqrt(nan), 1.0f);
-	if(vid == 6)
+	if(IN.tri == 6)
 		return float4(rsqrt(negone), rsqrt(zero), rsqrt(posone), 1.0f);
-	if(vid == 7)
-		return float4(rsqrt(posinf), rsqrt(neginf), rsqrt(nan), 1.0f);
+	if(IN.tri == 7)
+		return float4(saturate(posinf), saturate(neginf), saturate(nan), 1.0f);
+	if(IN.tri == 8)
+		return float4(min(posinf, nan), min(neginf, nan), min(nan, nan), 1.0f);
+	if(IN.tri == 9)
+		return float4(min(posinf, posinf), min(neginf, posinf), min(nan, posinf), 1.0f);
+	if(IN.tri == 10)
+		return float4(min(posinf, neginf), min(neginf, neginf), min(nan, neginf), 1.0f);
+	if(IN.tri == 11)
+		return float4(max(posinf, nan), max(neginf, nan), max(nan, nan), 1.0f);
+	if(IN.tri == 12)
+		return float4(max(posinf, posinf), max(neginf, posinf), max(nan, posinf), 1.0f);
+	if(IN.tri == 13)
+		return float4(max(posinf, neginf), max(neginf, neginf), max(nan, neginf), 1.0f);
 
 	return float4(0.4f, 0.4f, 0.4f, 0.4f);
 }
@@ -129,8 +152,9 @@ int impl::main(int argc, char **argv)
 	
 	D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                            D3D11_INPUT_PER_VERTEX_DATA, 0, },
-		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
+		{ "ZERO",     0, DXGI_FORMAT_R32_FLOAT,          0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
+		{ "ONE",      0, DXGI_FORMAT_R32_FLOAT,          0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
+		{ "NEGONE",   0, DXGI_FORMAT_R32_FLOAT,          0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
 	};
 
 	CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &layout));
@@ -141,17 +165,9 @@ int impl::main(int argc, char **argv)
 	MakeTexture2D(screenWidth, screenHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex, NULL, NULL, &fltRT, NULL);
 
 	a2v triangle[] = {
-		{ Vec3f(-1.0f,  0.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-		{ Vec3f(-0.5f,  1.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-		{ Vec3f( 0.0f,  0.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(1.0f, 0.0f), },
-		
-		{ Vec3f( 0.0f,  0.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-		{ Vec3f( 0.5f,  1.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-		{ Vec3f( 1.0f,  0.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(1.0f, 0.0f), },
-		
-		{ Vec3f(-0.5f, -1.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-		{ Vec3f( 0.0f,  0.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-		{ Vec3f( 0.5f, -1.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(1.0f, 0.0f), },
+		{ Vec3f(-0.5f,  0.0f, 0.0f), 0.0f, 1.0f, -1.0f, },
+		{ Vec3f( 0.0f,  1.0f, 0.0f), 0.0f, 1.0f, -1.0f, },
+		{ Vec3f( 0.5f,  0.0f, 0.0f), 0.0f, 1.0f, -1.0f, },
 	};
 
 	if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL, NULL))
@@ -164,6 +180,7 @@ int impl::main(int argc, char **argv)
 	{
 		float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
 		ctx->ClearRenderTargetView(fltRT, col);
+		ctx->ClearRenderTargetView(bbRTV, col);
 
 		UINT stride = sizeof(a2v);
 		UINT offset = 0;
@@ -179,7 +196,7 @@ int impl::main(int argc, char **argv)
 
 		ctx->OMSetRenderTargets(1, &fltRT.GetInterfacePtr(), NULL);
 
-		ctx->Draw(9, 0);
+		ctx->DrawInstanced(3, 70, 0, 0);
 
 		Present();
 	}
@@ -189,4 +206,4 @@ int impl::main(int argc, char **argv)
 
 }; // anonymous namespace
 
-int D3D11_Debug_InfNAN(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int D3D11_Debug_Shader(int argc, char **argv) { impl i; return i.main(argc, argv); }

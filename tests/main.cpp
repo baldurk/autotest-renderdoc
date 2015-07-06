@@ -58,8 +58,9 @@ int main(int argc, char **argv)
 	// Renders a lot of overlapping triangles
 	TEST(D3D11_Overdraw_Stress);
 
-	// Tests the debugging of Infs and NaNs in shaders.
-	TEST(D3D11_Debug_InfNAN);
+	// Tests simple shader debugging identities by rendering many small
+	// triangles and performing one calculation to each to an F32 target
+	TEST(D3D11_Debug_Shader);
 
 	// Test using more than 8 compute shader UAVs (D3D11.1 feature)
 	TEST(D3D11_1_Many_UAVs);

@@ -20,10 +20,10 @@
     <ClCompile Include="d3d11\d3d11_overdraw_stress.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
-    <ClCompile Include="d3d11\d3d11_debug_infnan.cpp">
+    <ClCompile Include="d3d11\d3d11_1_many_uavs.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
-    <ClCompile Include="d3d11\d3d11_1_many_uavs.cpp">
+    <ClCompile Include="d3d11\d3d11_debug_shader.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
   </ItemGroup>
