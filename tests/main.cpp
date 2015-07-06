@@ -54,10 +54,20 @@ int main(int argc, char **argv)
 	// that can be used for any dead-simple tests that don't require any
 	// particular API use
 	TEST(D3D11_Simple_Triangle);
+
+	// Renders a lot of overlapping triangles
 	TEST(D3D11_Overdraw_Stress);
+
+	// Tests the debugging of Infs and NaNs in shaders.
 	TEST(D3D11_Debug_InfNAN);
 
+	//////////////////////////////////////////////////////////////
 	// OpenGL tests
+	//////////////////////////////////////////////////////////////
+
+	// Just draws a simple triangle, using normal pipeline. Basic test
+	// that can be used for any dead-simple tests that don't require any
+	// particular API use
 	TEST(GL_Simple_Triangle);
 	
 	TEST_ERROR("%s is not a known test", argv[1]);
