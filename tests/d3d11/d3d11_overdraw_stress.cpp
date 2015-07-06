@@ -115,7 +115,7 @@ int impl::main(int argc, char **argv)
 	CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
 	CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
 
-	MakeTexture2D(screenWidth, screenHeight, DXGI_FORMAT_D32_FLOAT_S8X24_UINT, &bbDepth, NULL, NULL, NULL, &bbDSV);
+	MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_D32_FLOAT_S8X24_UINT, &bbDepth, NULL, NULL, NULL, &bbDSV);
 
 	CD3D11_RASTERIZER_DESC rd = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());
 	rd.CullMode = D3D11_CULL_NONE;

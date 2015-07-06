@@ -341,14 +341,14 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 	return 0;
 }
 
-int D3D11GraphicsTest::MakeTexture2D(UINT w, UINT h, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+int D3D11GraphicsTest::MakeTexture2D(UINT w, UINT h, UINT mips, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
 									ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
 									ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv)
 {
-	return MakeTexture2DMS(w, h, 1, fmt, tex, srv, uav, rtv, dsv);
+	return MakeTexture2DMS(w, h, mips, 1, fmt, tex, srv, uav, rtv, dsv);
 }
 
-int D3D11GraphicsTest::MakeTexture2DMS(UINT w, UINT h, UINT sampleCount, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+int D3D11GraphicsTest::MakeTexture2DMS(UINT w, UINT h, UINT mips, UINT sampleCount, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
 									ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
 									ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv)
 {
@@ -357,7 +357,7 @@ int D3D11GraphicsTest::MakeTexture2DMS(UINT w, UINT h, UINT sampleCount, DXGI_FO
 	texdesc.Width = w;
 	texdesc.Height = h;
 	texdesc.ArraySize = 1;
-	texdesc.MipLevels = 1;
+	texdesc.MipLevels = mips;
 	texdesc.MiscFlags = 0;
 	texdesc.CPUAccessFlags = 0;
 	texdesc.Usage = D3D11_USAGE_DEFAULT;

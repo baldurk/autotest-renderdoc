@@ -126,10 +126,10 @@ struct D3D11GraphicsTest : public GraphicsTest
 	int MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt, void *data, ID3D11Buffer **buf,
 					ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv);
 	
-	int MakeTexture2D(UINT w, UINT h, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+	int MakeTexture2D(UINT w, UINT h, UINT mips, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
 						ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
 						ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
-	int MakeTexture2DMS(UINT w, UINT h, UINT sampleCount, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+	int MakeTexture2DMS(UINT w, UINT h, UINT mips, UINT sampleCount, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
 						ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
 						ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
 	

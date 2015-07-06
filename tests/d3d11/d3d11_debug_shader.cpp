@@ -162,7 +162,7 @@ int impl::main(int argc, char **argv)
 	CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
 	CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
 
-	MakeTexture2D(screenWidth, screenHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex, NULL, NULL, &fltRT, NULL);
+	MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex, NULL, NULL, &fltRT, NULL);
 
 	a2v triangle[] = {
 		{ Vec3f(-0.5f,  0.0f, 0.0f), 0.0f, 1.0f, -1.0f, },
