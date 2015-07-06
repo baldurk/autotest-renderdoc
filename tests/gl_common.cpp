@@ -53,6 +53,10 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	// ...
 	
 #ifdef WIN32
+	string classname = "renderdoc_gl_test";
+	static int idx = 0;idx++;
+	classname += '0' + idx;
+
 	WNDCLASSEXA wc;
 	wc.cbSize        = sizeof(WNDCLASSEXA);
 	wc.style         = 0;
@@ -64,15 +68,15 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	wc.hCursor       = NULL;
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	wc.lpszMenuName  = NULL;
-	wc.lpszClassName = "renderdoc_test";
+	wc.lpszClassName = classname.c_str();
 	wc.hIconSm       = NULL;
 
 	if(!RegisterClassEx(&wc))
 	{
-		return 1;
+		return false;
 	}
 	
-	wnd = CreateWindowExA(WS_EX_CLIENTEDGE, "renderdoc_test", "RenderDoc test program", WS_OVERLAPPEDWINDOW,
+	wnd = CreateWindowExA(WS_EX_CLIENTEDGE, classname.c_str(), "RenderDoc test program", WS_OVERLAPPEDWINDOW,
 	                          CW_USEDEFAULT, CW_USEDEFAULT, screenWidth, screenHeight, NULL, NULL, NULL, NULL);
 	
 	PIXELFORMATDESCRIPTOR pfd = { 0 };
@@ -92,28 +96,28 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	if(pf == 0)
 	{
 		TEST_ERROR("Couldn't choose pixel format");
-		return 1;
+		return false;
 	}
 
 	BOOL res = SetPixelFormat(dc, pf, &pfd);
 	if(res == FALSE)
 	{
 		TEST_ERROR("Couldn't set pixel format");
-		return 1;
+		return false;
 	}
 	
 	HGLRC glrc = wglCreateContext(dc);
 	if(glrc == NULL)
 	{
 		TEST_ERROR("Couldn't create simple RC");
-		return 1;
+		return false;
 	}
 
 	res = wglMakeCurrent(dc, glrc);
 	if(res == FALSE)
 	{
 		TEST_ERROR("Couldn't make simple RC current");
-		return 1;
+		return false;
 	}
 
 	PFNWGLCREATECONTEXTATTRIBSARBPROC createContextAttribs = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
@@ -122,7 +126,7 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	if(createContextAttribs == NULL || getPixelFormatAttrib == NULL)
 	{
 		TEST_ERROR("can't find WGL_ARB_create_context or WGL_ARB_pixel_format");
-		return 1;
+		return false;
 	}
 	
 	wglMakeCurrent(NULL, NULL);
@@ -134,14 +138,14 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	if(pf == 0)
 	{
 		TEST_ERROR("Couldn't choose pixel format");
-		return 1;
+		return false;
 	}
 
 	res = SetPixelFormat(dc, pf, &pfd);
 	if(res == FALSE)
 	{
 		TEST_ERROR("Couldn't set pixel format");
-		return 1;
+		return false;
 	}
 
 	int attribs[64] = {0};
@@ -160,14 +164,14 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	if(rc == NULL)
 	{
 		TEST_ERROR("Couldn't create 4.3 RC - RenderDoc requires OpenGL 4.3 availability");
-		return 1;
+		return false;
 	}
 
 	res = wglMakeCurrent(dc, rc);
 	if(res == FALSE)
 	{
 		TEST_ERROR("Couldn't make 4.3 RC current");
-		return 1;
+		return false;
 	}
 
 	// this is required to get glew to work on core profiles, as it unconditionally calls

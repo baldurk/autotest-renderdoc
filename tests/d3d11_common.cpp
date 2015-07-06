@@ -45,6 +45,10 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 
 	HRESULT hr = S_OK;
 	
+	string classname = "renderdoc_d3d11_test";
+	static int idx = 0;idx++;
+	classname += '0' + idx;
+
 	WNDCLASSEXA wc;
 	wc.cbSize        = sizeof(WNDCLASSEXA);
 	wc.style         = 0;
@@ -56,15 +60,15 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 	wc.hCursor       = NULL;
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	wc.lpszMenuName  = NULL;
-	wc.lpszClassName = "renderdoc_test";
+	wc.lpszClassName = classname.c_str();
 	wc.hIconSm       = NULL;
 
 	if(!RegisterClassEx(&wc))
 	{
-		return 1;
+		return false;
 	}
 	
-	wnd = CreateWindowExA(WS_EX_CLIENTEDGE, "renderdoc_test", "RenderDoc test program", WS_OVERLAPPEDWINDOW,
+	wnd = CreateWindowExA(WS_EX_CLIENTEDGE, classname.c_str(), "RenderDoc test program", WS_OVERLAPPEDWINDOW,
 	                          CW_USEDEFAULT, CW_USEDEFAULT, screenWidth, screenHeight, NULL, NULL, NULL, NULL);
 
 	DXGI_SWAP_CHAIN_DESC swapDesc;
