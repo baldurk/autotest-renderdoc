@@ -109,9 +109,9 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 	if(FAILED(hr))
 	{
 		TEST_ERROR("swap->GetBuffer failed: %x", hr);
-		SAFE_RELEASE(dev);
-		SAFE_RELEASE(ctx);
-		SAFE_RELEASE(swap);
+		dev = NULL;
+		ctx = NULL;
+		swap = NULL;
 		return false;
 	}
 	
@@ -162,8 +162,8 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile)
 	{
 		TEST_ERROR("Failed to compile shader, error %x / %s", hr, error ? (char *)error->GetBufferPointer() : "Unknown");
 
-		SAFE_RELEASE(blob);
-		SAFE_RELEASE(error);
+		blob = NULL;
+		error = NULL;
 		return NULL;
 	}
 
@@ -336,7 +336,7 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 		CHECK_HR(dev->CreateRenderTargetView(*buf, &desc, rtv));
 	}
 
-	SAFE_RELEASE(releaseme);
+	if(releaseme) releaseme->Release();
 
 	return 0;
 }
