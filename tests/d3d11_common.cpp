@@ -242,8 +242,8 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 	{
 		case eCBuffer:
 			bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+			bufDesc.CPUAccessFlags = 0;
+			bufDesc.Usage = D3D11_USAGE_DEFAULT;
 			break;
 		case eStageBuffer:
 			bufDesc.BindFlags = 0;
