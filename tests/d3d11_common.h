@@ -82,6 +82,8 @@ COM_SMARTPTR(ID3D11ShaderResourceView);
 COM_SMARTPTR(ID3D11UnorderedAccessView);
 COM_SMARTPTR(ID3D11DepthStencilView);
 
+COM_SMARTPTR(ID3DUserDefinedAnnotation);
+
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p)      do { if (p) { (p)->Release(); (p)=NULL; } } while(0)
 #endif
@@ -163,4 +165,5 @@ struct D3D11GraphicsTest : public GraphicsTest
 	ID3D11DeviceContextPtr ctx;
 	ID3D11DeviceContext1Ptr ctx1;
 	ID3D11DeviceContext2Ptr ctx2;
+	ID3DUserDefinedAnnotationPtr annot;
 };

@@ -126,6 +126,8 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 		dev->QueryInterface(__uuidof(ID3D11Device2), (void **)&dev2);
 		ctx->QueryInterface(__uuidof(ID3D11DeviceContext2), (void **)&ctx2);
 	}
+
+	ctx->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void **)&annot);
 	
 	hr = dev->CreateRenderTargetView(bbTex, NULL, &bbRTV);
 
