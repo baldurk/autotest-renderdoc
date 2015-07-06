@@ -164,6 +164,53 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile)
 	return blob;
 }
 
+vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t offset, uint32_t len)
+{
+	D3D11_MAPPED_SUBRESOURCE mapped;
+
+	HRESULT hr = S_OK;
+
+	TEST_ASSERT(buffer, "buffer is NULL");
+
+	D3D11_BUFFER_DESC desc;
+	buffer->GetDesc(&desc);
+
+	if(len == 0)
+		len = desc.ByteWidth-offset;
+
+	if(len > 0 && offset+len > desc.ByteWidth)
+	{
+		TEST_WARN("Attempting to read off the end of the array. Will be clamped");
+		len = std::min(len, desc.ByteWidth-offset);
+	}
+
+	ID3D11BufferPtr stage;
+
+	desc.BindFlags = 0;
+	desc.Usage = D3D11_USAGE_STAGING;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+
+	CHECK_HR(dev->CreateBuffer(&desc, NULL, &stage));
+
+	vector<byte> ret;
+	ret.resize(len);
+
+	if(len > 0)
+	{
+		ctx->CopyResource(stage, buffer);
+
+		CHECK_HR(ctx->Map(stage, 0, D3D11_MAP_READ, 0, &mapped))
+
+		memcpy(&ret[0], mapped.pData, len);
+
+		ctx->Unmap(stage, 0);
+	}
+
+	return ret;
+}
+
 int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt, void *data, ID3D11Buffer **buf,
 								ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv)
 {

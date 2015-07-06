@@ -131,6 +131,8 @@ struct D3D11GraphicsTest : public GraphicsTest
 						ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
 						ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
 	
+	vector<byte> GetBufferData(ID3D11Buffer *buf, uint32_t offset = 0, uint32_t len = 0);
+
 	D3D11_MAPPED_SUBRESOURCE Map(ID3D11Resource *res, UINT sub, D3D11_MAP type)
 	{
 		D3D11_MAPPED_SUBRESOURCE mapped;
