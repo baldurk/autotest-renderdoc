@@ -65,6 +65,9 @@ int main(int argc, char **argv)
 	// Test using more than 8 compute shader UAVs (D3D11.1 feature)
 	TEST(D3D11_1_Many_UAVs);
 
+	// Test rendering into RTV mip levels
+	TEST(D3D11_Mip_RTV);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////

@@ -26,6 +26,9 @@
     <ClCompile Include="d3d11\d3d11_debug_shader.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_mip_rtv.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
