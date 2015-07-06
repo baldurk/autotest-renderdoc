@@ -72,6 +72,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="d3d11\d3d11_1_many_uavs.cpp" />
     <ClCompile Include="d3d11\d3d11_overdraw_stress.cpp" />
     <ClCompile Include="d3d11\d3d11_debug_infnan.cpp" />
     <ClCompile Include="d3d11\d3d11_simple_triangle.cpp" />
