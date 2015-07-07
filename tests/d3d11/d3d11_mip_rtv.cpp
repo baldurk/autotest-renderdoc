@@ -109,6 +109,8 @@ int impl::main(int argc, char **argv)
 	{
 		float clearcol[] = { 0.4f, 0.5f, 0.6f, 1.0f };
 		ctx->ClearRenderTargetView(bbRTV, clearcol);
+		for(int i=0; i < 4; i++)
+			ctx->ClearRenderTargetView(rtv[i], clearcol);
 
 		ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
