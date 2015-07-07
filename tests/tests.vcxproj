@@ -73,6 +73,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="d3d11\d3d11_1_many_uavs.cpp" />
+    <ClCompile Include="d3d11\d3d11_many_rtvs.cpp" />
     <ClCompile Include="d3d11\d3d11_mip_rtv.cpp" />
     <ClCompile Include="d3d11\d3d11_overdraw_stress.cpp" />
     <ClCompile Include="d3d11\d3d11_debug_shader.cpp" />

@@ -68,6 +68,9 @@ int main(int argc, char **argv)
 	// Test rendering into RTV mip levels
 	TEST(D3D11_Mip_RTV);
 
+	// Test repeatedly creating and destroying RTVs
+	TEST(D3D11_Many_RTVs);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
