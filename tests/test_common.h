@@ -114,6 +114,8 @@ struct GraphicsTest
 #define ARRAY_COUNT(arr) (sizeof(arr)/sizeof(arr[0]))
 #endif
 
+#define RANDF(mn, mx) ((float(rand())/float(RAND_MAX))*((mx)-(mn))+(mn))
+
 #if defined(WIN32)
 #define DEBUG_BREAK() __debugbreak()
 #elif defined(__linux__)
