@@ -32,6 +32,9 @@
     <ClCompile Include="d3d11\d3d11_many_rtvs.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_empty_compute_dispatch.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">

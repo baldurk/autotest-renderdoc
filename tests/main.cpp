@@ -71,6 +71,9 @@ int main(int argc, char **argv)
 	// Test repeatedly creating and destroying RTVs
 	TEST(D3D11_Many_RTVs);
 
+	// Test dispatching with one threadgroup count set to 0
+	TEST(D3D11_Empty_Compute_Dispatch);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
