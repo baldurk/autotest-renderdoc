@@ -195,6 +195,12 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 
 OpenGLGraphicsTest::~OpenGLGraphicsTest()
 {
+	if(!bufs.empty()) glDeleteBuffers((GLsizei)bufs.size(), &bufs[0]);
+	if(!texs.empty()) glDeleteTextures((GLsizei)texs.size(), &texs[0]);
+	if(!vaos.empty()) glDeleteVertexArrays((GLsizei)vaos.size(), &vaos[0]);
+	
+	for(GLuint p : progs) glDeleteProgram(p);
+
 	if (rc) wglDeleteContext(rc);
 	if (dc) ReleaseDC(wnd, dc);
 	if (wnd) DestroyWindow(wnd);
@@ -259,7 +265,31 @@ GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc)
 	glDeleteShader(vs);
 	glDeleteShader(fs);
 
+	if(program)
+		progs.push_back(program);
+
 	return program;
+}
+
+GLuint OpenGLGraphicsTest::MakeBuffer()
+{
+	bufs.push_back(0);
+	glGenBuffers(1, &bufs[bufs.size()-1]);
+	return bufs[bufs.size()-1];
+}
+
+GLuint OpenGLGraphicsTest::MakeTexture()
+{
+	texs.push_back(0);
+	glGenTextures(1, &texs[texs.size()-1]);
+	return texs[texs.size()-1];
+}
+
+GLuint OpenGLGraphicsTest::MakeVAO()
+{
+	vaos.push_back(0);
+	glGenVertexArrays(1, &vaos[vaos.size()-1]);
+	return vaos[vaos.size()-1];
 }
 
 bool OpenGLGraphicsTest::Running()

@@ -92,10 +92,6 @@ int impl::main(int argc, char **argv)
 	// initialise, create window, create context, etc
 	if(!Init(argc, argv))
 		return 3;
-
-	// make shaders, resources, etc here.
-	glGenBuffers(1, &vb);
-	glGenVertexArrays(1, &vao);
 	
 	a2v triangle[] = {
 		{ Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
@@ -103,8 +99,10 @@ int impl::main(int argc, char **argv)
 		{ Vec3f( 0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
 	};
 
+	vao = MakeVAO();
 	glBindVertexArray(vao);
 
+	vb = MakeBuffer();
 	glBindBuffer(GL_ARRAY_BUFFER, vb);
 	glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 	
@@ -133,11 +131,6 @@ int impl::main(int argc, char **argv)
 
 		Present();
 	}
-
-	glDeleteBuffers(1, &vb);
-	glDeleteVertexArrays(1, &vao);
-
-	glDeleteProgram(program);
 
 	return 0;
 }

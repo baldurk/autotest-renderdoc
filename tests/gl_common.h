@@ -31,6 +31,8 @@
 #include <GL/glew.h>
 #include <GL/wglew.h>
 
+#include <vector>
+
 struct OpenGLGraphicsTest : public GraphicsTest
 {
 	OpenGLGraphicsTest()
@@ -49,6 +51,9 @@ struct OpenGLGraphicsTest : public GraphicsTest
 	bool Init(int argc, char **argv);
 	
 	GLuint MakeProgram(string vertSrc, string fragSrc);
+	GLuint MakeBuffer();
+	GLuint MakeTexture();
+	GLuint MakeVAO();
 
 	bool Running();
 	void Present();
@@ -61,4 +66,6 @@ struct OpenGLGraphicsTest : public GraphicsTest
 	HDC dc;
 	HGLRC rc;
 #endif
+
+	std::vector<GLuint> bufs, texs, progs, vaos;
 };
