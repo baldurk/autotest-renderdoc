@@ -189,6 +189,7 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 #endif
 
 	glDebugMessageCallback(&debugCallback, NULL);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
 	return true;
 }
