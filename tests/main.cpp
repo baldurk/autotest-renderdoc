@@ -77,6 +77,10 @@ int main(int argc, char **argv)
 	// Test passing an array of float2 to make sure the interpolator
 	// packing is handled by shader debugging
 	TEST(D3D11_Array_Interpolator);
+
+	// Test a drawcall of 0 size
+	TEST(D3D11_Empty_Drawcall);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
