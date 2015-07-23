@@ -74,6 +74,9 @@ int main(int argc, char **argv)
 	// Test dispatching with one threadgroup count set to 0
 	TEST(D3D11_Empty_Compute_Dispatch);
 
+	// Test passing an array of float2 to make sure the interpolator
+	// packing is handled by shader debugging
+	TEST(D3D11_Array_Interpolator);
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
