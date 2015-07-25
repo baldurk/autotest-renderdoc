@@ -81,6 +81,10 @@ int main(int argc, char **argv)
 	// Test a drawcall of 0 size
 	TEST(D3D11_Empty_Drawcall);
 
+	// Test reading from structured buffers, with and without
+	// offsets
+	TEST(D3D11_Structured_Buffer_Read);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
