@@ -17,6 +17,9 @@
     <ClCompile Include="glew\glew.c">
       <Filter>OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
     <ClCompile Include="d3d11\d3d11_overdraw_stress.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>

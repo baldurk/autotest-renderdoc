@@ -199,6 +199,7 @@ OpenGLGraphicsTest::~OpenGLGraphicsTest()
 	if(!bufs.empty()) glDeleteBuffers((GLsizei)bufs.size(), &bufs[0]);
 	if(!texs.empty()) glDeleteTextures((GLsizei)texs.size(), &texs[0]);
 	if(!vaos.empty()) glDeleteVertexArrays((GLsizei)vaos.size(), &vaos[0]);
+	if(!fbos.empty()) glDeleteFramebuffers((GLsizei)fbos.size(), &fbos[0]);
 	
 	for(GLuint p : progs) glDeleteProgram(p);
 
@@ -291,6 +292,13 @@ GLuint OpenGLGraphicsTest::MakeVAO()
 	vaos.push_back(0);
 	glGenVertexArrays(1, &vaos[vaos.size()-1]);
 	return vaos[vaos.size()-1];
+}
+
+GLuint OpenGLGraphicsTest::MakeFBO()
+{
+	fbos.push_back(0);
+	glGenFramebuffers(1, &fbos[fbos.size()-1]);
+	return fbos[fbos.size()-1];
 }
 
 bool OpenGLGraphicsTest::Running()

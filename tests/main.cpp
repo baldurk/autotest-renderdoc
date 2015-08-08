@@ -93,6 +93,10 @@ int main(int argc, char **argv)
 	// that can be used for any dead-simple tests that don't require any
 	// particular API use
 	TEST(GL_Simple_Triangle);
+
+	// Creates a MS FBO with one attachment created with an unsized
+	// internal format
+	TEST(GL_Unsized_MS_FBO_Attachment);
 	
 	TEST_ERROR("%s is not a known test", argv[1]);
 

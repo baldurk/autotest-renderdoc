@@ -54,6 +54,7 @@ struct OpenGLGraphicsTest : public GraphicsTest
 	GLuint MakeBuffer();
 	GLuint MakeTexture();
 	GLuint MakeVAO();
+	GLuint MakeFBO();
 
 	bool Running();
 	void Present();
@@ -67,5 +68,5 @@ struct OpenGLGraphicsTest : public GraphicsTest
 	HGLRC rc;
 #endif
 
-	std::vector<GLuint> bufs, texs, progs, vaos;
+	std::vector<GLuint> bufs, texs, progs, vaos, fbos;
 };
