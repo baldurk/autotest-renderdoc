@@ -36,7 +36,7 @@ bool GraphicsTest::Init(int argc, char **argv)
 
 #define STRINGIZE(a) #a
 
-#define TEST(testname) int testname(int,char**); if(!strcmp(argv[1], STRINGIZE(testname))) { return testname(argc, argv); }
+#define TEST(idx, testname) int testname(int,char**); if(!strcmp(argv[1], #idx) || !strcmp(argv[1], STRINGIZE(testname))) { return testname(argc, argv); }
 
 int main(int argc, char **argv)
 {
@@ -53,37 +53,37 @@ int main(int argc, char **argv)
 	// Just draws a simple triangle, using normal pipeline. Basic test
 	// that can be used for any dead-simple tests that don't require any
 	// particular API use
-	TEST(D3D11_Simple_Triangle);
+	TEST(0, D3D11_Simple_Triangle);
 
 	// Renders a lot of overlapping triangles
-	TEST(D3D11_Overdraw_Stress);
+	TEST(1, D3D11_Overdraw_Stress);
 
 	// Tests simple shader debugging identities by rendering many small
 	// triangles and performing one calculation to each to an F32 target
-	TEST(D3D11_Debug_Shader);
+	TEST(2, D3D11_Debug_Shader);
 
 	// Test using more than 8 compute shader UAVs (D3D11.1 feature)
-	TEST(D3D11_1_Many_UAVs);
+	TEST(3, D3D11_1_Many_UAVs);
 
 	// Test rendering into RTV mip levels
-	TEST(D3D11_Mip_RTV);
+	TEST(4, D3D11_Mip_RTV);
 
 	// Test repeatedly creating and destroying RTVs
-	TEST(D3D11_Many_RTVs);
+	TEST(5, D3D11_Many_RTVs);
 
 	// Test dispatching with one threadgroup count set to 0
-	TEST(D3D11_Empty_Compute_Dispatch);
+	TEST(6, D3D11_Empty_Compute_Dispatch);
 
 	// Test passing an array of float2 to make sure the interpolator
 	// packing is handled by shader debugging
-	TEST(D3D11_Array_Interpolator);
+	TEST(7, D3D11_Array_Interpolator);
 
 	// Test a drawcall of 0 size
-	TEST(D3D11_Empty_Drawcall);
+	TEST(8, D3D11_Empty_Drawcall);
 
 	// Test reading from structured buffers, with and without
 	// offsets
-	TEST(D3D11_Structured_Buffer_Read);
+	TEST(9, D3D11_Structured_Buffer_Read);
 
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
@@ -92,11 +92,11 @@ int main(int argc, char **argv)
 	// Just draws a simple triangle, using normal pipeline. Basic test
 	// that can be used for any dead-simple tests that don't require any
 	// particular API use
-	TEST(GL_Simple_Triangle);
+	TEST(10, GL_Simple_Triangle);
 
 	// Creates a MS FBO with one attachment created with an unsized
 	// internal format
-	TEST(GL_Unsized_MS_FBO_Attachment);
+	TEST(11, GL_Unsized_MS_FBO_Attachment);
 	
 	TEST_ERROR("%s is not a known test", argv[1]);
 
