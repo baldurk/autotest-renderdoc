@@ -85,6 +85,9 @@ int main(int argc, char **argv)
 	// offsets
 	TEST(9, D3D11_Structured_Buffer_Read);
 
+	// Test setting some viewports that are empty, but enabled
+	TEST(10, D3D11_Empty_Viewports);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
@@ -92,11 +95,11 @@ int main(int argc, char **argv)
 	// Just draws a simple triangle, using normal pipeline. Basic test
 	// that can be used for any dead-simple tests that don't require any
 	// particular API use
-	TEST(10, GL_Simple_Triangle);
+	TEST(11, GL_Simple_Triangle);
 
 	// Creates a MS FBO with one attachment created with an unsized
 	// internal format
-	TEST(11, GL_Unsized_MS_FBO_Attachment);
+	TEST(12, GL_Unsized_MS_FBO_Attachment);
 	
 	TEST_ERROR("%s is not a known test", argv[1]);
 
