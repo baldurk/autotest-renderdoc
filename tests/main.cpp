@@ -116,6 +116,10 @@ int main(int argc, char **argv)
 	// Creates a single program pipeline and binds different programs to
 	// it mid-frame
 	TEST(GL_Runtime_Bind_Prog_To_Pipe);
+
+	// Creates a depth-stencil FBO and writes both depth and stencil to
+	// it
+	TEST(GL_DepthStencil_FBO);
 	
 	TEST_ERROR("%s is not a known test", argv[1]);
 

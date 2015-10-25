@@ -56,6 +56,9 @@
     <ClCompile Include="gl\gl_runtime_bind_prog_to_pipe.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_depthstencil_fbo.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
