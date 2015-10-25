@@ -112,6 +112,10 @@ int main(int argc, char **argv)
 	// Creates a MS FBO with one attachment created with an unsized
 	// internal format
 	TEST(GL_Unsized_MS_FBO_Attachment);
+
+	// Creates a single program pipeline and binds different programs to
+	// it mid-frame
+	TEST(GL_Runtime_Bind_Prog_To_Pipe);
 	
 	TEST_ERROR("%s is not a known test", argv[1]);
 

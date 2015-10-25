@@ -53,6 +53,9 @@
     <ClCompile Include="d3d11\d3d11_simple_dispatch.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_runtime_bind_prog_to_pipe.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
