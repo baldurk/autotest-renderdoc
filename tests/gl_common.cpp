@@ -200,6 +200,7 @@ OpenGLGraphicsTest::~OpenGLGraphicsTest()
 	if(!texs.empty()) glDeleteTextures((GLsizei)texs.size(), &texs[0]);
 	if(!vaos.empty()) glDeleteVertexArrays((GLsizei)vaos.size(), &vaos[0]);
 	if(!fbos.empty()) glDeleteFramebuffers((GLsizei)fbos.size(), &fbos[0]);
+	if(!pipes.empty()) glDeleteProgramPipelines((GLsizei)pipes.size(), &pipes[0]);
 	
 	for(GLuint p : progs) glDeleteProgram(p);
 
@@ -208,23 +209,35 @@ OpenGLGraphicsTest::~OpenGLGraphicsTest()
 	if (wnd) DestroyWindow(wnd);
 }
 
-GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc)
+GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc, bool sep)
 {
-	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint vs = vertSrc.empty() ? 0 : glCreateShader(GL_VERTEX_SHADER);
+	GLuint fs = fragSrc.empty() ? 0 : glCreateShader(GL_FRAGMENT_SHADER);
 
-	const char *cstr = vertSrc.c_str();
-	glShaderSource(vs, 1, &cstr, NULL);
-	cstr = fragSrc.c_str();
-	glShaderSource(fs, 1, &cstr, NULL);
+	const char *cstr = NULL;
+	
+	if(vs)
+	{
+		cstr = vertSrc.c_str();
+		glShaderSource(vs, 1, &cstr, NULL);
+		glCompileShader(vs);
+	}
 
-	glCompileShader(vs);
-	glCompileShader(fs);
+	if(fs)
+	{
+		cstr = fragSrc.c_str();
+		glShaderSource(fs, 1, &cstr, NULL);
+		glCompileShader(fs);
+	}
 	
 	char buffer[1024];
 	GLint status = 0;
+	
+	if(vs)
+		glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
+	else
+		status = 1;
 
-	glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
 	if(status == 0)
 	{
 		glGetShaderInfoLog(vs, 1024, NULL, buffer);
@@ -234,7 +247,11 @@ GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc)
 		return 0;
 	}
 
-	glGetShaderiv(fs, GL_COMPILE_STATUS, &status);
+	if(fs)
+		glGetShaderiv(fs, GL_COMPILE_STATUS, &status);
+	else
+		status = 1;
+
 	if(status == 0)
 	{
 		glGetShaderInfoLog(fs, 1024, NULL, buffer);
@@ -246,8 +263,10 @@ GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc)
 	
 	GLuint program = glCreateProgram();
 
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
+	if(vs) glAttachShader(program, vs);
+	if(fs) glAttachShader(program, fs);
+
+	if(!vs || !fs || sep) glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);
 
 	glLinkProgram(program);
 	
@@ -261,11 +280,16 @@ GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc)
 		program = 0;
 	}
 
-	glDetachShader(program, vs);
-	glDetachShader(program, fs);
-
-	glDeleteShader(vs);
-	glDeleteShader(fs);
+	if(vs)
+	{
+		glDetachShader(program, vs);
+		glDeleteShader(vs);
+	}
+	if(fs)
+	{
+		glDetachShader(program, fs);
+		glDeleteShader(fs);
+	}
 
 	if(program)
 		progs.push_back(program);
@@ -278,6 +302,13 @@ GLuint OpenGLGraphicsTest::MakeBuffer()
 	bufs.push_back(0);
 	glGenBuffers(1, &bufs[bufs.size()-1]);
 	return bufs[bufs.size()-1];
+}
+
+GLuint OpenGLGraphicsTest::MakePipeline()
+{
+	pipes.push_back(0);
+	glCreateProgramPipelines(1, &pipes[pipes.size()-1]);
+	return pipes[pipes.size()-1];
 }
 
 GLuint OpenGLGraphicsTest::MakeTexture()

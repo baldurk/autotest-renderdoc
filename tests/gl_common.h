@@ -50,7 +50,8 @@ struct OpenGLGraphicsTest : public GraphicsTest
 
 	bool Init(int argc, char **argv);
 	
-	GLuint MakeProgram(string vertSrc, string fragSrc);
+	GLuint MakeProgram(string vertSrc, string fragSrc, bool sep = false);
+	GLuint MakePipeline();
 	GLuint MakeBuffer();
 	GLuint MakeTexture();
 	GLuint MakeVAO();
@@ -68,5 +69,5 @@ struct OpenGLGraphicsTest : public GraphicsTest
 	HGLRC rc;
 #endif
 
-	std::vector<GLuint> bufs, texs, progs, vaos, fbos;
+	std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
 };
