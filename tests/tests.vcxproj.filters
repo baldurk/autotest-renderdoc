@@ -59,6 +59,9 @@
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_discard_view.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
