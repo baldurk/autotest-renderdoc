@@ -103,6 +103,10 @@ int main(int argc, char **argv)
 	// Test that discards an RTV
 	TEST(D3D11_Discard_View);
 
+	// Test that does UpdateSubresource on a deferred context which
+	// might need some workaround code.
+	TEST(D3D11_Deferred_UpdateSubresource);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
