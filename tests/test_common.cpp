@@ -23,6 +23,7 @@
 ******************************************************************************/
 
 #include "test_common.h"
+#include <windows.h>
 
 std::string lipsum = R"EOLIPSUM(
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sollicitudin congue urna, sed rhoncus magna hendrerit nec.
@@ -190,3 +191,19 @@ consectetur adipiscing elit.
 
 )EOLIPSUM";
 
+std::string GetCWD()
+{
+	char cwd[MAX_PATH + 1] = {0};
+	GetCurrentDirectoryA(MAX_PATH, cwd);
+
+	string cwdstr = cwd;
+
+	for(size_t i=0; i < cwdstr.size(); i++)
+		if(cwdstr[i] == '\\')
+			cwdstr[i] = '/';
+
+	while(cwdstr.back() == '/' || cwdstr.back() == '\\')
+		cwdstr.pop_back();
+
+	return cwdstr;
+}

@@ -112,6 +112,8 @@ struct GraphicsTest
 
 extern std::string lipsum;
 
+std::string GetCWD();
+
 #ifndef ARRAY_COUNT
 #define ARRAY_COUNT(arr) (sizeof(arr)/sizeof(arr[0]))
 #endif
