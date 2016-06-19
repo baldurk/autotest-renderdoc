@@ -110,6 +110,8 @@ struct GraphicsTest
 	bool debugDevice;
 };
 
+extern std::string lipsum;
+
 #ifndef ARRAY_COUNT
 #define ARRAY_COUNT(arr) (sizeof(arr)/sizeof(arr[0]))
 #endif

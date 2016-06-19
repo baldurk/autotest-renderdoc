@@ -95,6 +95,7 @@
     <ClCompile Include="gl_common.cpp" />
     <ClCompile Include="lz4.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="test_common.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d11_common.h" />
