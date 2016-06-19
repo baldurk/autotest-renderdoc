@@ -107,6 +107,10 @@ int main(int argc, char **argv)
 	// might need some workaround code.
 	TEST(D3D11_Deferred_UpdateSubresource);
 
+	// Tests shaders with their debug/reflection info stripped out
+	// and stored in separate blobs
+	TEST(D3D11_Stripped_Shaders);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
