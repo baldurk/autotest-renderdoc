@@ -115,6 +115,7 @@ int impl::main(int argc, char **argv)
 	glEnableVertexAttribArray(2);
 
 	program = MakeProgram(common + vertex, common + pixel);
+	glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 	
 	while(Running())
 	{

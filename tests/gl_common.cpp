@@ -220,6 +220,7 @@ GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc, bool sep)
 	{
 		cstr = vertSrc.c_str();
 		glShaderSource(vs, 1, &cstr, NULL);
+		glObjectLabel(GL_SHADER, vs, -1, "VS doodad");
 		glCompileShader(vs);
 	}
 
@@ -227,6 +228,7 @@ GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc, bool sep)
 	{
 		cstr = fragSrc.c_str();
 		glShaderSource(fs, 1, &cstr, NULL);
+		glObjectLabel(GL_SHADER, fs, -1, "FS thingy");
 		glCompileShader(fs);
 	}
 	
