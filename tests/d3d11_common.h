@@ -119,7 +119,11 @@ struct D3D11GraphicsTest : public GraphicsTest
 		BufUAVType = 0xf00,
 	};
 
-	ID3DBlobPtr Compile(string src, string entry, string profile);
+	ID3DBlobPtr Compile(string src, string entry, string profile, ID3DBlob **unstripped = NULL);
+	void WriteBlob(string name, ID3DBlob *blob, bool compress);
+
+	ID3DBlobPtr SetBlobPath(string name, ID3DBlob *blob);
+	void SetBlobPath(string name, ID3D11DeviceChild *shader);
 	
 	int MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt, void *data, ID3D11Buffer **buf,
 					ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv);

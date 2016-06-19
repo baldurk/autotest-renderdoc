@@ -24,9 +24,16 @@
 
 #include "d3d11_common.h"
 
+#include "lz4.h"
+
 #include <stdio.h>
 
 #pragma comment(lib, "d3dcompiler.lib")
+
+#define RENDERDOC_ShaderDebugMagicValue_struct                                \
+  {                                                                           \
+    0xeab25520, 0x6670, 0x4865, 0x84, 0x29, 0x6c, 0x8, 0x51, 0x54, 0x00, 0xff \
+  }
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -148,13 +155,13 @@ D3D11GraphicsTest::~D3D11GraphicsTest()
 	if (wnd) DestroyWindow(wnd);
 }
 
-ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile)
+ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile, ID3DBlob **unstripped)
 {
 	ID3DBlobPtr blob = NULL;
 	ID3DBlobPtr error = NULL;
 
 	HRESULT hr = D3DCompile(src.c_str(), src.length(),
-		NULL, NULL, NULL,
+		"", NULL, NULL,
 		entry.c_str(), profile.c_str(),
 		D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_DEBUG, 0, &blob, &error);
 
@@ -167,7 +174,77 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile)
 		return NULL;
 	}
 
+	if(unstripped)
+	{
+		blob.AddRef();
+		*unstripped = blob.GetInterfacePtr();
+		
+		ID3DBlobPtr stripped = NULL;
+
+		D3DStripShader(blob->GetBufferPointer(), blob->GetBufferSize(), D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO, &stripped);
+
+		blob = NULL;
+
+		return stripped;
+	}
+
 	return blob;
+}
+
+void D3D11GraphicsTest::WriteBlob(string name, ID3DBlob *blob, bool compress)
+{
+	FILE *f = NULL;
+	fopen_s(&f, name.c_str(), "wb");
+
+	if(f == NULL)
+	{
+		TEST_ERROR("Can't open blob file to write %s", name.c_str());
+		return;
+	}
+
+	if(compress)
+	{
+		int uncompSize = (int)blob->GetBufferSize();
+		char *compBuf = new char[uncompSize];
+
+		int compressedSize = LZ4_compress_default((const char *)blob->GetBufferPointer(), compBuf, uncompSize, uncompSize);
+
+		fwrite(compBuf, 1, compressedSize, f);
+
+		delete[] compBuf;
+	}
+	else
+	{
+		fwrite(blob->GetBufferPointer(), 1, blob->GetBufferSize(), f);
+	}
+
+	fclose(f);
+}
+
+ID3DBlobPtr D3D11GraphicsTest::SetBlobPath(string name, ID3DBlob *blob)
+{
+	ID3DBlobPtr newBlob = NULL;
+	
+	const GUID RENDERDOC_ShaderDebugMagicValue = RENDERDOC_ShaderDebugMagicValue_struct;
+
+	string pathData;
+	for(size_t i=0; i < sizeof(RENDERDOC_ShaderDebugMagicValue); i++)
+		pathData.push_back(' ');
+
+	pathData += name;
+
+	memcpy(&pathData[0], &RENDERDOC_ShaderDebugMagicValue, sizeof(RENDERDOC_ShaderDebugMagicValue));
+
+	D3DSetBlobPart(blob->GetBufferPointer(), blob->GetBufferSize(), D3D_BLOB_PRIVATE_DATA, 0, pathData.c_str(), pathData.size()+1, &newBlob);
+
+	return newBlob;
+}
+
+void D3D11GraphicsTest::SetBlobPath(string name, ID3D11DeviceChild *shader)
+{
+	const GUID RENDERDOC_ShaderDebugMagicValue = RENDERDOC_ShaderDebugMagicValue_struct;
+
+	shader->SetPrivateData(RENDERDOC_ShaderDebugMagicValue, (UINT)name.size()+1, name.c_str());
 }
 
 vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t offset, uint32_t len)

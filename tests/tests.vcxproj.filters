@@ -59,6 +59,7 @@
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
+    <ClCompile Include="lz4.c" />
     <ClCompile Include="d3d11\d3d11_discard_view.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
@@ -88,5 +89,6 @@
     <ClInclude Include="gl_common.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="lz4.h" />
   </ItemGroup>
 </Project>
