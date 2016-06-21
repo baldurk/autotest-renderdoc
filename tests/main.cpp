@@ -115,6 +115,10 @@ int main(int argc, char **argv)
 	// expects derivatives to still be valid after converging.
 	TEST(D3D11_Divergent_Shader);
 
+	// Tests creating resources mid-frame to make sure that they
+	// and their contents are correctly tracked.
+	TEST(D3D11_Midframe_Create);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
