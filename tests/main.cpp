@@ -111,6 +111,10 @@ int main(int argc, char **argv)
 	// and stored in separate blobs
 	TEST(D3D11_Stripped_Shaders);
 
+	// Test running a shader that diverges across a quad and then
+	// expects derivatives to still be valid after converging.
+	TEST(D3D11_Divergent_Shader);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////

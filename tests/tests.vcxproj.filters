@@ -70,6 +70,9 @@
     <ClCompile Include="d3d11\d3d11_stripped_shaders.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_divergent_shader.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
