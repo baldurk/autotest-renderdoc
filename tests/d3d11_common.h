@@ -86,7 +86,7 @@ COM_SMARTPTR(ID3D11DepthStencilView);
 
 COM_SMARTPTR(ID3DUserDefinedAnnotation);
 
-#define CHECK_HR(expr)       { hr = (expr); if( FAILED(hr) ) { TEST_ERROR( "Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, L#expr ); DEBUG_BREAK(); exit(1); } }
+#define CHECK_HR(expr)       { hr = (expr); if( FAILED(hr) ) { TEST_ERROR( "Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, #expr ); DEBUG_BREAK(); exit(1); } }
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
