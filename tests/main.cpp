@@ -119,6 +119,9 @@ int main(int argc, char **argv)
 	// and their contents are correctly tracked.
 	TEST(D3D11_Midframe_Create);
 
+	// Tests reading and writing from byte address buffers
+	TEST(D3D11_Byte_Address_Buffers);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////

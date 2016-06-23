@@ -328,6 +328,9 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 	else
 		bufDesc.StructureByteStride = 0;
 
+	if(type & eRawBuffer)
+		bufDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+
 	if(structSize > 0 && (byteSize % structSize) != 0)
 		TEST_FATAL("Invalid structure size - not divisor of byte size");
 
@@ -399,8 +402,13 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.NumElements = byteSize/std::max(structSize, 1U);
 
-		if(structSize == 0)
-			desc.Buffer.NumElements = byteSize/16;
+		if(type & eRawBuffer)
+		{
+			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+			desc.BufferEx.FirstElement = 0;
+			desc.BufferEx.NumElements = byteSize/std::max(structSize, 1U);
+			desc.BufferEx.Flags = D3D11_BUFFEREX_SRV_FLAG_RAW;
+		}
 
 		CHECK_HR(dev->CreateShaderResourceView(*buf, &desc, srv));
 	}
@@ -413,6 +421,9 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.Flags = (type & BufUAVType) == eAppend ? D3D11_BUFFER_UAV_FLAG_APPEND : 0;
 		desc.Buffer.NumElements = byteSize/std::max(structSize, 1U);
+
+		if(type & eRawBuffer)
+			desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_RAW;
 
 		CHECK_HR(dev->CreateUnorderedAccessView(*buf, &desc, uav));
 	}

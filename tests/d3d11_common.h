@@ -116,6 +116,7 @@ struct D3D11GraphicsTest : public GraphicsTest
 		BufMajorType = 0xff,
 
 		eAppend = 0x100,
+		eRawBuffer = 0x200,
 		BufUAVType = 0xf00,
 	};
 
