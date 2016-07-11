@@ -122,6 +122,10 @@ int main(int argc, char **argv)
 	// Tests reading and writing from byte address buffers
 	TEST(D3D11_Byte_Address_Buffers);
 
+	// Tests rendering from one mip to another to do a downsample
+	// chain
+	TEST(D3D11_Mip_Gen_RT);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////
