@@ -146,6 +146,9 @@ int main(int argc, char **argv)
 	// Creates a depth-stencil FBO and writes both depth and stencil to
 	// it
 	TEST(GL_DepthStencil_FBO);
+
+	// Uses VAO 0 (i.e. never binds a VAO)
+	TEST(GL_VAO_0);
 	
 	TEST_ERROR("%s is not a known test", argv[1]);
 

@@ -38,6 +38,7 @@ struct OpenGLGraphicsTest : public GraphicsTest
 	OpenGLGraphicsTest()
 		: glMajor(4)
 		, glMinor(3)
+		, coreProfile(true)
 	{
 #ifdef WIN32
 		wnd = NULL;
@@ -62,6 +63,7 @@ struct OpenGLGraphicsTest : public GraphicsTest
 
 	int glMajor;
 	int glMinor;
+	bool coreProfile;
 
 #ifdef WIN32
 	HWND wnd;

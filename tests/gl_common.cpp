@@ -161,7 +161,7 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 	attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
 	attribs[i++] = debugDevice ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
 	attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
-	attribs[i++] = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+	attribs[i++] = coreProfile ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
 
 	rc = createContextAttribs(dc, NULL, attribs);
 	if(rc == NULL)
