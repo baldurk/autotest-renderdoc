@@ -129,6 +129,9 @@ int main(int argc, char **argv)
 	// Test using D3D11's streamout feature
 	TEST(D3D11_StreamOut);
 
+	// Test that creates and samples a 3D texture
+	TEST(D3D11_Texture_3D);
+
 	//////////////////////////////////////////////////////////////
 	// OpenGL tests
 	//////////////////////////////////////////////////////////////

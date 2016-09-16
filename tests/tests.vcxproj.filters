@@ -88,6 +88,9 @@
     <ClCompile Include="d3d11\d3d11_streamout.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_texture_3d.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
