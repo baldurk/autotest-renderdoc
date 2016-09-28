@@ -91,6 +91,9 @@
     <ClCompile Include="d3d11\d3d11_texture_3d.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_buffer_updates.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
