@@ -177,15 +177,17 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 		return false;
 	}
 
-	// this is required to get glew to work on core profiles, as it unconditionally calls
-	// glGetString(GL_EXTENSIONS) even though that's invalid on core profiles
-	glewExperimental = true;
+  if(!gladLoadGL())
+  {
+    TEST_ERROR("Error initialising glad");
+    return false;
+  }
 
-	GLenum err = glewInit();
-	if(err != GLEW_OK)
-	{
-		TEST_ERROR("Error initialising glew. Error: %s", glewGetErrorString(err));
-	}
+  if(!gladLoadWGL(dc))
+  {
+    TEST_ERROR("Error initialising glad");
+    return false;
+  }
 	
 	ShowWindow(wnd, SW_SHOW);
 	UpdateWindow(wnd);

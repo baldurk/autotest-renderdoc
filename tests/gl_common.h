@@ -28,8 +28,8 @@
 
 #include <windows.h>
 
-#include <GL/glew.h>
-#include <GL/wglew.h>
+#include <glad/glad.h>
+#include <glad/glad_wgl.h>
 
 #include <vector>
 

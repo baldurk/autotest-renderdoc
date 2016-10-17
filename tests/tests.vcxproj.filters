@@ -14,9 +14,6 @@
     <ClCompile Include="gl_common.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="glew\glew.c">
-      <Filter>OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
@@ -93,6 +90,12 @@
     </ClCompile>
     <ClCompile Include="gl\gl_buffer_updates.cpp">
       <Filter>OpenGL\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="glad\glad.c">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="glad\glad_wgl.c">
+      <Filter>OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
