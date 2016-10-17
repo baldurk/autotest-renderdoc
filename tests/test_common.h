@@ -98,7 +98,8 @@ struct GraphicsTest
 		: screenWidth(1280),
 		  screenHeight(720),
 			fullscreen(false),
-			debugDevice(true)
+			debugDevice(true),
+			headless(false)
 	{
 	}
 
@@ -108,6 +109,7 @@ struct GraphicsTest
 	int screenHeight;
 	bool fullscreen;
 	bool debugDevice;
+	bool headless;
 };
 
 extern std::string lipsum;

@@ -7,3 +7,4 @@ ipch/
 *.pdb
 *.exe
 *.ilk
+*.VC.*

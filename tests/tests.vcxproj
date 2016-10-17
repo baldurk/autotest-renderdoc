@@ -100,6 +100,7 @@
     <ClCompile Include="glad\glad_wgl.c" />
     <ClCompile Include="gl\gl_buffer_updates.cpp" />
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp" />
+    <ClCompile Include="gl\gl_dx_interop.cpp" />
     <ClCompile Include="gl\gl_runtime_bind_prog_to_pipe.cpp" />
     <ClCompile Include="gl\gl_simple_triangle.cpp" />
     <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp" />

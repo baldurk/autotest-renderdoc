@@ -49,9 +49,46 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 
 	// D3D11 specific can go here
 	// ...
+  
+	D3D_FEATURE_LEVEL features[] = { D3D_FEATURE_LEVEL_11_0 };
+	D3D_DRIVER_TYPE driver = D3D_DRIVER_TYPE_HARDWARE;
 
+	if(d3d11_1)
+		features[0] = D3D_FEATURE_LEVEL_11_1;
+	
 	HRESULT hr = S_OK;
 	
+  if(headless)
+  {
+    hr = D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1, D3D11_SDK_VERSION,
+                           &dev, NULL, &ctx);
+
+    // if it failed but on a high feature level, try again on warp
+    if(FAILED(hr) && features[0] != D3D_FEATURE_LEVEL_11_0)
+    {
+      driver = D3D_DRIVER_TYPE_WARP;
+      hr = D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1, D3D11_SDK_VERSION,
+                             &dev, NULL, &ctx);
+    }
+
+    // if it failed again on a high feature level, try last on ref
+    if(FAILED(hr) && features[0] != D3D_FEATURE_LEVEL_11_0)
+    {
+      driver = D3D_DRIVER_TYPE_REFERENCE;
+      hr = D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1, D3D11_SDK_VERSION,
+                             &dev, NULL, &ctx);
+    }
+
+    if(FAILED(hr))
+    {
+      TEST_ERROR("D3D11CreateDeviceAndSwapChain failed: %x", hr);
+      return false;
+    }
+
+    PostDeviceCreate();
+    return true;
+  }
+
 	string classname = "renderdoc_d3d11_test";
 	static int idx = 0;idx++;
 	classname += '0' + idx;
@@ -96,12 +133,6 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapDesc.Flags = 0;
 
-	D3D_FEATURE_LEVEL features[] = { D3D_FEATURE_LEVEL_11_0 };
-	D3D_DRIVER_TYPE driver = D3D_DRIVER_TYPE_HARDWARE;
-
-	if(d3d11_1)
-		features[0] = D3D_FEATURE_LEVEL_11_1;
-	
 	hr = D3D11CreateDeviceAndSwapChain(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1, D3D11_SDK_VERSION,
 										&swapDesc, &swap, &dev, NULL, &ctx);
 
@@ -138,20 +169,6 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 		return false;
 	}
 	
-	if(d3d11_1)
-	{
-		dev->QueryInterface(__uuidof(ID3D11Device1), (void **)&dev1);
-		ctx->QueryInterface(__uuidof(ID3D11DeviceContext1), (void **)&ctx1);
-	}
-	
-	if(d3d11_2)
-	{
-		dev->QueryInterface(__uuidof(ID3D11Device2), (void **)&dev2);
-		ctx->QueryInterface(__uuidof(ID3D11DeviceContext2), (void **)&ctx2);
-	}
-
-	ctx->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void **)&annot);
-	
 	hr = dev->CreateRenderTargetView(bbTex, NULL, &bbRTV);
 
 	if(FAILED(hr))
@@ -162,8 +179,27 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 	
 	ShowWindow(wnd, SW_SHOW);
 	UpdateWindow(wnd);
+	
+  PostDeviceCreate();
 
 	return true;
+}
+
+void D3D11GraphicsTest::PostDeviceCreate()
+{
+  if(d3d11_1)
+  {
+    dev->QueryInterface(__uuidof(ID3D11Device1), (void **)&dev1);
+    ctx->QueryInterface(__uuidof(ID3D11DeviceContext1), (void **)&ctx1);
+  }
+
+  if(d3d11_2)
+  {
+    dev->QueryInterface(__uuidof(ID3D11Device2), (void **)&dev2);
+    ctx->QueryInterface(__uuidof(ID3D11DeviceContext2), (void **)&ctx2);
+  }
+
+  ctx->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void **)&annot);
 }
 
 D3D11GraphicsTest::~D3D11GraphicsTest()

@@ -160,6 +160,10 @@ int main(int argc, char **argv)
   // and get marked as dirty, as well as buffers updated mid-frame
   TEST(GL_Buffer_Updates);
 
+  // Test interop between GL and DX (Create and render to a DX surface
+  // and include into GL rendering)
+  TEST(GL_DX_Interop);
+
   TEST_ERROR("%s is not a known test", argv[1]);
 
   return 2;

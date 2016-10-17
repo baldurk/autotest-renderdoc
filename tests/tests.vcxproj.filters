@@ -97,6 +97,9 @@
     <ClCompile Include="glad\glad_wgl.c">
       <Filter>OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_dx_interop.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">

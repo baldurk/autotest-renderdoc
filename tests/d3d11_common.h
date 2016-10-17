@@ -103,7 +103,10 @@ struct D3D11GraphicsTest : public GraphicsTest
 	~D3D11GraphicsTest();
 
 	bool Init(int argc, char **argv);
-	
+
+  void PostDeviceCreate();
+
+
 	enum BufType
 	{
 		eCBuffer = 0x0,
