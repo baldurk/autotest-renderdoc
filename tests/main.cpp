@@ -132,6 +132,9 @@ int main(int argc, char **argv)
   // Test that creates and samples a 3D texture
   TEST(D3D11_Texture_3D);
 
+  // Tests using saturate, originally for a bug report
+  TEST(D3D11_Saturate);
+
   //////////////////////////////////////////////////////////////
   // OpenGL tests
   //////////////////////////////////////////////////////////////
