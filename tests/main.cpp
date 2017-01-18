@@ -135,6 +135,9 @@ int main(int argc, char **argv)
   // Tests using saturate, originally for a bug report
   TEST(D3D11_Saturate);
 
+  // Test overrunning the bounds of a Map() call
+  TEST(D3D11_Map_Overrun);
+
   //////////////////////////////////////////////////////////////
   // OpenGL tests
   //////////////////////////////////////////////////////////////
@@ -166,6 +169,9 @@ int main(int argc, char **argv)
   // Test interop between GL and DX (Create and render to a DX surface
   // and include into GL rendering)
   TEST(GL_DX_Interop);
+
+  // Test overrunning the bounds of a Map() call
+  TEST(GL_Map_Overrun);
 
   TEST_ERROR("%s is not a known test", argv[1]);
 

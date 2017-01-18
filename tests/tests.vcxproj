@@ -57,6 +57,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;d3d11.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>opengl32.dll;d3d11.dll;d3dcompiler_47.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -71,6 +72,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;d3d11.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>opengl32.dll;d3d11.dll;d3dcompiler_47.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -84,6 +86,7 @@
     <ClCompile Include="d3d11\d3d11_empty_drawcall.cpp" />
     <ClCompile Include="d3d11\d3d11_empty_viewports.cpp" />
     <ClCompile Include="d3d11\d3d11_many_rtvs.cpp" />
+    <ClCompile Include="d3d11\d3d11_map_overrun.cpp" />
     <ClCompile Include="d3d11\d3d11_midframe_create.cpp" />
     <ClCompile Include="d3d11\d3d11_mip_gen_rt.cpp" />
     <ClCompile Include="d3d11\d3d11_mip_rtv.cpp" />
@@ -102,6 +105,7 @@
     <ClCompile Include="gl\gl_buffer_updates.cpp" />
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp" />
     <ClCompile Include="gl\gl_dx_interop.cpp" />
+    <ClCompile Include="gl\gl_map_overrun.cpp" />
     <ClCompile Include="gl\gl_runtime_bind_prog_to_pipe.cpp" />
     <ClCompile Include="gl\gl_simple_triangle.cpp" />
     <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp" />
