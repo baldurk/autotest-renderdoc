@@ -138,6 +138,9 @@ int main(int argc, char **argv)
   // Test overrunning the bounds of a Map() call
   TEST(D3D11_Map_Overrun);
 
+  // Test of D3D11 hazard tracking write/read bindings
+  TEST(D3D11_Binding_Hazards);
+
   //////////////////////////////////////////////////////////////
   // OpenGL tests
   //////////////////////////////////////////////////////////////
