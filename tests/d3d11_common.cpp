@@ -428,8 +428,8 @@ int D3D11GraphicsTest::MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT 
 	HRESULT hr = S_OK;
 	
 	CHECK_HR(dev->CreateBuffer(&bufDesc, data ? &initdata : NULL, buf));
-
-	if(srv)
+  
+	if(srv && srv != (ID3D11ShaderResourceView **)0x1)
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 

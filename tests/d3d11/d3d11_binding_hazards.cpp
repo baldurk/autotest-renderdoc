@@ -51,6 +51,7 @@ struct impl : D3D11GraphicsTest
 	int main(int argc, char **argv);
 
 	ID3D11BufferPtr buf;
+	ID3D11BufferPtr buf2;
 	ID3D11Texture2DPtr tex[2];
 	ID3D11ShaderResourceViewPtr srv[3];
 	ID3D11UnorderedAccessViewPtr uav[3];
@@ -85,12 +86,38 @@ int impl::main(int argc, char **argv)
 	}
 
   MakeBuffer(eCompBuffer, 0, 65536, 4, DXGI_FORMAT_R32_UINT, NULL, &buf, &srv[2], &uav[2], NULL);
+  MakeBuffer(eCompBuffer, 0, 65536, 4, DXGI_FORMAT_R32_UINT, NULL, &buf2, (ID3D11ShaderResourceView **)0x1, NULL, NULL);
   
 	while(Running())
   {
     ctx->ClearState();
 
     ctx->CSSetShader(cs, NULL, 0);
+    
+		CD3D11_SHADER_RESOURCE_VIEW_DESC sdesc(D3D11_SRV_DIMENSION_BUFFER, DXGI_FORMAT_R32_UINT, 0, 128);
+
+    ID3D11ShaderResourceView *tempSRV = NULL;
+
+    dev->CreateShaderResourceView(buf2, &sdesc, &tempSRV);
+
+    ctx->CSSetShaderResources(1, 1, &tempSRV);
+
+    ULONG refcount = tempSRV->Release();
+
+    ID3D11ShaderResourceView *srvs[2] = {
+       NULL,
+       tempSRV
+    };
+
+    ctx->CSSetShaderResources(1, 2, srvs);
+
+    refcount = tempSRV->AddRef();
+    refcount = tempSRV->Release();
+    
+    ctx->CSSetShaderResources(3, 2, srvs);
+
+    refcount = tempSRV->AddRef();
+    refcount = tempSRV->Release();
 
     ctx->CSSetUnorderedAccessViews(0, 1, &uav[0].GetInterfacePtr(), NULL);
     ctx->CSSetUnorderedAccessViews(2, 1, &uav[1].GetInterfacePtr(), NULL);

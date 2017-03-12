@@ -85,6 +85,7 @@ COM_SMARTPTR(ID3D11ShaderResourceView);
 COM_SMARTPTR(ID3D11UnorderedAccessView);
 COM_SMARTPTR(ID3D11DepthStencilView);
 
+COM_SMARTPTR(ID3D11InfoQueue);
 COM_SMARTPTR(ID3DUserDefinedAnnotation);
 
 #define CHECK_HR(expr)       { hr = (expr); if( FAILED(hr) ) { TEST_ERROR( "Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, #expr ); DEBUG_BREAK(); exit(1); } }
