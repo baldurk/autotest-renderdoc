@@ -141,6 +141,9 @@ int main(int argc, char **argv)
   // Test of D3D11 hazard tracking write/read bindings
   TEST(D3D11_Binding_Hazards);
 
+  // Test of primitive restart in triangle strips with -1 index
+  TEST(D3D11_Primitive_Restart);
+
   //////////////////////////////////////////////////////////////
   // OpenGL tests
   //////////////////////////////////////////////////////////////
