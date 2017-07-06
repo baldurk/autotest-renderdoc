@@ -165,8 +165,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Simple_Triangle(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Simple_Triangle",
+              "Just draws a simple triangle, using normal pipeline. Basic test that can be used "
+              "for any dead-simple tests that don't require any particular API use");

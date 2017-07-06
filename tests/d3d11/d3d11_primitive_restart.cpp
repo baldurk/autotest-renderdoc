@@ -220,8 +220,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Primitive_Restart(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Primitive_Restart",
+              "Test of primitive restart in triangle strips with -1 index");

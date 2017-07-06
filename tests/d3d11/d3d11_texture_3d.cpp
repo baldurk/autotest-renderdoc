@@ -357,8 +357,4 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Texture_3D(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Texture_3D", "Test that creates and samples a 3D texture");

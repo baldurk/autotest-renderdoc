@@ -109,8 +109,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Byte_Address_Buffers(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Byte_Address_Buffers",
+              "Tests reading and writing from byte address buffers");

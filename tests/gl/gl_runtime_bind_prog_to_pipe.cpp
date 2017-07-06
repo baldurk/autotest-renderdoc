@@ -170,8 +170,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_Runtime_Bind_Prog_To_Pipe(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "Runtime_Bind_Prog_To_Pipe",
+              "Creates a single program pipeline and binds different programs to it mid-frame");

@@ -191,8 +191,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_Unsized_MS_FBO_Attachment(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "Unsized_MS_FBO_Attachment",
+              "Creates a MS FBO with one attachment created with an unsized internal format");

@@ -171,8 +171,4 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Map_Overrun(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Map_Overrun", "Test overrunning the bounds of a Map() call");

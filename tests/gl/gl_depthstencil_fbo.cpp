@@ -231,8 +231,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_DepthStencil_FBO(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "DepthStencil_FBO",
+              "Creates a depth-stencil FBO and writes both depth and stencil to it");

@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 #include "test_common.h"
 
@@ -34,25 +35,34 @@ bool GraphicsTest::Init(int argc, char **argv)
   return true;
 }
 
-#define STRINGIZE(a) #a
+std::vector<TestMetadata> *test_list = NULL;
 
-#define TEST(testname)                                                  \
-  int testname(int, char **);                                           \
-  _itoa_s(idx++, idxbuf, 10);                                           \
-  printf("Test %s: %s\n", idxbuf, STRINGIZE(testname));                 \
-  fflush(stdout);                                                       \
-  if(!strcmp(argv[1], idxbuf) || !strcmp(argv[1], STRINGIZE(testname))) \
-  {                                                                     \
-    printf("\n\n======\nRunning %s\n\n", STRINGIZE(testname));          \
-    fflush(stdout);                                                     \
-    return testname(argc, argv);                                        \
-  }
+void RegisterTest(TestMetadata test)
+{
+  if(test_list == NULL)
+    test_list = new std::vector<TestMetadata>();
+  test_list->push_back(test);
+}
 
 int main(int argc, char **argv)
 {
-  if(argc < 2)
+  if(test_list == NULL)
+    test_list = new std::vector<TestMetadata>();
+
+  std::vector<TestMetadata> &tests = *test_list;
+
+  if(argc < 2 || !strcmp(argv[0], "--list"))
   {
-    TEST_ERROR("Invalid usage: %s <test-name>", argv[0]);
+    TEST_ERROR("Invalid usage: %s <api>::<test-name>, or --list to list the tests", argv[0]);
+
+    printf("\n");
+
+    for(const TestMetadata &test : tests)
+      printf("%s::%s -\n\t%s\n\n", test.API, test.Name, test.Description);
+
+    fflush(stdout);
+
+    delete test_list;
     return 1;
   }
 
@@ -60,134 +70,23 @@ int main(int argc, char **argv)
   // D3D11 tests
   //////////////////////////////////////////////////////////////
 
-  char idxbuf[8] = {0};
-  int idx = 0;
+  for(const TestMetadata &test : tests)
+  {
+    std::string fullname = test.API;
+    fullname += "::";
+    fullname += test.Name;
 
-  // Just draws a simple triangle, using normal pipeline. Basic test
-  // that can be used for any dead-simple tests that don't require any
-  // particular API use
-  TEST(D3D11_Simple_Triangle);
-
-  // Renders a lot of overlapping triangles
-  TEST(D3D11_Overdraw_Stress);
-
-  // Tests simple shader debugging identities by rendering many small
-  // triangles and performing one calculation to each to an F32 target
-  TEST(D3D11_Debug_Shader);
-
-  // Test using more than 8 compute shader UAVs (D3D11.1 feature)
-  TEST(D3D11_1_Many_UAVs);
-
-  // Test rendering into RTV mip levels
-  TEST(D3D11_Mip_RTV);
-
-  // Test repeatedly creating and destroying RTVs
-  TEST(D3D11_Many_RTVs);
-
-  // Test dispatching with one threadgroup count set to 0
-  TEST(D3D11_Empty_Compute_Dispatch);
-
-  // Test passing an array of float2 to make sure the interpolator
-  // packing is handled by shader debugging
-  TEST(D3D11_Array_Interpolator);
-
-  // Test a drawcall of 0 size
-  TEST(D3D11_Empty_Drawcall);
-
-  // Test reading from structured buffers, with and without
-  // offsets
-  TEST(D3D11_Structured_Buffer_Read);
-
-  // Test setting some viewports that are empty, but enabled
-  TEST(D3D11_Empty_Viewports);
-
-  // Test that just does a dispatch and some copies, for checking
-  // basic compute stuff
-  TEST(D3D11_Simple_Dispatch);
-
-  // Test that discards an RTV
-  TEST(D3D11_Discard_View);
-
-  // Test that does UpdateSubresource on a deferred context which
-  // might need some workaround code.
-  TEST(D3D11_Deferred_UpdateSubresource);
-
-  // Tests shaders with their debug/reflection info stripped out
-  // and stored in separate blobs
-  TEST(D3D11_Stripped_Shaders);
-
-  // Test running a shader that diverges across a quad and then
-  // expects derivatives to still be valid after converging.
-  TEST(D3D11_Divergent_Shader);
-
-  // Tests creating resources mid-frame to make sure that they
-  // and their contents are correctly tracked.
-  TEST(D3D11_Midframe_Create);
-
-  // Tests reading and writing from byte address buffers
-  TEST(D3D11_Byte_Address_Buffers);
-
-  // Tests rendering from one mip to another to do a downsample
-  // chain
-  TEST(D3D11_Mip_Gen_RT);
-
-  // Test using D3D11's streamout feature
-  TEST(D3D11_StreamOut);
-
-  // Test that creates and samples a 3D texture
-  TEST(D3D11_Texture_3D);
-
-  // Tests using saturate, originally for a bug report
-  TEST(D3D11_Saturate);
-
-  // Test overrunning the bounds of a Map() call
-  TEST(D3D11_Map_Overrun);
-
-  // Test of D3D11 hazard tracking write/read bindings
-  TEST(D3D11_Binding_Hazards);
-
-  // Test of primitive restart in triangle strips with -1 index
-  TEST(D3D11_Primitive_Restart);
-
-  //////////////////////////////////////////////////////////////
-  // OpenGL tests
-  //////////////////////////////////////////////////////////////
-
-  // Just draws a simple triangle, using normal pipeline. Basic test
-  // that can be used for any dead-simple tests that don't require any
-  // particular API use
-  TEST(GL_Simple_Triangle);
-
-  // Creates a MS FBO with one attachment created with an unsized
-  // internal format
-  TEST(GL_Unsized_MS_FBO_Attachment);
-
-  // Creates a single program pipeline and binds different programs to
-  // it mid-frame
-  TEST(GL_Runtime_Bind_Prog_To_Pipe);
-
-  // Creates a depth-stencil FBO and writes both depth and stencil to
-  // it
-  TEST(GL_DepthStencil_FBO);
-
-  // Uses VAO 0 (i.e. never binds a VAO)
-  TEST(GL_VAO_0);
-
-  // Test of buffer updates, both buffers that are updated regularly
-  // and get marked as dirty, as well as buffers updated mid-frame
-  TEST(GL_Buffer_Updates);
-
-  // Test interop between GL and DX (Create and render to a DX surface
-  // and include into GL rendering)
-  TEST(GL_DX_Interop);
-
-  // Test overrunning the bounds of a Map() call
-  TEST(GL_Map_Overrun);
-
-  // Test creating large texture 2D arrays of BC4, BC5, BC6, BC7 textures
-  TEST(GL_Large_BCn_Arrays);
+    if(fullname == argv[1])
+    {
+      TEST_LOG("\n\n======\nRunning %s\n\n", argv[1]);
+      int ret = test.test->main(argc, argv);
+      delete test_list;
+      return ret;
+    }
+  }
 
   TEST_ERROR("%s is not a known test", argv[1]);
+  delete test_list;
 
   return 2;
 }

@@ -169,8 +169,4 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Discard_View(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Discard_View", "Test that discards an RTV");

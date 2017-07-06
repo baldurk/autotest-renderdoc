@@ -384,8 +384,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_Large_BCn_Arrays(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "Large_BCn_Arrays",
+              "Test creating large texture 2D arrays of BC4, BC5, BC6, BC7 textures");

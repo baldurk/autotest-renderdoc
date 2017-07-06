@@ -220,8 +220,4 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Binding_Hazards(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Binding_Hazards", "Test of D3D11 hazard tracking write/read bindings");

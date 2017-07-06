@@ -109,8 +109,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Simple_Dispatch(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Simple_Dispatch",
+              "Test that just does a dispatch and some copies, for checking basic compute stuff");

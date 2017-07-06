@@ -244,8 +244,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Divergent_Shader(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Divergent_Shader",
+              "Test running a shader that diverges across a quad and then expects derivatives to "
+              "still be valid after converging.");

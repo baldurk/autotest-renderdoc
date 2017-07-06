@@ -169,8 +169,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Empty_Viewports(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Empty_Viewports",
+              "Test setting some viewports that are empty, but enabled");

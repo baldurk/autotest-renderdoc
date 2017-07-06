@@ -147,8 +147,4 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_VAO_0(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "VAO_0", "Uses VAO 0 (i.e. never binds a VAO)");

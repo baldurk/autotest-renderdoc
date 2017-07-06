@@ -207,8 +207,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Structured_Buffer_Read(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Structured_Buffer_Read",
+              "Test reading from structured buffers, with and without offsets");

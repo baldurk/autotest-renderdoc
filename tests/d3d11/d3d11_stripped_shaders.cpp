@@ -175,8 +175,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Stripped_Shaders(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST(
+    "D3D11", "Stripped_Shaders",
+    "Tests shaders with their debug/reflection info stripped out and stored in separate blobs");

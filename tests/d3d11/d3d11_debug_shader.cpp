@@ -226,8 +226,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Debug_Shader(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Debug_Shader",
+              "Tests simple shader debugging identities by rendering many small triangles and "
+              "performing one calculation to each to an F32 target");

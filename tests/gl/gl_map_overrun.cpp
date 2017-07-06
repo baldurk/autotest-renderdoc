@@ -151,8 +151,4 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_Map_Overrun(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "Map_Overrun", "Test overrunning the bounds of a Map() call");

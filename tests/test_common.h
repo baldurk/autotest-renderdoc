@@ -96,7 +96,9 @@ struct GraphicsTest
   {
   }
 
-  bool Init(int argc, char **argv);
+  virtual ~GraphicsTest() {}
+  virtual int main(int argc, char **argv) = 0;
+  virtual bool Init(int argc, char **argv);
 
   int screenWidth;
   int screenHeight;
@@ -104,6 +106,48 @@ struct GraphicsTest
   bool debugDevice;
   bool headless;
 };
+
+struct TestMetadata
+{
+  const char *API;
+  const char *Name;
+  const char *Description;
+  GraphicsTest *test;
+
+  bool operator<(const TestMetadata &o)
+  {
+    int ret = strcmp(API, o.API);
+    if(ret != 0)
+      return ret < 0;
+
+    ret = strcmp(Name, o.Name);
+    if(ret != 0)
+      return ret < 0;
+
+    return test < o.test;
+  }
+};
+
+void RegisterTest(TestMetadata test);
+
+#define REGISTER_TEST(a, n, d) \
+  namespace                    \
+  {                            \
+  struct TestRegistration      \
+  {                            \
+    impl m_impl;               \
+    TestRegistration()         \
+    {                          \
+      TestMetadata test;       \
+      test.API = a;            \
+      test.Name = n;           \
+      test.Description = d;    \
+      test.test = &m_impl;     \
+      RegisterTest(test);      \
+    }                          \
+  };                           \
+  };                           \
+  static TestRegistration Anon##__LINE__;
 
 extern std::string lipsum;
 

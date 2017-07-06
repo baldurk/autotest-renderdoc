@@ -403,8 +403,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Midframe_Create(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "D3D11_Midframe_Create",
+              "Tests creating resources mid-frame to make sure that they and their contents are "
+              "correctly tracked.");

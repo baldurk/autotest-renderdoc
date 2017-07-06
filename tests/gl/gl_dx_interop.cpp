@@ -125,11 +125,16 @@ void main()
 
 )EOSHADER";
 
+struct d3dimpl : D3D11GraphicsTest
+{
+  int main(int argc, char **argv) { return 1; }
+};
+
 struct impl : OpenGLGraphicsTest
 {
   int main(int argc, char **argv);
 
-  D3D11GraphicsTest d3d;
+  d3dimpl d3d;
 
   ID3D11VertexShaderPtr vs;
   ID3D11PixelShaderPtr ps;
@@ -329,8 +334,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_DX_Interop(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "DX_Interop",
+              "Test interop between GL and DX (Create and render to a DX surface and include into "
+              "GL rendering)");

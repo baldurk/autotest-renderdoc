@@ -249,8 +249,4 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_StreamOut(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "StreamOut", "Test using D3D11's streamout feature");

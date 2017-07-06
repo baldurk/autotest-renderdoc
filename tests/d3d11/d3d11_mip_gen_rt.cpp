@@ -174,8 +174,5 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Mip_Gen_RT(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Mip_Gen_RT",
+              "Tests rendering from one mip to another to do a downsample chain");

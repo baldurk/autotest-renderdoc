@@ -179,8 +179,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int GL_Buffer_Updates(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("GL", "Buffer_Updates",
+              "Test of buffer updates, both buffers that are updated regularly and get marked as "
+              "dirty, as well as buffers updated mid-frame");

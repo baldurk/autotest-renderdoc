@@ -319,8 +319,6 @@ int impl::main(int argc, char **argv)
 
 };    // anonymous namespace
 
-int D3D11_Deferred_UpdateSubresource(int argc, char **argv)
-{
-  impl i;
-  return i.main(argc, argv);
-}
+REGISTER_TEST("D3D11", "Deferred_UpdateSubresource",
+              "Test that does UpdateSubresource on a deferred context which might need some "
+              "workaround code.");
