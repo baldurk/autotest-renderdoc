@@ -125,10 +125,6 @@ void main()
 
 )EOSHADER";
 
-#include "C:/projects/renderdoc/renderdoc/api/app/renderdoc_app.h"
-
-RENDERDOC_API_1_1_1 *rdoc = NULL;
-
 struct impl : OpenGLGraphicsTest
 {
 	int main(int argc, char **argv);
@@ -144,11 +140,15 @@ struct impl : OpenGLGraphicsTest
 	ID3D11RenderTargetViewPtr rtv;
 	ID3D11RenderTargetViewPtr rtv2;
 
+  ID3D11BufferPtr buf;
+
   HANDLE interop_dev;
   HANDLE interop_fromd3d;
   GLuint gl_fromd3d;
   HANDLE interop_tod3d;
   GLuint gl_tod3d;
+
+  HANDLE interop_d3dbuf;
 
 	GLuint vao;
 	GLuint vb;
@@ -190,13 +190,20 @@ int impl::main(int argc, char **argv)
 		{ Vec3f( 0.8f, -0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f( 1.0f, 0.0f), },
 		{ Vec3f( 0.8f,  0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f( 1.0f, 1.0f), },
 	};
+  
+  d3d.MakeBuffer(D3D11GraphicsTest::eCBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &buf, NULL, NULL, NULL);
 
 	vao = MakeVAO();
 	glBindVertexArray(vao);
 
 	vb = MakeBuffer();
 	glBindBuffer(GL_ARRAY_BUFFER, vb);
-	glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
+
+  interop_dev = wglDXOpenDeviceNV(d3d.dev);
+
+  interop_d3dbuf = wglDXRegisterObjectNV(interop_dev, buf, vb, GL_NONE, WGL_ACCESS_READ_ONLY_NV);
+
+	//glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
@@ -208,8 +215,6 @@ int impl::main(int argc, char **argv)
 
 	program = MakeProgram(common + vertex, common + pixel);
 	glObjectLabel(GL_PROGRAM, program, -1, "Full program");
-
-  interop_dev = wglDXOpenDeviceNV(d3d.dev);
 
   gl_fromd3d = MakeTexture();
   interop_fromd3d = wglDXRegisterObjectNV(interop_dev, d3d_fromd3d, gl_fromd3d, GL_TEXTURE_2D, WGL_ACCESS_READ_ONLY_NV);
@@ -236,9 +241,15 @@ int impl::main(int argc, char **argv)
   float delta = 0.0f;
 
   bool capd = false;
+
+  int frame = 0;
 	
 	while(Running())
 	{
+    frame++;
+    
+  wglDXLockObjectsNV(interop_dev, 1, &interop_d3dbuf);
+
 		float col2[] = { 0.6f, 0.4f, 0.6f, 1.0f };
 		ctx->ClearRenderTargetView(rtv, col2);
 
@@ -289,10 +300,13 @@ int impl::main(int argc, char **argv)
     glBindTexture(GL_TEXTURE_2D, 0);
 
     wglDXUnlockObjectsNV(interop_dev, ARRAY_COUNT(lockHandles), lockHandles);
+  
+  wglDXUnlockObjectsNV(interop_dev, 1, &interop_d3dbuf);
 
 		Present();
 	}
-
+  
+  wglDXUnregisterObjectNV(interop_dev, interop_d3dbuf);
   wglDXUnregisterObjectNV(interop_dev, interop_fromd3d);
   wglDXUnregisterObjectNV(interop_dev, interop_tod3d);
   wglDXCloseDeviceNV(interop_dev);
