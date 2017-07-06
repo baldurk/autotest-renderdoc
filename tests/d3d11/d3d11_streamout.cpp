@@ -24,8 +24,8 @@
 
 #include "../d3d11_common.h"
 
-namespace {
-
+namespace
+{
 struct a2v
 {
   Vec3f pos;
@@ -99,12 +99,21 @@ int impl::main(int argc, char **argv)
   ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
   D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0, },
-    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
-    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
+      {
+          "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0,
+      },
+      {
+          "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
+          D3D11_INPUT_PER_VERTEX_DATA, 0,
+      },
+      {
+          "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
+          D3D11_INPUT_PER_VERTEX_DATA, 0,
+      },
   };
 
-  CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &layout));
+  CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(),
+                                  vsblob->GetBufferSize(), &layout));
 
   std::vector<D3D11_SO_DECLARATION_ENTRY> sodecl;
   std::vector<UINT> strides;
@@ -135,7 +144,8 @@ int impl::main(int argc, char **argv)
   strides.push_back(8 * sizeof(float));
 
   ID3D11ShaderReflection *foo = NULL;
-  D3DReflect(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), (void **)&foo);
+  D3DReflect(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), __uuidof(ID3D11ShaderReflection),
+             (void **)&foo);
 
   D3D11_SIGNATURE_PARAMETER_DESC outdesc0;
   foo->GetOutputParameterDesc(0, &outdesc0);
@@ -144,16 +154,25 @@ int impl::main(int argc, char **argv)
   foo->GetOutputParameterDesc(1, &outdesc1);
 
   CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-  CHECK_HR(dev->CreateGeometryShaderWithStreamOutput(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &sodecl[0], (UINT)sodecl.size(), &strides[0], (UINT)strides.size(), 0, NULL, &gs));
+  CHECK_HR(dev->CreateGeometryShaderWithStreamOutput(
+      vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &sodecl[0], (UINT)sodecl.size(),
+      &strides[0], (UINT)strides.size(), 0, NULL, &gs));
   CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
 
   a2v triangle[] = {
-    { Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-    { Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-    { Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
+      {
+          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
   };
 
-  if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL, NULL))
+  if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL,
+                NULL))
   {
     TEST_ERROR("Failed to create triangle VB");
     return 1;
@@ -179,7 +198,7 @@ int impl::main(int argc, char **argv)
     ctx->UpdateSubresource(so[0], 0, NULL, empty, 2048, 2048);
     ctx->UpdateSubresource(so[1], 0, NULL, empty, 2048, 2048);
 
-    float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
     ctx->ClearRenderTargetView(bbRTV, col);
 
     UINT stride = sizeof(a2v);
@@ -192,13 +211,13 @@ int impl::main(int argc, char **argv)
     ctx->GSSetShader(gs, NULL, 0);
     ctx->PSSetShader(ps, NULL, 0);
 
-    D3D11_VIEWPORT view = { 0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f };
+    D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
     ctx->RSSetViewports(1, &view);
 
     ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 
-    ID3D11Buffer *bufs[] = { so[0], so[1] };
-    UINT offs[2] = { 0 };
+    ID3D11Buffer *bufs[] = {so[0], so[1]};
+    UINT offs[2] = {0};
     ctx->SOSetTargets(2, bufs, offs);
 
     ctx->Draw(3, 0);
@@ -228,6 +247,10 @@ int impl::main(int argc, char **argv)
   return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int D3D11_StreamOut(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int D3D11_StreamOut(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

@@ -193,17 +193,17 @@ consectetur adipiscing elit.
 
 std::string GetCWD()
 {
-	char cwd[MAX_PATH + 1] = {0};
-	GetCurrentDirectoryA(MAX_PATH, cwd);
+  char cwd[MAX_PATH + 1] = {0};
+  GetCurrentDirectoryA(MAX_PATH, cwd);
 
-	string cwdstr = cwd;
+  string cwdstr = cwd;
 
-	for(size_t i=0; i < cwdstr.size(); i++)
-		if(cwdstr[i] == '\\')
-			cwdstr[i] = '/';
+  for(size_t i = 0; i < cwdstr.size(); i++)
+    if(cwdstr[i] == '\\')
+      cwdstr[i] = '/';
 
-	while(cwdstr.back() == '/' || cwdstr.back() == '\\')
-		cwdstr.pop_back();
+  while(cwdstr.back() == '/' || cwdstr.back() == '\\')
+    cwdstr.pop_back();
 
-	return cwdstr;
+  return cwdstr;
 }

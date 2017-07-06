@@ -1,18 +1,18 @@
 /******************************************************************************
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2015 Baldur Karlsson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,8 +24,8 @@
 
 #include "../d3d11_common.h"
 
-namespace {
-
+namespace
+{
 string compute = R"EOSHADER(
 
 Texture2D<uint> texin : register(t0);
@@ -48,16 +48,16 @@ void main()
 
 struct impl : D3D11GraphicsTest
 {
-	int main(int argc, char **argv);
+  int main(int argc, char **argv);
 
-	ID3D11BufferPtr buf;
-	ID3D11BufferPtr buf2;
-	ID3D11Texture2DPtr tex[2];
-	ID3D11ShaderResourceViewPtr srv[3];
-	ID3D11UnorderedAccessViewPtr uav[3];
-	ID3D11RenderTargetViewPtr rtv[3];
+  ID3D11BufferPtr buf;
+  ID3D11BufferPtr buf2;
+  ID3D11Texture2DPtr tex[2];
+  ID3D11ShaderResourceViewPtr srv[3];
+  ID3D11UnorderedAccessViewPtr uav[3];
+  ID3D11RenderTargetViewPtr rtv[3];
 
-	ID3D11ComputeShaderPtr cs;
+  ID3D11ComputeShaderPtr cs;
 };
 
 int impl::main(int argc, char **argv)
@@ -66,35 +66,36 @@ int impl::main(int argc, char **argv)
   debugDevice = true;
   LoadLibraryA("C:/projects/renderdoc/x64/development/renderdoc.dll");
 
-	// initialise, create window, create device, etc
-	if(!Init(argc, argv))
-		return 3;
+  // initialise, create window, create device, etc
+  if(!Init(argc, argv))
+    return 3;
 
-	HRESULT hr = S_OK;
+  HRESULT hr = S_OK;
 
-	ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-	
-	CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+  ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
 
-	for(int i=0; i < 2; i++)
-	{
-		if(MakeTexture2D(8, 8, 1, DXGI_FORMAT_R32_UINT, &tex[i], &srv[i], &uav[i], &rtv[i], NULL))
-		{
-			TEST_ERROR("Failed to create compute tex");
-			return 1;
-		}
-	}
+  CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+
+  for(int i = 0; i < 2; i++)
+  {
+    if(MakeTexture2D(8, 8, 1, DXGI_FORMAT_R32_UINT, &tex[i], &srv[i], &uav[i], &rtv[i], NULL))
+    {
+      TEST_ERROR("Failed to create compute tex");
+      return 1;
+    }
+  }
 
   MakeBuffer(eCompBuffer, 0, 65536, 4, DXGI_FORMAT_R32_UINT, NULL, &buf, &srv[2], &uav[2], NULL);
-  MakeBuffer(eCompBuffer, 0, 65536, 4, DXGI_FORMAT_R32_UINT, NULL, &buf2, (ID3D11ShaderResourceView **)0x1, NULL, NULL);
-  
-	while(Running())
+  MakeBuffer(eCompBuffer, 0, 65536, 4, DXGI_FORMAT_R32_UINT, NULL, &buf2,
+             (ID3D11ShaderResourceView **)0x1, NULL, NULL);
+
+  while(Running())
   {
     ctx->ClearState();
 
     ctx->CSSetShader(cs, NULL, 0);
-    
-		CD3D11_SHADER_RESOURCE_VIEW_DESC sdesc(D3D11_SRV_DIMENSION_BUFFER, DXGI_FORMAT_R32_UINT, 0, 128);
+
+    CD3D11_SHADER_RESOURCE_VIEW_DESC sdesc(D3D11_SRV_DIMENSION_BUFFER, DXGI_FORMAT_R32_UINT, 0, 128);
 
     ID3D11ShaderResourceView *tempSRV = NULL;
 
@@ -104,16 +105,13 @@ int impl::main(int argc, char **argv)
 
     ULONG refcount = tempSRV->Release();
 
-    ID3D11ShaderResourceView *srvs[2] = {
-       NULL,
-       tempSRV
-    };
+    ID3D11ShaderResourceView *srvs[2] = {NULL, tempSRV};
 
     ctx->CSSetShaderResources(1, 2, srvs);
 
     refcount = tempSRV->AddRef();
     refcount = tempSRV->Release();
-    
+
     ctx->CSSetShaderResources(3, 2, srvs);
 
     refcount = tempSRV->AddRef();
@@ -140,13 +138,15 @@ int impl::main(int argc, char **argv)
     TEST_ASSERT(getCSUAVs[2] == uav[1], "Unexpected binding");
     TEST_ASSERT(getCSUAVs[3] == uav[2], "Unexpected binding");
 
-    // this should unbind uav[0] because it's re-bound as rtv[0], then unbind uav[1] because it's rebound on another UAV slot
-    ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1, &uav[1].GetInterfacePtr(), NULL);
+    // this should unbind uav[0] because it's re-bound as rtv[0], then unbind uav[1] because it's
+    // rebound on another UAV slot
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
+                                                   &uav[1].GetInterfacePtr(), NULL);
 
     ctx->Dispatch(1, 1, 1);
     ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
     ctx->CSGetUnorderedAccessViews(0, 4, getCSUAVs);
-    
+
     TEST_ASSERT(getOMRTV == rtv[0], "Unexpected binding");
     TEST_ASSERT(getOMUAV == uav[1], "Unexpected binding");
     TEST_ASSERT(getCSUAVs[0] == NULL, "Unexpected binding");
@@ -172,15 +172,14 @@ int impl::main(int argc, char **argv)
     ctx->ClearState();
 
     ctx->CSSetShader(cs, NULL, 0);
-    
-    ID3D11RenderTargetView *RTVs[] = { 
-      rtv[0],
-      rtv[0],
+
+    ID3D11RenderTargetView *RTVs[] = {
+        rtv[0], rtv[0],
     };
 
     // can't bind the same RTV to two slots
     ctx->OMSetRenderTargets(2, RTVs, NULL);
-    
+
     ctx->Dispatch(1, 1, 1);
     ctx->OMGetRenderTargetsAndUnorderedAccessViews(2, getOMRTVs, NULL, 2, 1, &getOMUAV);
     TEST_ASSERT(getOMRTVs[0] == NULL, "Unexpected binding");
@@ -189,10 +188,11 @@ int impl::main(int argc, char **argv)
 
     RTVs[0] = rtv[1];
     RTVs[1] = rtv[0];
-    
+
     // this bind is fine, no overlapping state
-    ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1, &uav[2].GetInterfacePtr(), NULL);
-    
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1, &uav[2].GetInterfacePtr(),
+                                                   NULL);
+
     ctx->Dispatch(1, 1, 1);
     ctx->OMGetRenderTargetsAndUnorderedAccessViews(2, getOMRTVs, NULL, 2, 1, &getOMUAV);
     TEST_ASSERT(getOMRTVs[0] == rtv[1], "Unexpected binding");
@@ -201,10 +201,11 @@ int impl::main(int argc, char **argv)
 
     RTVs[0] = rtv[0];
     RTVs[1] = rtv[1];
-    
+
     // this bind is discarded, because RTV[0] overlaps UAV[0].
-    ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1, &uav[0].GetInterfacePtr(), NULL);
-    
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1, &uav[0].GetInterfacePtr(),
+                                                   NULL);
+
     ctx->Dispatch(1, 1, 1);
     ctx->OMGetRenderTargetsAndUnorderedAccessViews(2, getOMRTVs, NULL, 2, 1, &getOMUAV);
     TEST_ASSERT(getOMRTVs[0] == rtv[1], "Unexpected binding");
@@ -214,9 +215,13 @@ int impl::main(int argc, char **argv)
     Present();
   }
 
-	return 0;
+  return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int D3D11_Binding_Hazards(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int D3D11_Binding_Hazards(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

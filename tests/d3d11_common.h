@@ -26,15 +26,15 @@
 
 #include "test_common.h"
 
-#include <windows.h>
 #include <comdef.h>
+#include <windows.h>
 
 #include <dxgi.h>
 
-#include <d3d9.h>
 #include <d3d11.h>
 #include <d3d11_1.h>
 #include <d3d11_2.h>
+#include <d3d9.h>
 
 #include <d3dcompiler.h>
 
@@ -88,90 +88,100 @@ COM_SMARTPTR(ID3D11DepthStencilView);
 COM_SMARTPTR(ID3D11InfoQueue);
 COM_SMARTPTR(ID3DUserDefinedAnnotation);
 
-#define CHECK_HR(expr)       { hr = (expr); if( FAILED(hr) ) { TEST_ERROR( "Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, #expr ); DEBUG_BREAK(); exit(1); } }
+#define CHECK_HR(expr)                                                                    \
+  {                                                                                       \
+    hr = (expr);                                                                          \
+    if(FAILED(hr))                                                                        \
+    {                                                                                     \
+      TEST_ERROR("Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, #expr); \
+      DEBUG_BREAK();                                                                      \
+      exit(1);                                                                            \
+    }                                                                                     \
+  }
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
-	D3D11GraphicsTest()
-		: backbufferFmt(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB)
-		, backbufferCount(2)
-		, backbufferMSAA(1)
-		, d3d11_1(false)
-		, d3d11_2(false)
-		, wnd(NULL)
-	{
-	}
+  D3D11GraphicsTest()
+      : backbufferFmt(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB),
+        backbufferCount(2),
+        backbufferMSAA(1),
+        d3d11_1(false),
+        d3d11_2(false),
+        wnd(NULL)
+  {
+  }
 
-	~D3D11GraphicsTest();
+  ~D3D11GraphicsTest();
 
-	bool Init(int argc, char **argv);
+  bool Init(int argc, char **argv);
 
   void PostDeviceCreate();
 
+  enum BufType
+  {
+    eCBuffer = 0x0,
+    eStageBuffer = 0x1,
+    eVBuffer = 0x2,
+    eIBuffer = 0x4,
+    eBuffer = 0x8,
+    eCompBuffer = 0x10,
+    eSOBuffer = 0x20,
+    BufMajorType = 0xff,
 
-	enum BufType
-	{
-		eCBuffer = 0x0,
-		eStageBuffer = 0x1,
-		eVBuffer = 0x2,
-		eIBuffer = 0x4,
-		eBuffer = 0x8,
-		eCompBuffer = 0x10,
-		eSOBuffer = 0x20,
-		BufMajorType = 0xff,
+    eAppend = 0x100,
+    eRawBuffer = 0x200,
+    BufUAVType = 0xf00,
+  };
 
-		eAppend = 0x100,
-		eRawBuffer = 0x200,
-		BufUAVType = 0xf00,
-	};
+  ID3DBlobPtr Compile(string src, string entry, string profile, ID3DBlob **unstripped = NULL);
+  void WriteBlob(string name, ID3DBlob *blob, bool compress);
 
-	ID3DBlobPtr Compile(string src, string entry, string profile, ID3DBlob **unstripped = NULL);
-	void WriteBlob(string name, ID3DBlob *blob, bool compress);
+  ID3DBlobPtr SetBlobPath(string name, ID3DBlob *blob);
+  void SetBlobPath(string name, ID3D11DeviceChild *shader);
 
-	ID3DBlobPtr SetBlobPath(string name, ID3DBlob *blob);
-	void SetBlobPath(string name, ID3D11DeviceChild *shader);
-	
-	int MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt, void *data, ID3D11Buffer **buf,
-					ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv);
-	
-	int MakeTexture2D(UINT w, UINT h, UINT mips, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
-						ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
-						ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
-	int MakeTexture2DMS(UINT w, UINT h, UINT mips, UINT sampleCount, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
-						ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
-						ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
-	
-	vector<byte> GetBufferData(ID3D11Buffer *buf, uint32_t offset = 0, uint32_t len = 0);
+  int MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt,
+                 void *data, ID3D11Buffer **buf, ID3D11ShaderResourceView **srv,
+                 ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv);
 
-	D3D11_MAPPED_SUBRESOURCE Map(ID3D11Resource *res, UINT sub, D3D11_MAP type)
-	{
-		D3D11_MAPPED_SUBRESOURCE mapped;
-		ctx->Map(res, sub, type, 0, &mapped);
-		return mapped;
-	}
+  int MakeTexture2D(UINT w, UINT h, UINT mips, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
+                    ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
+                    ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
+  int MakeTexture2DMS(UINT w, UINT h, UINT mips, UINT sampleCount, DXGI_FORMAT fmt,
+                      ID3D11Texture2D **tex, ID3D11ShaderResourceView **srv,
+                      ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv,
+                      ID3D11DepthStencilView **dsv);
 
-	bool Running();
-	void Present();
+  vector<byte> GetBufferData(ID3D11Buffer *buf, uint32_t offset = 0, uint32_t len = 0);
 
-	DXGI_FORMAT backbufferFmt;
-	int backbufferCount;
-	int backbufferMSAA;
-	bool d3d11_1;
-	bool d3d11_2;
+  D3D11_MAPPED_SUBRESOURCE Map(ID3D11Resource *res, UINT sub, D3D11_MAP type)
+  {
+    D3D11_MAPPED_SUBRESOURCE mapped;
+    ctx->Map(res, sub, type, 0, &mapped);
+    return mapped;
+  }
 
-	HWND wnd;
+  bool Running();
+  void Present();
 
-	IDXGISwapChainPtr swap;
+  DXGI_FORMAT backbufferFmt;
+  int backbufferCount;
+  int backbufferMSAA;
+  bool d3d11_1;
+  bool d3d11_2;
 
-	ID3D11Texture2DPtr bbTex;
-	ID3D11RenderTargetViewPtr bbRTV;
+  HWND wnd;
 
-	ID3D11DevicePtr dev;
-	ID3D11Device1Ptr dev1;
-	ID3D11Device2Ptr dev2;
+  IDXGISwapChainPtr swap;
 
-	ID3D11DeviceContextPtr ctx;
-	ID3D11DeviceContext1Ptr ctx1;
-	ID3D11DeviceContext2Ptr ctx2;
-	ID3DUserDefinedAnnotationPtr annot;
+  ID3D11Texture2DPtr bbTex;
+  ID3D11RenderTargetViewPtr bbRTV;
+
+  ID3D11DevicePtr dev;
+  ID3D11Device1Ptr dev1;
+  ID3D11Device2Ptr dev2;
+
+  ID3D11DeviceContextPtr ctx;
+  ID3D11DeviceContext1Ptr ctx1;
+  ID3D11DeviceContext2Ptr ctx2;
+  ID3DUserDefinedAnnotationPtr annot;
 };

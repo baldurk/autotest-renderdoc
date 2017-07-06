@@ -1,18 +1,18 @@
 /******************************************************************************
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2015 Baldur Karlsson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,13 +24,13 @@
 
 #include "../gl_common.h"
 
-namespace {
-	
+namespace
+{
 struct a2v
 {
-	Vec3f pos;
-	Vec4f col;
-	Vec2f uv;
+  Vec3f pos;
+  Vec4f col;
+  Vec2f uv;
 };
 
 string common = R"EOSHADER(
@@ -79,69 +79,80 @@ void main()
 
 struct impl : OpenGLGraphicsTest
 {
-	int main(int argc, char **argv);
+  int main(int argc, char **argv);
 
-	GLuint vao;
-	GLuint vb;
+  GLuint vao;
+  GLuint vb;
 
-	GLuint program;
+  GLuint program;
 };
 
 int impl::main(int argc, char **argv)
 {
-	// initialise, create window, create context, etc
-	if(!Init(argc, argv))
-		return 3;
-	
-	a2v triangle[] = {
-		{ Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-		{ Vec3f( 0.0f,  0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-		{ Vec3f( 0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
-	};
+  // initialise, create window, create context, etc
+  if(!Init(argc, argv))
+    return 3;
 
-	vao = MakeVAO();
-	glBindVertexArray(vao);
+  a2v triangle[] = {
+      {
+          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+  };
 
-	vb = MakeBuffer();
-	glBindBuffer(GL_ARRAY_BUFFER, vb);
-	glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle) - sizeof(Vec2f), NULL, GL_MAP_WRITE_BIT);
+  vao = MakeVAO();
+  glBindVertexArray(vao);
+
+  vb = MakeBuffer();
+  glBindBuffer(GL_ARRAY_BUFFER, vb);
+  glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle) - sizeof(Vec2f), NULL, GL_MAP_WRITE_BIT);
 
   void *dst = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
   memcpy(dst, triangle, sizeof(triangle));
 
   glUnmapBuffer(GL_ARRAY_BUFFER);
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-	program = MakeProgram(common + vertex, common + pixel);
-	glObjectLabel(GL_PROGRAM, program, -1, "Full program");
-	
-	while(Running())
-	{
-		float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
-		glClearBufferfv(GL_COLOR, 0, col);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
 
-		glBindVertexArray(vao);
+  program = MakeProgram(common + vertex, common + pixel);
+  glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
-		glUseProgram(program);
-		
-		glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+  while(Running())
+  {
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+    glClearBufferfv(GL_COLOR, 0, col);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(vao);
 
-		Present();
-	}
+    glUseProgram(program);
 
-	return 0;
+    glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    Present();
+  }
+
+  return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int GL_Map_Overrun(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int GL_Map_Overrun(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

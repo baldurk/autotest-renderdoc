@@ -35,41 +35,38 @@
 
 struct OpenGLGraphicsTest : public GraphicsTest
 {
-	OpenGLGraphicsTest()
-		: glMajor(4)
-		, glMinor(3)
-		, coreProfile(true)
-	{
+  OpenGLGraphicsTest() : glMajor(4), glMinor(3), coreProfile(true)
+  {
 #ifdef WIN32
-		wnd = NULL;
-		dc = NULL;
-		rc = NULL;
+    wnd = NULL;
+    dc = NULL;
+    rc = NULL;
 #endif
-	}
+  }
 
-	~OpenGLGraphicsTest();
+  ~OpenGLGraphicsTest();
 
-	bool Init(int argc, char **argv);
-	
-	GLuint MakeProgram(string vertSrc, string fragSrc, bool sep = false);
-	GLuint MakePipeline();
-	GLuint MakeBuffer();
-	GLuint MakeTexture();
-	GLuint MakeVAO();
-	GLuint MakeFBO();
+  bool Init(int argc, char **argv);
 
-	bool Running();
-	void Present();
+  GLuint MakeProgram(string vertSrc, string fragSrc, bool sep = false);
+  GLuint MakePipeline();
+  GLuint MakeBuffer();
+  GLuint MakeTexture();
+  GLuint MakeVAO();
+  GLuint MakeFBO();
 
-	int glMajor;
-	int glMinor;
-	bool coreProfile;
+  bool Running();
+  void Present();
+
+  int glMajor;
+  int glMinor;
+  bool coreProfile;
 
 #ifdef WIN32
-	HWND wnd;
-	HDC dc;
-	HGLRC rc;
+  HWND wnd;
+  HDC dc;
+  HGLRC rc;
 #endif
 
-	std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
+  std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
 };

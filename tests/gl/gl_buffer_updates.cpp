@@ -24,8 +24,8 @@
 
 #include "../gl_common.h"
 
-namespace {
-  
+namespace
+{
 struct a2v
 {
   Vec3f pos;
@@ -94,15 +94,27 @@ int impl::main(int argc, char **argv)
     return 3;
 
   a2v triangle[] = {
-    { Vec3f(-0.8f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-    { Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-    { Vec3f(-0.2f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
+      {
+          Vec3f(-0.8f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(-0.2f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
   };
 
   a2v triangle2[] = {
-    { Vec3f( 0.2f, 0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-    { Vec3f( 0.5f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-    { Vec3f( 0.8f, 0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
+      {
+          Vec3f(0.2f, 0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(0.8f, 0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
   };
 
   vao = MakeVAO();
@@ -116,12 +128,13 @@ int impl::main(int argc, char **argv)
   memset(dummy, 0xbb, sizeof(dummy));
 
   // do lots of trash updates
-  for(int i=0; i < 20; i++)
+  for(int i = 0; i < 20; i++)
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(dummy), dummy);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
@@ -130,14 +143,14 @@ int impl::main(int argc, char **argv)
   // set the right data
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(triangle), triangle);
 
-	program = MakeProgram(common + vertex, common + pixel);
+  program = MakeProgram(common + vertex, common + pixel);
   glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
   int framecounter = 1;
 
   while(Running())
   {
-    float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, col);
 
     glBindVertexArray(vao);
@@ -164,6 +177,10 @@ int impl::main(int argc, char **argv)
   return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int GL_Buffer_Updates(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int GL_Buffer_Updates(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

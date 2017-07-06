@@ -1,18 +1,18 @@
 /******************************************************************************
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2015 Baldur Karlsson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,13 +24,13 @@
 
 #include "../gl_common.h"
 
-namespace {
-	
+namespace
+{
 struct a2v
 {
-	Vec3f pos;
-	Vec4f col;
-	Vec2f uv;
+  Vec3f pos;
+  Vec4f col;
+  Vec2f uv;
 };
 
 string common = R"EOSHADER(
@@ -79,102 +79,120 @@ void main()
 
 struct impl : OpenGLGraphicsTest
 {
-	int main(int argc, char **argv);
+  int main(int argc, char **argv);
 
-	GLuint vao;
-	GLuint vb;
+  GLuint vao;
+  GLuint vb;
 
-	GLuint fbo;
-	GLuint attachments[3];
-	static const GLsizei numSamples = 8;
+  GLuint fbo;
+  GLuint attachments[3];
+  static const GLsizei numSamples = 8;
 
-	GLuint program;
+  GLuint program;
 };
 
 int impl::main(int argc, char **argv)
 {
-	// initialise, create window, create context, etc
-	if(!Init(argc, argv))
-		return 3;
-	
-	a2v triangle[] = {
-		{ Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-		{ Vec3f( 0.0f,  0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-		{ Vec3f( 0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
-	};
+  // initialise, create window, create context, etc
+  if(!Init(argc, argv))
+    return 3;
 
-	vao = MakeVAO();
-	glBindVertexArray(vao);
+  a2v triangle[] = {
+      {
+          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+  };
 
-	vb = MakeBuffer();
-	glBindBuffer(GL_ARRAY_BUFFER, vb);
-	glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
+  vao = MakeVAO();
+  glBindVertexArray(vao);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+  vb = MakeBuffer();
+  glBindBuffer(GL_ARRAY_BUFFER, vb);
+  glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 
-	program = MakeProgram(common + vertex, common + pixel);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-	fbo = MakeFBO();
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-   
-	// Color render texture
-	for(int i=0; i < 3; i++)
-		attachments[i] = MakeTexture();
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[0]);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB10_A2, screenWidth, screenHeight, false);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, attachments[0], 0);
+  program = MakeProgram(common + vertex, common + pixel);
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[1]);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB, screenWidth, screenHeight, false);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D_MULTISAMPLE, attachments[1], 0);
+  fbo = MakeFBO();
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[2]);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_DEPTH_COMPONENT24, screenWidth, screenHeight, false);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, attachments[2], 0);
+  // Color render texture
+  for(int i = 0; i < 3; i++)
+    attachments[i] = MakeTexture();
 
-	glDepthFunc(GL_ALWAYS);
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	
-	while(Running())
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		GLenum bufs[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-		glDrawBuffers(2, bufs);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[0]);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB10_A2, screenWidth,
+                          screenHeight, false);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+                         attachments[0], 0);
 
-		float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
-		glClearBufferfv(GL_COLOR, 0, col);
-		glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[1]);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB, screenWidth, screenHeight,
+                          false);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D_MULTISAMPLE,
+                         attachments[1], 0);
 
-		glBindVertexArray(vao);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[2]);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_DEPTH_COMPONENT24, screenWidth,
+                          screenHeight, false);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE,
+                         attachments[2], 0);
 
-		glUseProgram(program);
-		
-		glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+  glDepthFunc(GL_ALWAYS);
+  glEnable(GL_DEPTH_TEST);
+  glDepthMask(GL_TRUE);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  while(Running())
+  {
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    GLenum bufs[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, bufs);
 
-		glDrawBuffer(GL_BACK_LEFT);
-		glReadBuffer(GL_COLOR_ATTACHMENT0);
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+    glClearBufferfv(GL_COLOR, 0, col);
+    glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
 
-		glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBindVertexArray(vao);
 
-		Present();
-	}
+    glUseProgram(program);
 
-	return 0;
+    glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+    glDrawBuffer(GL_BACK_LEFT);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+    glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight,
+                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    Present();
+  }
+
+  return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int GL_Unsized_MS_FBO_Attachment(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int GL_Unsized_MS_FBO_Attachment(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

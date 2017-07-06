@@ -36,12 +36,17 @@ bool GraphicsTest::Init(int argc, char **argv)
 
 #define STRINGIZE(a) #a
 
-#define TEST(testname) \
-  int testname(int,char**); \
-  _itoa_s(idx++, idxbuf, 10); \
-  printf("Test %s: %s\n", idxbuf, STRINGIZE(testname)); fflush(stdout); \
+#define TEST(testname)                                                  \
+  int testname(int, char **);                                           \
+  _itoa_s(idx++, idxbuf, 10);                                           \
+  printf("Test %s: %s\n", idxbuf, STRINGIZE(testname));                 \
+  fflush(stdout);                                                       \
   if(!strcmp(argv[1], idxbuf) || !strcmp(argv[1], STRINGIZE(testname))) \
-      { printf("\n\n======\nRunning %s\n\n", STRINGIZE(testname)); fflush(stdout); return testname(argc, argv); }
+  {                                                                     \
+    printf("\n\n======\nRunning %s\n\n", STRINGIZE(testname));          \
+    fflush(stdout);                                                     \
+    return testname(argc, argv);                                        \
+  }
 
 int main(int argc, char **argv)
 {
@@ -55,7 +60,7 @@ int main(int argc, char **argv)
   // D3D11 tests
   //////////////////////////////////////////////////////////////
 
-  char idxbuf[8] = { 0 };
+  char idxbuf[8] = {0};
   int idx = 0;
 
   // Just draws a simple triangle, using normal pipeline. Basic test

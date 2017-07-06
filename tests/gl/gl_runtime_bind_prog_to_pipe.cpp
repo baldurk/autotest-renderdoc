@@ -1,18 +1,18 @@
 /******************************************************************************
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2015 Baldur Karlsson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,13 +24,13 @@
 
 #include "../gl_common.h"
 
-namespace {
-	
+namespace
+{
 struct a2v
 {
-	Vec3f pos;
-	Vec4f col;
-	Vec2f uv;
+  Vec3f pos;
+  Vec4f col;
+  Vec2f uv;
 };
 
 string common = R"EOSHADER(
@@ -90,77 +90,88 @@ void main()
 
 struct impl : OpenGLGraphicsTest
 {
-	int main(int argc, char **argv);
+  int main(int argc, char **argv);
 
-	GLuint vao;
-	GLuint vb;
+  GLuint vao;
+  GLuint vb;
 
-	GLuint pipeline;
+  GLuint pipeline;
 
-	GLuint vsprog1, vsprog2, fsprog;
+  GLuint vsprog1, vsprog2, fsprog;
 };
 
 int impl::main(int argc, char **argv)
 {
-	// initialise, create window, create context, etc
-	if(!Init(argc, argv))
-		return 3;
-	
-	a2v triangle[] = {
-		{ Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-		{ Vec3f( 0.0f,  0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-		{ Vec3f( 0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
-	};
+  // initialise, create window, create context, etc
+  if(!Init(argc, argv))
+    return 3;
 
-	vao = MakeVAO();
-	glBindVertexArray(vao);
+  a2v triangle[] = {
+      {
+          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+  };
 
-	vb = MakeBuffer();
-	glBindBuffer(GL_ARRAY_BUFFER, vb);
-	glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
+  vao = MakeVAO();
+  glBindVertexArray(vao);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+  vb = MakeBuffer();
+  glBindBuffer(GL_ARRAY_BUFFER, vb);
+  glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 
-	pipeline = MakePipeline();
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-	vsprog1 = MakeProgram(common + "\n#define VARIANT 1\n" + vertex, "");
-	vsprog2 = MakeProgram(common + "\n#define VARIANT 2\n" + vertex, "");
-	fsprog = MakeProgram("", common + pixel);
-	
-	while(Running())
-	{
-		float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
-		glClearBufferfv(GL_COLOR, 0, col);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
 
-		glBindVertexArray(vao);
+  pipeline = MakePipeline();
 
-		glUseProgram(0);
-		glBindProgramPipeline(pipeline);
-		
-		glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+  vsprog1 = MakeProgram(common + "\n#define VARIANT 1\n" + vertex, "");
+  vsprog2 = MakeProgram(common + "\n#define VARIANT 2\n" + vertex, "");
+  fsprog = MakeProgram("", common + pixel);
 
-		glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vsprog1);
-		glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, fsprog);
+  while(Running())
+  {
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+    glClearBufferfv(GL_COLOR, 0, col);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(vao);
 
-		glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vsprog2);
-		glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, fsprog);
+    glUseProgram(0);
+    glBindProgramPipeline(pipeline);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+    glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
 
-		Present();
-	}
+    glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vsprog1);
+    glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, fsprog);
 
-	return 0;
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vsprog2);
+    glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, fsprog);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    Present();
+  }
+
+  return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int GL_Runtime_Bind_Prog_To_Pipe(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int GL_Runtime_Bind_Prog_To_Pipe(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

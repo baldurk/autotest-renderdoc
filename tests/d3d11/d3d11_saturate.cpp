@@ -24,9 +24,9 @@
 
 #include "../d3d11_common.h"
 
-namespace {
-
-  string vertex = R"EOSHADER(
+namespace
+{
+string vertex = R"EOSHADER(
 
 void main(uint vert : SV_VertexID, out float4 pos : SV_Position)
 {
@@ -41,7 +41,7 @@ void main(uint vert : SV_VertexID, out float4 pos : SV_Position)
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+string pixel = R"EOSHADER(
 
 void main(float4 pos : SV_Position, out float4 a : SV_Target0, out float4 b : SV_Target1)
 {
@@ -70,63 +70,66 @@ void main(float4 pos : SV_Position, out float4 a : SV_Target0, out float4 b : SV
 
 )EOSHADER";
 
-  struct impl : D3D11GraphicsTest
+struct impl : D3D11GraphicsTest
+{
+  int main(int argc, char **argv);
+
+  ID3D11VertexShaderPtr vs;
+  ID3D11PixelShaderPtr ps;
+
+  ID3D11Texture2DPtr fltTex[2];
+  ID3D11RenderTargetViewPtr fltRT[2];
+};
+
+int impl::main(int argc, char **argv)
+{
+  // initialise, create window, create device, etc
+  if(!Init(argc, argv))
+    return 3;
+
+  HRESULT hr = S_OK;
+
+  ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
+  ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
+
+  CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
+  CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+
+  MakeTexture2D(400, 400, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex[0], NULL, NULL, &fltRT[0], NULL);
+  MakeTexture2D(400, 400, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex[1], NULL, NULL, &fltRT[1], NULL);
+
+  while(Running())
   {
-    int main(int argc, char **argv);
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+    ctx->ClearRenderTargetView(fltRT[0], col);
+    ctx->ClearRenderTargetView(fltRT[1], col);
+    ctx->ClearRenderTargetView(bbRTV, col);
 
-    ID3D11VertexShaderPtr vs;
-    ID3D11PixelShaderPtr ps;
+    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    ID3D11Texture2DPtr fltTex[2];
-    ID3D11RenderTargetViewPtr fltRT[2];
-  };
+    ctx->VSSetShader(vs, NULL, 0);
+    ctx->PSSetShader(ps, NULL, 0);
 
-  int impl::main(int argc, char **argv)
-  {
-    // initialise, create window, create device, etc
-    if(!Init(argc, argv))
-      return 3;
+    D3D11_VIEWPORT view = {0.0f, 0.0f, 400.0f, 400.0f, 0.0f, 1.0f};
+    ctx->RSSetViewports(1, &view);
 
-    HRESULT hr = S_OK;
+    ID3D11RenderTargetView *rts[] = {
+        fltRT[0], fltRT[1],
+    };
+    ctx->OMSetRenderTargets(2, rts, NULL);
 
-    ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
-    ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
+    ctx->Draw(3, 0);
 
-    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
-
-    MakeTexture2D(400, 400, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex[0], NULL, NULL, &fltRT[0], NULL);
-    MakeTexture2D(400, 400, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex[1], NULL, NULL, &fltRT[1], NULL);
-
-    while(Running())
-    {
-      float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
-      ctx->ClearRenderTargetView(fltRT[0], col);
-      ctx->ClearRenderTargetView(fltRT[1], col);
-      ctx->ClearRenderTargetView(bbRTV, col);
-
-      ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-      ctx->VSSetShader(vs, NULL, 0);
-      ctx->PSSetShader(ps, NULL, 0);
-
-      D3D11_VIEWPORT view = { 0.0f, 0.0f, 400.0f, 400.0f, 0.0f, 1.0f };
-      ctx->RSSetViewports(1, &view);
-
-      ID3D11RenderTargetView *rts[] = {
-        fltRT[0],
-        fltRT[1],
-      };
-      ctx->OMSetRenderTargets(2, rts, NULL);
-
-      ctx->Draw(3, 0);
-
-      Present();
-    }
-
-    return 0;
+    Present();
   }
 
-}; // anonymous namespace
+  return 0;
+}
 
-int D3D11_Saturate(int argc, char **argv) { impl i; return i.main(argc, argv); }
+};    // anonymous namespace
+
+int D3D11_Saturate(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

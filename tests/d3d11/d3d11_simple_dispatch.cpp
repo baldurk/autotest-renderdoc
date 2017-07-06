@@ -1,18 +1,18 @@
 /******************************************************************************
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2015 Baldur Karlsson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,8 +24,8 @@
 
 #include "../d3d11_common.h"
 
-namespace {
-
+namespace
+{
 string compute = R"EOSHADER(
 
 Texture2D<uint> texin : register(t0);
@@ -45,68 +45,72 @@ void main()
 
 struct impl : D3D11GraphicsTest
 {
-	int main(int argc, char **argv);
+  int main(int argc, char **argv);
 
-	ID3D11BufferPtr buf;
-	ID3D11Texture2DPtr tex[2];
-	ID3D11ShaderResourceViewPtr srv[2];
-	ID3D11UnorderedAccessViewPtr uav[2];
+  ID3D11BufferPtr buf;
+  ID3D11Texture2DPtr tex[2];
+  ID3D11ShaderResourceViewPtr srv[2];
+  ID3D11UnorderedAccessViewPtr uav[2];
 
-	ID3D11ComputeShaderPtr cs;
+  ID3D11ComputeShaderPtr cs;
 };
 
 int impl::main(int argc, char **argv)
 {
-	// initialise, create window, create device, etc
-	if(!Init(argc, argv))
-		return 3;
+  // initialise, create window, create device, etc
+  if(!Init(argc, argv))
+    return 3;
 
-	HRESULT hr = S_OK;
+  HRESULT hr = S_OK;
 
-	ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-	
-	CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+  ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
 
-	uint32_t data[8*8] = { 0 };
-	for(size_t i=0; i < 8*8; i++)
-	{
-		data[i] = 5 + rand()%100;
-	}
+  CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
 
-	for(int i=0; i < 2; i++)
-	{
-		if(MakeTexture2D(8, 8, 1, DXGI_FORMAT_R32_UINT, &tex[i], &srv[i], &uav[i], NULL, NULL))
-		{
-			TEST_ERROR("Failed to create compute tex");
-			return 1;
-		}
-		
-		ctx->UpdateSubresource(tex[i], 0, NULL, data, sizeof(uint32_t) * 8, sizeof(uint32_t) * 8 * 8);
-	}
+  uint32_t data[8 * 8] = {0};
+  for(size_t i = 0; i < 8 * 8; i++)
+  {
+    data[i] = 5 + rand() % 100;
+  }
 
-	while(Running())
-	{
-		float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
-		ctx->ClearRenderTargetView(bbRTV, col);
+  for(int i = 0; i < 2; i++)
+  {
+    if(MakeTexture2D(8, 8, 1, DXGI_FORMAT_R32_UINT, &tex[i], &srv[i], &uav[i], NULL, NULL))
+    {
+      TEST_ERROR("Failed to create compute tex");
+      return 1;
+    }
 
-		ctx->CSSetShader(cs, NULL, 0);
-		
-		ctx->UpdateSubresource(tex[1], 0, NULL, data, sizeof(uint32_t) * 8, sizeof(uint32_t) * 8 * 8);
+    ctx->UpdateSubresource(tex[i], 0, NULL, data, sizeof(uint32_t) * 8, sizeof(uint32_t) * 8 * 8);
+  }
 
-		ctx->CSSetUnorderedAccessViews(0, 1, &uav[0].GetInterfacePtr(), NULL);
-		ctx->CSSetShaderResources(0, 1, &srv[1].GetInterfacePtr());
+  while(Running())
+  {
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+    ctx->ClearRenderTargetView(bbRTV, col);
 
-		ctx->Dispatch(1, 1, 1);
+    ctx->CSSetShader(cs, NULL, 0);
 
-		// copy from source to test, just for the sake of it (we could flipflop)
-		ctx->CopyResource(tex[1], tex[0]);
+    ctx->UpdateSubresource(tex[1], 0, NULL, data, sizeof(uint32_t) * 8, sizeof(uint32_t) * 8 * 8);
 
-		Present();
-	}
+    ctx->CSSetUnorderedAccessViews(0, 1, &uav[0].GetInterfacePtr(), NULL);
+    ctx->CSSetShaderResources(0, 1, &srv[1].GetInterfacePtr());
 
-	return 0;
+    ctx->Dispatch(1, 1, 1);
+
+    // copy from source to test, just for the sake of it (we could flipflop)
+    ctx->CopyResource(tex[1], tex[0]);
+
+    Present();
+  }
+
+  return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int D3D11_Simple_Dispatch(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int D3D11_Simple_Dispatch(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}

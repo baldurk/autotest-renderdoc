@@ -24,8 +24,8 @@
 
 #include "../d3d11_common.h"
 
-namespace {
-
+namespace
+{
 struct a2v
 {
   Vec3f pos;
@@ -120,12 +120,21 @@ int impl::main(int argc, char **argv)
   ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
   D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0, },
-    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
-    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0, },
+      {
+          "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0,
+      },
+      {
+          "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
+          D3D11_INPUT_PER_VERTEX_DATA, 0,
+      },
+      {
+          "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
+          D3D11_INPUT_PER_VERTEX_DATA, 0,
+      },
   };
 
-  CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &layout));
+  CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(),
+                                  vsblob->GetBufferSize(), &layout));
 
   CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
   CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
@@ -140,95 +149,95 @@ int impl::main(int argc, char **argv)
 
   char *digits[10] = {
 
-    "..####.."
-    ".#....#."
-    "#......#"
-    "#......#"       // 0
-    "#......#"
-    "#......#"
-    ".#....#."
-    "..####..",
+      "..####.."
+      ".#....#."
+      "#......#"
+      "#......#"    // 0
+      "#......#"
+      "#......#"
+      ".#....#."
+      "..####..",
 
-    "....#..."
-    "...##..."
-    "..#.#..."
-    "....#..."       // 1
-    "....#..."
-    "....#..."
-    "....#..."
-    "..####..",
+      "....#..."
+      "...##..."
+      "..#.#..."
+      "....#..."    // 1
+      "....#..."
+      "....#..."
+      "....#..."
+      "..####..",
 
-    "..###..."
-    ".#...#.."
-    ".....#.."
-    "....#..."       // 2
-    "....#..."
-    "...#...."
-    "...#...."
-    "..####..",
+      "..###..."
+      ".#...#.."
+      ".....#.."
+      "....#..."    // 2
+      "....#..."
+      "...#...."
+      "...#...."
+      "..####..",
 
-    "..###..."
-    ".#...#.."
-    ".....#.."
-    ".....#.."       // 3
-    "..###..."
-    ".....#.."
-    ".#...#.."
-    "..###...",
+      "..###..."
+      ".#...#.."
+      ".....#.."
+      ".....#.."    // 3
+      "..###..."
+      ".....#.."
+      ".#...#.."
+      "..###...",
 
-    "........"
-    "....#..."
-    "...#...."
-    "..#....."
-    ".#..#..."       // 4
-    ".#####.."
-    "....#..."
-    "....#...",
+      "........"
+      "....#..."
+      "...#...."
+      "..#....."
+      ".#..#..."    // 4
+      ".#####.."
+      "....#..."
+      "....#...",
 
-    ".#####.."
-    ".#......"
-    ".#......"
-    ".####..."       // 5
-    ".....#.."
-    ".....#.."
-    ".#...#.."
-    "..###...",
+      ".#####.."
+      ".#......"
+      ".#......"
+      ".####..."    // 5
+      ".....#.."
+      ".....#.."
+      ".#...#.."
+      "..###...",
 
-    "........"
-    ".....#.."
-    "....#..."
-    "...#...."
-    "..####.."       // 6
-    ".#....#."
-    ".#....#."
-    "..####..",
+      "........"
+      ".....#.."
+      "....#..."
+      "...#...."
+      "..####.."    // 6
+      ".#....#."
+      ".#....#."
+      "..####..",
 
-    "........"
-    "........"
-    ".######."
-    ".....#.."
-    "....#..."       // 7
-    "...#...."
-    "..#....."
-    ".#......",
+      "........"
+      "........"
+      ".######."
+      ".....#.."
+      "....#..."    // 7
+      "...#...."
+      "..#....."
+      ".#......",
 
-    "..####.."
-    ".#....#."
-    ".#....#."
-    "..####.."       // 8
-    ".#....#."
-    ".#....#."
-    ".#....#."
-    "..####..",
+      "..####.."
+      ".#....#."
+      ".#....#."
+      "..####.."    // 8
+      ".#....#."
+      ".#....#."
+      ".#....#."
+      "..####..",
 
-    "..####.."
-    ".#....#."
-    ".#....#."
-    "..#####."       // 9
-    "......#."
-    ".....#.."
-    "....#..."
-    "...#....",
+      "..####.."
+      ".#....#."
+      ".#....#."
+      "..#####."    // 9
+      "......#."
+      ".....#.."
+      "....#..."
+      "...#....",
   };
 
   for(uint32_t mip = 0; mip < 8; mip++)
@@ -237,72 +246,80 @@ int impl::main(int argc, char **argv)
 
     if(mip > 0)
     {
-      for(uint32_t i = 0; i < d*d*(1024>>mip); i++)
+      for(uint32_t i = 0; i < d * d * (1024 >> mip); i++)
         data[i] = (rand() % 0x7fff) << 1;
     }
     else
     {
       for(uint32_t slice = 0; slice < 1024; slice++)
       {
-        uint8_t *base = data + d*d*sizeof(uint8_t)*slice;
+        uint8_t *base = data + d * d * sizeof(uint8_t) * slice;
 
         int str[4] = {0, 0, 0, 0};
 
         uint32_t digitCalc = slice;
 
-        str[0] += digitCalc/1000;
+        str[0] += digitCalc / 1000;
 
         digitCalc %= 1000;
-        str[1] += digitCalc/100;
+        str[1] += digitCalc / 100;
 
         digitCalc %= 100;
-        str[2] += digitCalc/10;
+        str[2] += digitCalc / 10;
 
         digitCalc %= 10;
         str[3] += digitCalc;
 
         base += 32;
-        base += 32*d*sizeof(uint8_t);
+        base += 32 * d * sizeof(uint8_t);
 
         // first digit
-        for(int row=0; row < 8; row++)
-          memcpy(base + row*d*sizeof(uint8_t), digits[ str[0] ] + row*8, 8);
+        for(int row = 0; row < 8; row++)
+          memcpy(base + row * d * sizeof(uint8_t), digits[str[0]] + row * 8, 8);
 
         base += 16;
 
         // second digit
-        for(int row=0; row < 8; row++)
-          memcpy(base + row*d*sizeof(uint8_t), digits[ str[1] ] + row*8, 8);
+        for(int row = 0; row < 8; row++)
+          memcpy(base + row * d * sizeof(uint8_t), digits[str[1]] + row * 8, 8);
 
         base += 16;
 
         // third digit
-        for(int row=0; row < 8; row++)
-          memcpy(base + row*d*sizeof(uint8_t), digits[ str[2] ] + row*8, 8);
+        for(int row = 0; row < 8; row++)
+          memcpy(base + row * d * sizeof(uint8_t), digits[str[2]] + row * 8, 8);
 
         base += 16;
 
         // fourth digit
-        for(int row=0; row < 8; row++)
-          memcpy(base + row*d*sizeof(uint8_t), digits[ str[3] ] + row*8, 8);
+        for(int row = 0; row < 8; row++)
+          memcpy(base + row * d * sizeof(uint8_t), digits[str[3]] + row * 8, 8);
       }
     }
 
-    ctx->UpdateSubresource(tex, mip, NULL, data, d*sizeof(uint8_t), d*d*sizeof(uint8_t));
+    ctx->UpdateSubresource(tex, mip, NULL, data, d * sizeof(uint8_t), d * d * sizeof(uint8_t));
   }
 
-  CD3D11_SHADER_RESOURCE_VIEW_DESC srvdesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(tex, DXGI_FORMAT_R8_UNORM);
+  CD3D11_SHADER_RESOURCE_VIEW_DESC srvdesc =
+      CD3D11_SHADER_RESOURCE_VIEW_DESC(tex, DXGI_FORMAT_R8_UNORM);
   CHECK_HR(dev->CreateShaderResourceView(tex, &srvdesc, &srv));
 
   delete[] data;
 
   a2v triangle[] = {
-    { Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f), },
-    { Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f), },
-    { Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f), },
+      {
+          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
   };
 
-  if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL, NULL))
+  if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL,
+                NULL))
   {
     TEST_ERROR("Failed to create triangle VB");
     return 1;
@@ -310,7 +327,7 @@ int impl::main(int argc, char **argv)
 
   while(Running())
   {
-    float col[] = { 0.4f, 0.5f, 0.6f, 1.0f };
+    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
     ctx->ClearRenderTargetView(bbRTV, col);
 
     UINT stride = sizeof(a2v);
@@ -325,7 +342,7 @@ int impl::main(int argc, char **argv)
     ctx->PSSetSamplers(0, 1, &samp.GetInterfacePtr());
     ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
-    D3D11_VIEWPORT view = { 0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f };
+    D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
     ctx->RSSetViewports(1, &view);
 
     ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
@@ -338,6 +355,10 @@ int impl::main(int argc, char **argv)
   return 0;
 }
 
-}; // anonymous namespace
+};    // anonymous namespace
 
-int D3D11_Texture_3D(int argc, char **argv) { impl i; return i.main(argc, argv); }
+int D3D11_Texture_3D(int argc, char **argv)
+{
+  impl i;
+  return i.main(argc, argv);
+}
