@@ -179,6 +179,9 @@ int main(int argc, char **argv)
   // Test overrunning the bounds of a Map() call
   TEST(GL_Map_Overrun);
 
+  // Test creating large texture 2D arrays of BC4, BC5, BC6, BC7 textures
+  TEST(GL_Large_BCn_Arrays);
+
   TEST_ERROR("%s is not a known test", argv[1]);
 
   return 2;

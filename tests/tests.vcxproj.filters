@@ -115,6 +115,9 @@
     <ClCompile Include="d3d11\d3d11_primitive_restart.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_large_bcn_arrays.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
