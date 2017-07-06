@@ -133,24 +133,165 @@ int impl::main(int argc, char **argv)
   CD3D11_SAMPLER_DESC sampdesc = CD3D11_SAMPLER_DESC(CD3D11_DEFAULT());
   CHECK_HR(dev->CreateSamplerState(&sampdesc, &samp));
 
-  CD3D11_TEXTURE3D_DESC texdesc = CD3D11_TEXTURE3D_DESC(DXGI_FORMAT_R16_SNORM, 256, 256, 256, 8);
+  CD3D11_TEXTURE3D_DESC texdesc = CD3D11_TEXTURE3D_DESC(DXGI_FORMAT_R8_UNORM, 128, 128, 1024, 8);
   CHECK_HR(dev->CreateTexture3D(&texdesc, NULL, &tex));
 
-  uint16_t *data = new uint16_t[256 * 256 * 256 * sizeof(uint16_t)];
+  uint8_t *data = new uint8_t[128 * 128 * 1024 * sizeof(uint8_t)];
 
-  uint16_t blah = RAND_MAX;
+  char *digits[10] = {
+
+    "..####.."
+    ".#....#."
+    "#......#"
+    "#......#"       // 0
+    "#......#"
+    "#......#"
+    ".#....#."
+    "..####..",
+
+    "....#..."
+    "...##..."
+    "..#.#..."
+    "....#..."       // 1
+    "....#..."
+    "....#..."
+    "....#..."
+    "..####..",
+
+    "..###..."
+    ".#...#.."
+    ".....#.."
+    "....#..."       // 2
+    "....#..."
+    "...#...."
+    "...#...."
+    "..####..",
+
+    "..###..."
+    ".#...#.."
+    ".....#.."
+    ".....#.."       // 3
+    "..###..."
+    ".....#.."
+    ".#...#.."
+    "..###...",
+
+    "........"
+    "....#..."
+    "...#...."
+    "..#....."
+    ".#..#..."       // 4
+    ".#####.."
+    "....#..."
+    "....#...",
+
+    ".#####.."
+    ".#......"
+    ".#......"
+    ".####..."       // 5
+    ".....#.."
+    ".....#.."
+    ".#...#.."
+    "..###...",
+
+    "........"
+    ".....#.."
+    "....#..."
+    "...#...."
+    "..####.."       // 6
+    ".#....#."
+    ".#....#."
+    "..####..",
+
+    "........"
+    "........"
+    ".######."
+    ".....#.."
+    "....#..."       // 7
+    "...#...."
+    "..#....."
+    ".#......",
+
+    "..####.."
+    ".#....#."
+    ".#....#."
+    "..####.."       // 8
+    ".#....#."
+    ".#....#."
+    ".#....#."
+    "..####..",
+
+    "..####.."
+    ".#....#."
+    ".#....#."
+    "..#####."       // 9
+    "......#."
+    ".....#.."
+    "....#..."
+    "...#....",
+  };
 
   for(uint32_t mip = 0; mip < 8; mip++)
   {
-    uint32_t d = 256 >> mip;
+    uint32_t d = 128 >> mip;
 
-    for(uint32_t i = 0; i < d*d*d; i++)
-      data[i] = (rand() % 0x7fff) << 1;
+    if(mip > 0)
+    {
+      for(uint32_t i = 0; i < d*d*(1024>>mip); i++)
+        data[i] = (rand() % 0x7fff) << 1;
+    }
+    else
+    {
+      for(uint32_t slice = 0; slice < 1024; slice++)
+      {
+        uint8_t *base = data + d*d*sizeof(uint8_t)*slice;
 
-    ctx->UpdateSubresource(tex, mip, NULL, data, d*sizeof(uint16_t), d*d*sizeof(uint16_t));
+        int str[4] = {0, 0, 0, 0};
+
+        uint32_t digitCalc = slice;
+
+        str[0] += digitCalc/1000;
+
+        digitCalc %= 1000;
+        str[1] += digitCalc/100;
+
+        digitCalc %= 100;
+        str[2] += digitCalc/10;
+
+        digitCalc %= 10;
+        str[3] += digitCalc;
+
+        base += 32;
+        base += 32*d*sizeof(uint8_t);
+
+        // first digit
+        for(int row=0; row < 8; row++)
+          memcpy(base + row*d*sizeof(uint8_t), digits[ str[0] ] + row*8, 8);
+
+        base += 16;
+
+        // second digit
+        for(int row=0; row < 8; row++)
+          memcpy(base + row*d*sizeof(uint8_t), digits[ str[1] ] + row*8, 8);
+
+        base += 16;
+
+        // third digit
+        for(int row=0; row < 8; row++)
+          memcpy(base + row*d*sizeof(uint8_t), digits[ str[2] ] + row*8, 8);
+
+        base += 16;
+
+        // fourth digit
+        for(int row=0; row < 8; row++)
+          memcpy(base + row*d*sizeof(uint8_t), digits[ str[3] ] + row*8, 8);
+      }
+    }
+
+    ctx->UpdateSubresource(tex, mip, NULL, data, d*sizeof(uint8_t), d*d*sizeof(uint8_t));
   }
 
-  CD3D11_SHADER_RESOURCE_VIEW_DESC srvdesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(tex, DXGI_FORMAT_R16_SNORM);
+  CD3D11_SHADER_RESOURCE_VIEW_DESC srvdesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(tex, DXGI_FORMAT_R8_UNORM);
   CHECK_HR(dev->CreateShaderResourceView(tex, &srvdesc, &srv));
 
   delete[] data;
