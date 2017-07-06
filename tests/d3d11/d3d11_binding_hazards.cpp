@@ -64,7 +64,6 @@ int impl::main(int argc, char **argv)
 {
   // so that running individually we get errors
   debugDevice = true;
-  LoadLibraryA("C:/projects/renderdoc/x64/development/renderdoc.dll");
 
   // initialise, create window, create device, etc
   if(!Init(argc, argv))

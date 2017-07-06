@@ -100,6 +100,9 @@ struct GraphicsTest
   virtual int main(int argc, char **argv) = 0;
   virtual bool Init(int argc, char **argv);
 
+  void StartFrameCapture(void *device = NULL, void *wnd = NULL);
+  void EndFrameCapture(void *device = NULL, void *wnd = NULL);
+
   int screenWidth;
   int screenHeight;
   bool fullscreen;
