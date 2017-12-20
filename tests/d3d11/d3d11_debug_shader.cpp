@@ -47,7 +47,7 @@ struct a2v
 struct v2f
 {
 	float4 pos : SV_POSITION;
-	float zeroVal : ZERO;
+	float2 zeroVal : ZERO;
 	float oneVal : ONE;
 	float negoneVal : NEGONE;
 	uint tri : TRIANGLE;
@@ -69,7 +69,7 @@ v2f main(a2v IN, uint tri : SV_InstanceID)
 	OUT.pos.x += -0.9f + col*0.2f;
 	OUT.pos.y +=  0.85f - row*0.3f;
 
-	OUT.zeroVal = IN.zeroVal;
+	OUT.zeroVal = IN.zeroVal.xx;
 	OUT.oneVal = IN.oneVal;
 	OUT.negoneVal = IN.negoneVal;
 	OUT.tri = tri;
@@ -81,15 +81,17 @@ v2f main(a2v IN, uint tri : SV_InstanceID)
 
 string pixel = R"EOSHADER(
 
+Buffer<float> test : register(t0);
+
 float4 main(v2f IN) : SV_Target0
 {
-  float	posinf = IN.oneVal/IN.zeroVal;
-  float	neginf = IN.negoneVal/IN.zeroVal;
-  float	nan = IN.zeroVal/IN.zeroVal;
+  float	posinf = IN.oneVal/IN.zeroVal.x;
+  float	neginf = IN.negoneVal/IN.zeroVal.x;
+  float	nan = IN.zeroVal.x/IN.zeroVal.y;
 
 	float negone = IN.negoneVal;
 	float posone = IN.oneVal;
-	float zero = IN.zeroVal;
+	float zero = IN.zeroVal.x;
 
 	if(IN.tri == 0)
 		return float4(log(negone), log(zero), log(posone), 1.0f);
@@ -120,6 +122,46 @@ float4 main(v2f IN) : SV_Target0
 	if(IN.tri == 13)
 		return float4(max(posinf, neginf), max(neginf, neginf), max(nan, neginf), 1.0f);
 
+  // rounding tests
+  float round_a = 1.7f*posone;
+  float round_b = 2.1f*posone;
+  float round_c = 1.5f*posone;
+  float round_d = 2.5f*posone;
+  float round_e = zero;
+  float round_f = -1.7f*posone;
+  float round_g = -2.1f*posone;
+  float round_h = -1.5f*posone;
+  float round_i = -2.5f*posone;
+
+  if(IN.tri == 14)
+    return float4(round(round_a), floor(round_a), ceil(round_a), trunc(round_a));
+  if(IN.tri == 15)
+    return float4(round(round_b), floor(round_b), ceil(round_b), trunc(round_b));
+  if(IN.tri == 16)
+    return float4(round(round_c), floor(round_c), ceil(round_c), trunc(round_c));
+  if(IN.tri == 17)
+    return float4(round(round_d), floor(round_d), ceil(round_d), trunc(round_d));
+  if(IN.tri == 18)
+    return float4(round(round_e), floor(round_e), ceil(round_e), trunc(round_e));
+  if(IN.tri == 19)
+    return float4(round(round_f), floor(round_f), ceil(round_f), trunc(round_f));
+  if(IN.tri == 20)
+    return float4(round(round_g), floor(round_g), ceil(round_g), trunc(round_g));
+  if(IN.tri == 21)
+    return float4(round(round_h), floor(round_h), ceil(round_h), trunc(round_h));
+  if(IN.tri == 22)
+    return float4(round(round_i), floor(round_i), ceil(round_i), trunc(round_i));
+
+  if(IN.tri == 23)
+    return float4(round(neginf), floor(neginf), ceil(neginf), trunc(neginf));
+  if(IN.tri == 24)
+    return float4(round(posinf), floor(posinf), ceil(posinf), trunc(posinf));
+  if(IN.tri == 25)
+    return float4(round(nan), floor(nan), ceil(nan), trunc(nan));
+
+  if(IN.tri == 26)
+    return test[5].xxxx;
+
 	return float4(0.4f, 0.4f, 0.4f, 0.4f);
 }
 
@@ -134,6 +176,9 @@ struct impl : D3D11GraphicsTest
 
   ID3D11VertexShaderPtr vs;
   ID3D11PixelShaderPtr ps;
+
+  ID3D11BufferPtr srvBuf;
+  ID3D11ShaderResourceViewPtr srv;
 
   ID3D11Texture2DPtr fltTex;
   ID3D11RenderTargetViewPtr fltRT;
@@ -195,6 +240,16 @@ int impl::main(int argc, char **argv)
     TEST_ERROR("Failed to create triangle VB");
     return 1;
   }
+
+  float testdata[] = {
+      1.0f,  2.0f,  3.0f,  4.0f,  5.0f,  6.0f,  7.0f,  8.0f,  9.0f,  10.0f,
+      11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f, 120.0f,
+  };
+
+  MakeBuffer(eCompBuffer, 0, sizeof(testdata), 10, DXGI_FORMAT_UNKNOWN, testdata, &srvBuf, &srv,
+             NULL, NULL);
+
+  ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
   while(Running())
   {
