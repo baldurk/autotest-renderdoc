@@ -153,6 +153,48 @@ int impl::main(int argc, char **argv)
     TEST_ASSERT(getCSUAVs[2] == NULL, "Unexpected binding");
     TEST_ASSERT(getCSUAVs[3] == uav[2], "Unexpected binding");
 
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,
+                                                   NULL, NULL, 1, 0, NULL, NULL);
+
+    ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
+
+    TEST_ASSERT(getOMRTV == rtv[0], "Unexpected binding");
+    TEST_ASSERT(getOMUAV == NULL, "Unexpected binding");
+
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
+                                                   &uav[1].GetInterfacePtr(), NULL);
+
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,
+                                                   &rtv[1].GetInterfacePtr(), NULL, 1, 0, NULL, NULL);
+
+    ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
+
+    TEST_ASSERT(getOMRTV == rtv[0], "Unexpected binding");
+    TEST_ASSERT(getOMUAV == NULL, "Unexpected binding");
+
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
+                                                   &uav[1].GetInterfacePtr(), NULL);
+
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[2].GetInterfacePtr(), NULL, 1,
+                                                   D3D11_KEEP_UNORDERED_ACCESS_VIEWS, NULL, NULL);
+
+    ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
+
+    TEST_ASSERT(getOMRTV == rtv[2], "Unexpected binding");
+    TEST_ASSERT(getOMUAV == uav[1], "Unexpected binding");
+
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
+                                                   &uav[1].GetInterfacePtr(), NULL);
+
+    ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[2].GetInterfacePtr(), NULL, 1,
+                                                   D3D11_KEEP_UNORDERED_ACCESS_VIEWS,
+                                                   &uav[0].GetInterfacePtr(), NULL);
+
+    ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
+
+    TEST_ASSERT(getOMRTV == rtv[2], "Unexpected binding");
+    TEST_ASSERT(getOMUAV == uav[1], "Unexpected binding");
+
     // finally this should unbind both OM views, and rebind back on the CS
     ctx->CSSetUnorderedAccessViews(0, 1, &uav[0].GetInterfacePtr(), NULL);
     ctx->CSSetUnorderedAccessViews(2, 1, &uav[1].GetInterfacePtr(), NULL);
