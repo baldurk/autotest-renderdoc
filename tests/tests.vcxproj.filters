@@ -121,6 +121,12 @@
     <ClCompile Include="d3d11\d3d11_counter_query_pred.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="vk_common.cpp">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="vulkan\vk_simple_triangle.cpp">
+      <Filter>Vulkan\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -135,6 +141,12 @@
     <Filter Include="OpenGL\tests">
       <UniqueIdentifier>{1da9ebf5-0432-4265-b118-9ffa5857a317}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan">
+      <UniqueIdentifier>{edb31c02-2b14-4e5f-8332-bcf87d98e80d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan\tests">
+      <UniqueIdentifier>{e5a064fd-f7f5-41f7-af8f-27d766122f53}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d11_common.h">
@@ -145,5 +157,8 @@
       <Filter>OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="lz4.h" />
+    <ClInclude Include="vk_common.h">
+      <Filter>Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
