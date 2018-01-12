@@ -71,6 +71,12 @@ static void glfwCallback(int err, const char *str)
   TEST_ERROR("GLFW Error %i: %s", err, str);
 }
 
+static void glfwKeypress(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+  if(key == GLFW_KEY_ESCAPE)
+    glfwSetWindowShouldClose(window, 1);
+}
+
 static void glfwResize(GLFWwindow *window, int width, int height)
 {
   if(width == 0 || height == 0)
@@ -205,6 +211,8 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
   win = glfwCreateWindow(screenWidth, screenHeight, "Autotesting", NULL, NULL);
+
+  glfwSetKeyCallback(win, &glfwKeypress);
 
   glfwSetWindowUserPointer(win, this);
   glfwSetWindowSizeCallback(win, &glfwResize);

@@ -41,6 +41,12 @@ static void glfwCallback(int err, const char *str)
   TEST_ERROR("GLFW Error %i: %s", err, str);
 }
 
+static void glfwKeypress(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+  if(key == GLFW_KEY_ESCAPE)
+    glfwSetWindowShouldClose(window, 1);
+}
+
 bool OpenGLGraphicsTest::Init(int argc, char **argv)
 {
   // parse parameters here to override parameters
@@ -73,6 +79,8 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
     TEST_ERROR("Error creating glfw window");
     return false;
   }
+
+  glfwSetKeyCallback(win, &glfwKeypress);
 
   glfwMakeContextCurrent(win);
 

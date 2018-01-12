@@ -631,6 +631,9 @@ bool D3D11GraphicsTest::Running()
   if(msg.message == WM_QUIT)
     return false;
 
+  if(msg.message == WM_CHAR && msg.wParam == VK_ESCAPE)
+    return false;
+
   Sleep(20);
 
   return true;
