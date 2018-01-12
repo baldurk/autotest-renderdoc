@@ -207,3 +207,22 @@ std::string GetCWD()
 
   return cwdstr;
 }
+
+static char printBuf[4096] = {};
+
+void DebugPrint(const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+
+  vsnprintf(printBuf, 4095, fmt, args);
+
+  va_end(args);
+
+  fputs(printBuf, stdout);
+  fflush(stdout);
+
+#if defined(WIN32)
+  OutputDebugStringA(printBuf);
+#endif
+}
