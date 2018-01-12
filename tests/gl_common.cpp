@@ -36,179 +36,57 @@ static void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum
   }
 }
 
-#ifdef WIN32
-static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static void glfwCallback(int err, const char *str)
 {
-  if(msg == WM_CLOSE)
-  {
-    DestroyWindow(hwnd);
-    return 0;
-  }
-  if(msg == WM_DESTROY)
-  {
-    PostQuitMessage(0);
-    return 0;
-  }
-  return DefWindowProc(hwnd, msg, wParam, lParam);
+  TEST_ERROR("GLFW Error %i: %s", err, str);
 }
-#endif
 
 bool OpenGLGraphicsTest::Init(int argc, char **argv)
 {
   // parse parameters here to override parameters
   GraphicsTest::Init(argc, argv);
 
-// GL specific can go here
-// ...
-
-#ifdef WIN32
-  string classname = "renderdoc_gl_test";
-  static int idx = 0;
-  idx++;
-  classname += '0' + idx;
-
-  WNDCLASSEXA wc;
-  wc.cbSize = sizeof(WNDCLASSEXA);
-  wc.style = 0;
-  wc.lpfnWndProc = WndProc;
-  wc.cbClsExtra = 0;
-  wc.cbWndExtra = 0;
-  wc.hInstance = GetModuleHandle(NULL);
-  wc.hIcon = NULL;
-  wc.hCursor = NULL;
-  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-  wc.lpszMenuName = NULL;
-  wc.lpszClassName = classname.c_str();
-  wc.hIconSm = NULL;
-
-  if(!RegisterClassEx(&wc))
+  if(!glfwInit())
   {
+    TEST_ERROR("Failed to init GLFW");
     return false;
   }
 
-  RECT rect = {0, 0, screenWidth, screenHeight};
-  AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_CLIENTEDGE);
+  inited = true;
 
-  wnd = CreateWindowExA(WS_EX_CLIENTEDGE, classname.c_str(), "RenderDoc test program",
-                        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left,
-                        rect.bottom - rect.top, NULL, NULL, NULL, NULL);
+  glfwSetErrorCallback(&glfwCallback);
 
-  PIXELFORMATDESCRIPTOR pfd = {0};
+  glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
+  glfwWindowHint(GLFW_CLIENT_API, gles ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API);
+  glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinor);
+  glfwWindowHint(GLFW_OPENGL_PROFILE,
+                 coreProfile ? GLFW_OPENGL_CORE_PROFILE : GLFW_OPENGL_ANY_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+  glfwWindowHint(GLFW_RESIZABLE, 0);
 
-  pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-  pfd.nVersion = 1;
-  pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-  pfd.iLayerType = PFD_MAIN_PLANE;
-  pfd.iPixelType = PFD_TYPE_RGBA;
-  pfd.cColorBits = 32;
-  pfd.cDepthBits = 0;
-  pfd.cStencilBits = 0;
+  win = glfwCreateWindow(screenWidth, screenHeight, "Autotesting", NULL, NULL);
 
-  dc = GetDC(wnd);
-
-  int pf = ChoosePixelFormat(dc, &pfd);
-  if(pf == 0)
+  if(!win)
   {
-    TEST_ERROR("Couldn't choose pixel format");
+    TEST_ERROR("Error creating glfw window");
     return false;
   }
 
-  BOOL res = SetPixelFormat(dc, pf, &pfd);
-  if(res == FALSE)
-  {
-    TEST_ERROR("Couldn't set pixel format");
-    return false;
-  }
+  glfwMakeContextCurrent(win);
 
-  HGLRC glrc = wglCreateContext(dc);
-  if(glrc == NULL)
-  {
-    TEST_ERROR("Couldn't create simple RC");
-    return false;
-  }
-
-  res = wglMakeCurrent(dc, glrc);
-  if(res == FALSE)
-  {
-    TEST_ERROR("Couldn't make simple RC current");
-    return false;
-  }
-
-  PFNWGLCREATECONTEXTATTRIBSARBPROC createContextAttribs =
-      (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-  PFNWGLGETPIXELFORMATATTRIBIVARBPROC getPixelFormatAttrib =
-      (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
-
-  if(createContextAttribs == NULL || getPixelFormatAttrib == NULL)
-  {
-    TEST_ERROR("can't find WGL_ARB_create_context or WGL_ARB_pixel_format");
-    return false;
-  }
-
-  wglMakeCurrent(NULL, NULL);
-  wglDeleteContext(glrc);
-  ReleaseDC(wnd, dc);
-  dc = GetDC(wnd);
-
-  pf = ChoosePixelFormat(dc, &pfd);
-  if(pf == 0)
-  {
-    TEST_ERROR("Couldn't choose pixel format");
-    return false;
-  }
-
-  res = SetPixelFormat(dc, pf, &pfd);
-  if(res == FALSE)
-  {
-    TEST_ERROR("Couldn't set pixel format");
-    return false;
-  }
-
-  int attribs[64] = {0};
-  int i = 0;
-
-  attribs[i++] = WGL_CONTEXT_MAJOR_VERSION_ARB;
-  attribs[i++] = glMajor;
-  attribs[i++] = WGL_CONTEXT_MINOR_VERSION_ARB;
-  attribs[i++] = glMinor;
-  attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
-  attribs[i++] = debugDevice ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
-  attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
-  attribs[i++] =
-      coreProfile ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-
-  rc = createContextAttribs(dc, NULL, attribs);
-  if(rc == NULL)
-  {
-    TEST_ERROR("Couldn't create 4.3 RC - RenderDoc requires OpenGL 4.3 availability");
-    return false;
-  }
-
-  res = wglMakeCurrent(dc, rc);
-  if(res == FALSE)
-  {
-    TEST_ERROR("Couldn't make 4.3 RC current");
-    return false;
-  }
-
-  if(!gladLoadGL())
+  if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
     TEST_ERROR("Error initialising glad");
     return false;
   }
 
-  if(!gladLoadWGL(dc))
+  if(GLAD_GL_ARB_debug_output)
   {
-    TEST_ERROR("Error initialising glad");
-    return false;
+    glDebugMessageCallback(&debugCallback, NULL);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   }
-
-  ShowWindow(wnd, SW_SHOW);
-  UpdateWindow(wnd);
-#endif
-
-  glDebugMessageCallback(&debugCallback, NULL);
-  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
   return true;
 }
@@ -229,12 +107,10 @@ OpenGLGraphicsTest::~OpenGLGraphicsTest()
   for(GLuint p : progs)
     glDeleteProgram(p);
 
-  if(rc)
-    wglDeleteContext(rc);
-  if(dc)
-    ReleaseDC(wnd, dc);
-  if(wnd)
-    DestroyWindow(wnd);
+  if(win)
+    glfwDestroyWindow(win);
+  if(inited)
+    glfwTerminate();
 }
 
 GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc, bool sep)
@@ -367,31 +243,14 @@ GLuint OpenGLGraphicsTest::MakeFBO()
 
 bool OpenGLGraphicsTest::Running()
 {
-#ifdef WIN32
-  MSG msg;
-  ZeroMemory(&msg, sizeof(msg));
-
-  // Check to see if any messages are waiting in the queue
-  while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-  {
-    // Translate the message and dispatch it to WindowProc()
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
-
-  // If the message is WM_QUIT, exit the program
-  if(msg.message == WM_QUIT)
+  if(glfwWindowShouldClose(win))
     return false;
-
-  Sleep(20);
-#endif
 
   return true;
 }
 
 void OpenGLGraphicsTest::Present()
 {
-#ifdef WIN32
-  SwapBuffers(dc);
-#endif
+  glfwSwapBuffers(win);
+  glfwPollEvents();
 }

@@ -26,24 +26,14 @@
 
 #include "test_common.h"
 
-#include <windows.h>
-
 #include <glad/glad.h>
-#include <glad/glad_wgl.h>
+
+#include <GLFW/glfw3.h>
 
 #include <vector>
 
 struct OpenGLGraphicsTest : public GraphicsTest
 {
-  OpenGLGraphicsTest() : glMajor(4), glMinor(3), coreProfile(true)
-  {
-#ifdef WIN32
-    wnd = NULL;
-    dc = NULL;
-    rc = NULL;
-#endif
-  }
-
   ~OpenGLGraphicsTest();
 
   bool Init(int argc, char **argv);
@@ -58,15 +48,13 @@ struct OpenGLGraphicsTest : public GraphicsTest
   bool Running();
   void Present();
 
-  int glMajor;
-  int glMinor;
-  bool coreProfile;
+  int glMajor = 4;
+  int glMinor = 3;
+  bool coreProfile = true;
+  bool gles = false;
 
-#ifdef WIN32
-  HWND wnd;
-  HDC dc;
-  HGLRC rc;
-#endif
+  GLFWwindow *win = NULL;
+  bool inited = false;
 
   std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
 };

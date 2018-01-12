@@ -25,6 +25,13 @@
 #include "../d3d11_common.h"
 #include "../gl_common.h"
 
+#include <glad/glad_wgl.h>
+
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WGL
+
+#include <GLFW/glfw3native.h>
+
 namespace
 {
 string dxcommon = R"EOSHADER(
@@ -189,6 +196,10 @@ int impl::main(int argc, char **argv)
   // initialise, create window, create context, etc
   if(!Init(argc, argv))
     return 3;
+
+  HDC dc = GetDC(glfwGetWin32Window(win));
+  gladLoadWGL(dc);
+  ReleaseDC(NULL, dc);
 
   a2v triangle[] = {
       {
