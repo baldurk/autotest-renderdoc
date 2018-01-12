@@ -80,6 +80,7 @@
     <ClCompile Include="d3d11\d3d11_array_interpolator.cpp" />
     <ClCompile Include="d3d11\d3d11_binding_hazards.cpp" />
     <ClCompile Include="d3d11\d3d11_byte_address_buffers.cpp" />
+    <ClCompile Include="d3d11\d3d11_counter_query_pred.cpp" />
     <ClCompile Include="d3d11\d3d11_deferred_updatesubresource.cpp" />
     <ClCompile Include="d3d11\d3d11_discard_view.cpp" />
     <ClCompile Include="d3d11\d3d11_divergent_shader.cpp" />

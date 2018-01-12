@@ -24,6 +24,8 @@
 
 #pragma once
 
+#define INITGUID
+
 #include "test_common.h"
 
 #include <comdef.h>
@@ -65,6 +67,10 @@ COM_SMARTPTR(ID3D11InputLayout);
 
 COM_SMARTPTR(ID3D11Buffer);
 
+COM_SMARTPTR(ID3D11Query);
+COM_SMARTPTR(ID3D11Counter);
+COM_SMARTPTR(ID3D11Predicate);
+
 COM_SMARTPTR(ID3D11VertexShader);
 COM_SMARTPTR(ID3D11PixelShader);
 COM_SMARTPTR(ID3D11HullShader);
@@ -98,6 +104,13 @@ COM_SMARTPTR(ID3DUserDefinedAnnotation);
       exit(1);                                                                            \
     }                                                                                     \
   }
+
+template <class T>
+inline void SetDebugName(T pObj, const char *name)
+{
+  if(pObj)
+    pObj->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)strlen(name), name);
+}
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
