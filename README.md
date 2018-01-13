@@ -10,13 +10,15 @@ The main repository is [renderdoc](https://github.com/baldurk/renderdoc), go the
 Building
 --------------
 
-I assume VS 2013 and latest Win 8.1 SDK, unlike renderdoc I won't be supporting old VS or using the DX SDK. This is mostly to keep things simpler - I'll need to test D3D11.1 or D3D11.2 features. The VS 2013 support is for string literals to more easily embed shaders in source, and sadly VS 2010 doesn't support that C++11 feature.
+I assume VS 2015 and latest Windows SDK.
+
+Building on linux/android to come soon.
 
 License
 --------------
 
 RenderDoc is released under the MIT license, see [LICENSE.md](LICENSE.md) for full text. This repository is under the same license.
 
-The tests use [GLEW](http://glew.sourceforge.net/) for extension loading, which is BSD licensed.
+The tests use [GLAD](https://github.com/Dav1dde/glad) for extension loading, which is MIT licensed.
 
-The harness that runs tests and interfaces with renderdoc's API to run tests and check things uses [duktape](http://duktape.org/) which is MIT licensed
+Also [GLFW](https://github.com/glfw/glfw) for window creation and handling, which is Zlib licensed.
