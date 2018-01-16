@@ -128,10 +128,10 @@ struct AllocatedBuffer
     buffer = vk::Buffer(buf);
   }
 
-  void *map()
+  byte *map()
   {
-    void *ret = NULL;
-    VkResult vkr = vmaMapMemory(allocator, alloc, &ret);
+    byte *ret = NULL;
+    VkResult vkr = vmaMapMemory(allocator, alloc, (void **)&ret);
 
     if(vkr != VK_SUCCESS)
       return NULL;

@@ -127,6 +127,9 @@
     <ClCompile Include="vk\vk_simple_triangle.cpp">
       <Filter>Vulkan\tests</Filter>
     </ClCompile>
+    <ClCompile Include="vk\vk_draw_zoo.cpp">
+      <Filter>Vulkan\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">

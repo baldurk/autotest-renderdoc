@@ -422,7 +422,7 @@ vk::ShaderModule VulkanGraphicsTest::CompileGlslToSpv(const std::string &source_
 
   if(code.GetCompilationStatus() != shaderc_compilation_status_success)
   {
-    TEST_ERROR("Failed to compile shader");
+    TEST_ERROR("Failed to compile shader: %s", code.GetErrorMessage().c_str());
     return ret;
   }
 
