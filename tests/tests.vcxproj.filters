@@ -124,7 +124,7 @@
     <ClCompile Include="vk_common.cpp">
       <Filter>Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="vulkan\vk_simple_triangle.cpp">
+    <ClCompile Include="vk\vk_simple_triangle.cpp">
       <Filter>Vulkan\tests</Filter>
     </ClCompile>
   </ItemGroup>

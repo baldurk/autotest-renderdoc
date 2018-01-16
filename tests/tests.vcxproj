@@ -134,8 +134,8 @@
     <ClCompile Include="lz4.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_common.cpp" />
+    <ClCompile Include="vk\vk_simple_triangle.cpp" />
     <ClCompile Include="vk_common.cpp" />
-    <ClCompile Include="vulkan\vk_simple_triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d11_common.h" />
