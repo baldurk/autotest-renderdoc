@@ -162,6 +162,20 @@ float4 main(v2f IN) : SV_Target0
   if(IN.tri == 26)
     return test[5].xxxx;
 
+  if(IN.tri == 27)
+  {
+    uint unsignedVal = uint(344.1f*posone);
+    int signedVal = int(344.1f*posone);
+    return float4(firstbithigh(unsignedVal), firstbitlow(unsignedVal),
+                  firstbithigh(signedVal), firstbitlow(signedVal));
+  }
+
+  if(IN.tri == 28)
+  {
+    int signedVal = int(344.1f*negone);
+    return float4(firstbithigh(signedVal), firstbitlow(signedVal), 0.0f, 0.0f);
+  }
+
 	return float4(0.4f, 0.4f, 0.4f, 0.4f);
 }
 
@@ -246,7 +260,7 @@ int impl::main(int argc, char **argv)
       11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f, 120.0f,
   };
 
-  MakeBuffer(eCompBuffer, 0, sizeof(testdata), 10, DXGI_FORMAT_UNKNOWN, testdata, &srvBuf, &srv,
+  MakeBuffer(eCompBuffer, 0, sizeof(testdata), 4, DXGI_FORMAT_R32_FLOAT, testdata, &srvBuf, &srv,
              NULL, NULL);
 
   ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
