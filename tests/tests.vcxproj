@@ -100,6 +100,7 @@
     <ClCompile Include="d3d11\d3d11_deferred_updatesubresource.cpp" />
     <ClCompile Include="d3d11\d3d11_discard_view.cpp" />
     <ClCompile Include="d3d11\d3d11_divergent_shader.cpp" />
+    <ClCompile Include="d3d11\d3d11_draw_zoo.cpp" />
     <ClCompile Include="d3d11\d3d11_empty_compute_dispatch.cpp" />
     <ClCompile Include="d3d11\d3d11_empty_drawcall.cpp" />
     <ClCompile Include="d3d11\d3d11_empty_viewports.cpp" />
