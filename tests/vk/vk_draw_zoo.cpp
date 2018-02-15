@@ -94,6 +94,7 @@ struct impl : VulkanGraphicsTest
   std::vector<vk::Framebuffer> framebuffer;
   vk::Pipeline noInstPipe;
   vk::Pipeline instPipe;
+  vk::Pipeline stripPipe;
 
   AllocatedBuffer vb1;
   AllocatedBuffer ib1;
@@ -110,6 +111,7 @@ struct impl : VulkanGraphicsTest
         device.destroyFramebuffer(fb);
       device.destroyPipeline(noInstPipe);
       device.destroyPipeline(instPipe);
+      device.destroyPipeline(stripPipe);
     }
 
     vb1.destroy();
@@ -170,6 +172,14 @@ int impl::main(int argc, char **argv)
 
   ResultChecker(noInstPipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
 
+  pipeCreate.ia.primitiveRestartEnable = true;
+  pipeCreate.ia.topology = vk::PrimitiveTopology::eTriangleStrip;
+
+  ResultChecker(stripPipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
+
+  pipeCreate.ia.primitiveRestartEnable = false;
+  pipeCreate.ia.topology = vk::PrimitiveTopology::eTriangleList;
+
   // add an instance vertex buffer for colours
   pipeCreate.binds.push_back(
       vk::VertexInputBindingDescription(1, sizeof(Vec4f), vk::VertexInputRate::eInstance));
@@ -226,10 +236,47 @@ int impl::main(int argc, char **argv)
       {
           Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
       },
+      // strips: 13, 14, 15, ...
+      {
+          Vec3f(-0.5f, 0.2f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+      },
+      {
+          Vec3f(-0.5f, 0.0f, 0.0f), Vec4f(0.2f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+      },
+      {
+          Vec3f(-0.3f, 0.2f, 0.0f), Vec4f(0.4f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(-0.3f, 0.0f, 0.0f), Vec4f(0.6f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(-0.1f, 0.2f, 0.0f), Vec4f(0.8f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(-0.1f, 0.0f, 0.0f), Vec4f(1.0f, 0.5f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(0.1f, 0.2f, 0.0f), Vec4f(0.0f, 0.8f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(0.1f, 0.0f, 0.0f), Vec4f(0.2f, 0.1f, 0.5f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(0.3f, 0.2f, 0.0f), Vec4f(0.4f, 0.3f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(0.3f, 0.0f, 0.0f), Vec4f(0.6f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(0.5f, 0.2f, 0.0f), Vec4f(0.8f, 0.3f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
+      {
+          Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+      },
   };
 
   vb1.create(allocator,
-             vk::BufferCreateInfo({}, sizeof(a2v) * 30, vk::BufferUsageFlagBits::eVertexBuffer |
+             vk::BufferCreateInfo({}, sizeof(a2v) * 50, vk::BufferUsageFlagBits::eVertexBuffer |
                                                             vk::BufferUsageFlagBits::eTransferDst),
              VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
@@ -276,6 +323,20 @@ int impl::main(int argc, char **argv)
     memcpy(dst + 23, triangle + 10, sizeof(a2v));
     memcpy(dst + 24, triangle + 11, sizeof(a2v));
     memcpy(dst + 25, triangle + 12, sizeof(a2v));
+
+    // strip after 30
+    memcpy(dst + 30, triangle + 13, sizeof(a2v));
+    memcpy(dst + 31, triangle + 14, sizeof(a2v));
+    memcpy(dst + 32, triangle + 15, sizeof(a2v));
+    memcpy(dst + 33, triangle + 16, sizeof(a2v));
+    memcpy(dst + 34, triangle + 17, sizeof(a2v));
+    memcpy(dst + 35, triangle + 18, sizeof(a2v));
+    memcpy(dst + 36, triangle + 19, sizeof(a2v));
+    memcpy(dst + 37, triangle + 20, sizeof(a2v));
+    memcpy(dst + 38, triangle + 21, sizeof(a2v));
+    memcpy(dst + 39, triangle + 22, sizeof(a2v));
+    memcpy(dst + 40, triangle + 23, sizeof(a2v));
+    memcpy(dst + 41, triangle + 24, sizeof(a2v));
 
     vb1.unmap();
   }
@@ -331,6 +392,19 @@ int impl::main(int argc, char **argv)
     dst[37] = 104;
     dst[38] = 105;
     dst[39] = 106;
+
+    dst[42] = 30;
+    dst[43] = 31;
+    dst[44] = 32;
+    dst[45] = 33;
+    dst[46] = 34;
+    dst[47] = 0xffffffff;
+    dst[48] = 36;
+    dst[49] = 37;
+    dst[50] = 38;
+    dst[51] = 39;
+    dst[52] = 40;
+    dst[53] = 41;
 
     ib1.unmap();
   }
@@ -420,6 +494,15 @@ int impl::main(int argc, char **argv)
     cmd.bindVertexBuffers(0, {vb1.buffer}, {19 * sizeof(a2v)});
     cmd.bindIndexBuffer(ib1.buffer, 14 * sizeof(uint32_t), vk::IndexType::eUint32);
     cmd.drawIndexed(3, 1, 23, -100, 0);
+    vp.x += vp.width;
+
+    cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, stripPipe);
+
+    // indexed strip with primitive restart
+    cmd.setViewport(0, {vp});
+    cmd.bindVertexBuffers(0, {vb1.buffer}, {0});
+    cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
+    cmd.drawIndexed(12, 1, 42, 0, 0);
     vp.x += vp.width;
 
     // adjust to next row
