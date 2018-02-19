@@ -133,6 +133,15 @@
     <ClCompile Include="d3d11\d3d11_draw_zoo.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_cbuffer_zoo.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\gl_cbuffer_zoo.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\vk_cbuffer_zoo.cpp">
+      <Filter>Vulkan\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">

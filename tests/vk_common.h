@@ -49,6 +49,7 @@ struct PipelineCreator
 {
   PipelineCreator();
 
+  inline void clearShaders() { stages.clear(); }
   inline void addShader(vk::ShaderModule module, vk::ShaderStageFlagBits stage,
                         const char *entry = "main")
   {
@@ -208,7 +209,12 @@ struct VulkanGraphicsTest : public GraphicsTest
   void Submit(int index, int totalSubmits, const std::vector<vk::CommandBuffer> &cmds);
   void Present();
 
+  vk::ShaderModule CompileShaderToSpv(const std::string &source_text,
+                                      shaderc_shader_kind shader_kind, const char *input_file_name,
+                                      const shaderc::CompileOptions &options);
   vk::ShaderModule CompileGlslToSpv(const std::string &source_text, shaderc_shader_kind shader_kind,
+                                    const char *input_file_name);
+  vk::ShaderModule CompileHlslToSpv(const std::string &source_text, shaderc_shader_kind shader_kind,
                                     const char *input_file_name);
   vk::CommandBuffer GetCommandBuffer();
 

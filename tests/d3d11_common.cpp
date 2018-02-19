@@ -200,13 +200,13 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 
 void D3D11GraphicsTest::PostDeviceCreate()
 {
-  if(d3d11_1)
+  // if(d3d11_1)
   {
     dev->QueryInterface(__uuidof(ID3D11Device1), (void **)&dev1);
     ctx->QueryInterface(__uuidof(ID3D11DeviceContext1), (void **)&ctx1);
   }
 
-  if(d3d11_2)
+  // if(d3d11_2)
   {
     dev->QueryInterface(__uuidof(ID3D11Device2), (void **)&dev2);
     ctx->QueryInterface(__uuidof(ID3D11DeviceContext2), (void **)&ctx2);

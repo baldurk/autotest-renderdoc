@@ -96,6 +96,7 @@
     <ClCompile Include="d3d11\d3d11_array_interpolator.cpp" />
     <ClCompile Include="d3d11\d3d11_binding_hazards.cpp" />
     <ClCompile Include="d3d11\d3d11_byte_address_buffers.cpp" />
+    <ClCompile Include="d3d11\d3d11_cbuffer_zoo.cpp" />
     <ClCompile Include="d3d11\d3d11_counter_query_pred.cpp" />
     <ClCompile Include="d3d11\d3d11_deferred_updatesubresource.cpp" />
     <ClCompile Include="d3d11\d3d11_discard_view.cpp" />
@@ -123,6 +124,7 @@
     <ClCompile Include="glad\glad.c" />
     <ClCompile Include="glad\glad_wgl.c" />
     <ClCompile Include="gl\gl_buffer_updates.cpp" />
+    <ClCompile Include="gl\gl_cbuffer_zoo.cpp" />
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp" />
     <ClCompile Include="gl\gl_dx_interop.cpp" />
     <ClCompile Include="gl\gl_large_bcn_arrays.cpp" />
@@ -135,6 +137,7 @@
     <ClCompile Include="lz4.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_common.cpp" />
+    <ClCompile Include="vk\vk_cbuffer_zoo.cpp" />
     <ClCompile Include="vk\vk_draw_zoo.cpp" />
     <ClCompile Include="vk\vk_simple_triangle.cpp" />
     <ClCompile Include="vk_common.cpp" />

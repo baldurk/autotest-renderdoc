@@ -410,15 +410,16 @@ void VulkanGraphicsTest::Present()
   acquireImage();
 }
 
-vk::ShaderModule VulkanGraphicsTest::CompileGlslToSpv(const std::string &source_text,
-                                                      shaderc_shader_kind shader_kind,
-                                                      const char *input_file_name)
+vk::ShaderModule VulkanGraphicsTest::CompileShaderToSpv(const std::string &source_text,
+                                                        shaderc_shader_kind shader_kind,
+                                                        const char *input_file_name,
+                                                        const shaderc::CompileOptions &options)
 {
   vk::ShaderModule ret;
 
 #if defined(HAVE_SHADERC)
   shaderc::SpvCompilationResult code =
-      compiler->CompileGlslToSpv(source_text, shader_kind, input_file_name);
+      compiler->CompileGlslToSpv(source_text, shader_kind, input_file_name, "main", options);
 
   if(code.GetCompilationStatus() != shaderc_compilation_status_success)
   {
@@ -431,6 +432,40 @@ vk::ShaderModule VulkanGraphicsTest::CompileGlslToSpv(const std::string &source_
 #endif
 
   return ret;
+}
+
+vk::ShaderModule VulkanGraphicsTest::CompileGlslToSpv(const std::string &source_text,
+                                                      shaderc_shader_kind shader_kind,
+                                                      const char *input_file_name)
+{
+#if defined(HAVE_SHADERC)
+  shaderc::CompileOptions options;
+
+  options.SetGenerateDebugInfo();
+  options.SetOptimizationLevel(shaderc_optimization_level_zero);
+  options.SetSourceLanguage(shaderc_source_language_glsl);
+
+  return CompileShaderToSpv(source_text, shader_kind, input_file_name, options);
+#endif
+
+  return {};
+}
+
+vk::ShaderModule VulkanGraphicsTest::CompileHlslToSpv(const std::string &source_text,
+                                                      shaderc_shader_kind shader_kind,
+                                                      const char *input_file_name)
+{
+#if defined(HAVE_SHADERC)
+  shaderc::CompileOptions options;
+
+  options.SetGenerateDebugInfo();
+  options.SetOptimizationLevel(shaderc_optimization_level_zero);
+  options.SetSourceLanguage(shaderc_source_language_hlsl);
+
+  return CompileShaderToSpv(source_text, shader_kind, input_file_name, options);
+#endif
+
+  return {};
 }
 
 vk::CommandBuffer VulkanGraphicsTest::GetCommandBuffer()
