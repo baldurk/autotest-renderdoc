@@ -92,7 +92,7 @@ struct Vec4f
 struct GraphicsTest
 {
   GraphicsTest()
-      : screenWidth(1280), screenHeight(720), fullscreen(false), debugDevice(true), headless(false)
+      : screenWidth(1280), screenHeight(720), fullscreen(false), debugDevice(false), headless(false)
   {
   }
 
