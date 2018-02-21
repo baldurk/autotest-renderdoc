@@ -94,8 +94,8 @@ int impl::main(int argc, char **argv)
 
   HRESULT hr = S_OK;
 
-  ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
-  ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
+  ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_4_0");
+  ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_4_0");
 
   D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
       {
