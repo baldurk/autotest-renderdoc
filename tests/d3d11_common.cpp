@@ -148,7 +148,7 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
                                      D3D11_SDK_VERSION, &swapDesc, &swap, &dev, NULL, &ctx);
 
   // if it failed but on a high feature level, try again on warp
-  if(FAILED(hr) && features[0] != D3D_FEATURE_LEVEL_11_0)
+  if(FAILED(hr))
   {
     driver = D3D_DRIVER_TYPE_WARP;
     hr = D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
@@ -157,7 +157,7 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
   }
 
   // if it failed again on a high feature level, try last on ref
-  if(FAILED(hr) && features[0] != D3D_FEATURE_LEVEL_11_0)
+  if(FAILED(hr))
   {
     driver = D3D_DRIVER_TYPE_REFERENCE;
     hr = D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
