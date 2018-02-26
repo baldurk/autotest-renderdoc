@@ -142,6 +142,9 @@
     <ClCompile Include="vk\vk_cbuffer_zoo.cpp">
       <Filter>Vulkan\tests</Filter>
     </ClCompile>
+    <ClCompile Include="d3d11\d3d11_refcount_check.cpp">
+      <Filter>D3D11\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">

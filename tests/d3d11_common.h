@@ -94,6 +94,13 @@ COM_SMARTPTR(ID3D11DepthStencilView);
 COM_SMARTPTR(ID3D11InfoQueue);
 COM_SMARTPTR(ID3DUserDefinedAnnotation);
 
+#define GET_REFCOUNT(val, obj) \
+  do                           \
+  {                            \
+    obj->AddRef();             \
+    val = obj->Release();      \
+  } while(0)
+
 #define CHECK_HR(expr)                                                                    \
   {                                                                                       \
     hr = (expr);                                                                          \
