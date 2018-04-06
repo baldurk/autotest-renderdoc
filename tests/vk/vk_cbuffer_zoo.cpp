@@ -300,6 +300,7 @@ struct impl : VulkanGraphicsTest
       device.destroyFramebuffer(framebuffer);
       device.destroyPipeline(glslpipe);
       device.destroyPipeline(hlslpipe);
+      device.destroyDescriptorSetLayout(setlayout);
       device.destroyDescriptorPool(descpool);
     }
 
