@@ -68,7 +68,7 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinor);
   glfwWindowHint(GLFW_OPENGL_PROFILE,
-                 coreProfile ? GLFW_OPENGL_CORE_PROFILE : GLFW_OPENGL_ANY_PROFILE);
+                 coreProfile ? GLFW_OPENGL_CORE_PROFILE : GLFW_OPENGL_COMPAT_PROFILE);
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
   glfwWindowHint(GLFW_RESIZABLE, 0);
 
