@@ -30,7 +30,7 @@ struct a2v
 {
   int16_t pos[3];
   uint16_t col[4];
-  double uv[2];
+  double uv[3];
 };
 
 std::string common = R"EOSHADER(
@@ -50,7 +50,7 @@ std::string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
-layout(location = 2) in dvec2 UV;
+layout(location = 2) in dvec3 UV;
 
 layout(location = 0) out v2f vertOut;
 
@@ -59,7 +59,7 @@ void main()
 	vertOut.pos = vec4(Position.xyz, 1);
 	gl_Position = vertOut.pos;
 	vertOut.col = Color;
-	vertOut.uv = vec4(UV.xy, 0, 1);
+	vertOut.uv = vec4(UV.xyz, 1);
 }
 
 )EOSHADER";
@@ -150,7 +150,7 @@ int impl::main(int argc, char **argv)
   pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(
       1, 0, vk::Format::eR16G16B16A16Uscaled, offsetof(a2v, col)));
   pipeCreate.attrs.push_back(
-      vk::VertexInputAttributeDescription(2, 0, vk::Format::eR64G64Sfloat, offsetof(a2v, uv)));
+      vk::VertexInputAttributeDescription(2, 0, vk::Format::eR64G64B64Sfloat, offsetof(a2v, uv)));
 
   pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
   pipeCreate.addShader(frag, vk::ShaderStageFlagBits::eFragment);
@@ -162,13 +162,13 @@ int impl::main(int argc, char **argv)
 
   a2v triangle[] = {
       {
-          {-16000, 16000, 0}, {51515, 2945, 5893, 492}, {5.5432376923, 8382354.00023},
+          {-16000, 16000, 0}, {51515, 2945, 5893, 492}, {8.2645198430, 1.8813003880, -3.96710837683597},
       },
       {
-          {0, -16000, 0}, {1786, 32356, 8394, 1835}, {5.5432376923, 8382354.00023},
+          {0, -16000, 0}, {1786, 32356, 8394, 1835}, {1.646793901, 6.86148531, -1.19476386246190},
       },
       {
-          {16000, 16000, 0}, {8523, 9924, 49512, 3942}, {5.5432376923, 8382354.00023},
+          {16000, 16000, 0}, {8523, 9924, 49512, 3942}, {5.206423972, 9.58934003, -5.408522446462},
       },
   };
 
