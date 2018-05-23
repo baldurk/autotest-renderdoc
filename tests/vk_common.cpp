@@ -140,8 +140,6 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   vk::ApplicationInfo app("RenderDoc autotesting", VK_MAKE_VERSION(1, 0, 0),
                           "RenderDoc autotesting", VK_MAKE_VERSION(1, 0, 0), VK_API_VERSION_1_0);
 
-  std::vector<const char *> instExts;
-
   for(uint32_t i = 0; i < count; i++)
     instExts.push_back(extensions[i]);
 
@@ -229,9 +227,9 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   {
     TEST_ERROR("Error creating glfw surface: %s", vk::to_string(vkr).c_str());
     return false;
-  }
+  };
 
-  std::vector<const char *> devExts = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+  devExts.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
   float prio = 1.0f;
   vk::DeviceQueueCreateInfo queueInfo({}, 0, 1, &prio);

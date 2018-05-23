@@ -227,6 +227,10 @@ struct VulkanGraphicsTest : public GraphicsTest
   // requested features
   vk::PhysicalDeviceFeatures features = {};
 
+  // requested extensions
+  std::vector<const char *> instExts;
+  std::vector<const char *> devExts;
+
   // core objects
   vk::Instance instance;
   vk::PhysicalDevice phys;
