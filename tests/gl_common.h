@@ -39,6 +39,7 @@ struct OpenGLGraphicsTest : public GraphicsTest
   bool Init(int argc, char **argv);
 
   GLuint MakeProgram(string vertSrc, string fragSrc, bool sep = false);
+  GLuint MakeProgram();
   GLuint MakePipeline();
   GLuint MakeBuffer();
   GLuint MakeTexture();

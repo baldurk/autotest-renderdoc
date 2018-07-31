@@ -214,6 +214,13 @@ GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc, bool sep)
   return program;
 }
 
+GLuint OpenGLGraphicsTest::MakeProgram()
+{
+  GLuint program = glCreateProgram();
+  progs.push_back(program);
+  return program;
+}
+
 GLuint OpenGLGraphicsTest::MakeBuffer()
 {
   bufs.push_back(0);
