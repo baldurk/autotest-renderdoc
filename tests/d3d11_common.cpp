@@ -227,7 +227,9 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile,
   ID3DBlobPtr error = NULL;
 
   HRESULT hr = D3DCompile(src.c_str(), src.length(), "", NULL, NULL, entry.c_str(), profile.c_str(),
-                          D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_DEBUG, 0, &blob, &error);
+                          D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_DEBUG |
+                              D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_OPTIMIZATION_LEVEL0,
+                          0, &blob, &error);
 
   if(FAILED(hr))
   {
