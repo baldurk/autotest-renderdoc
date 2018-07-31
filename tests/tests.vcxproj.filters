@@ -148,6 +148,9 @@
     <ClCompile Include="vk\vk_awkward_triangle.cpp">
       <Filter>Vulkan\tests</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_spirv_shader.cpp">
+      <Filter>OpenGL\tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
