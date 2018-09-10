@@ -89,8 +89,8 @@ struct impl : D3D11GraphicsTest
   ID3D11PixelShaderPtr ps;
 
   // the main tex in this test
-  ID3D11Texture2DPtr tex;
-  ID3D11ShaderResourceViewPtr srv;
+  ID3D11Texture2DPtr tex, tex2;
+  ID3D11ShaderResourceViewPtr srv, srv2;
 
   ID3D11DeviceContextPtr defctx;
 };
@@ -178,6 +178,12 @@ int impl::main(int argc, char **argv)
   }
 
   if(MakeTexture2D(64, 64, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &tex, &srv, NULL, NULL, NULL))
+  {
+    TEST_ERROR("Failed to create texture");
+    return 1;
+  }
+
+  if(MakeTexture2D(2048, 2048, 1, DXGI_FORMAT_R8_UNORM, &tex2, &srv2, NULL, NULL, NULL))
   {
     TEST_ERROR("Failed to create texture");
     return 1;
@@ -305,6 +311,17 @@ int impl::main(int argc, char **argv)
     ctx->ExecuteCommandList(cmdList, TRUE);
 
     ctx->Draw(3, 9);
+
+    ID3D11Device *device = dev;
+    ID3D11DeviceContext *context = ctx;
+
+    // test update with box to ensure we don't read too much data
+    D3D11_BOX smallbox = CD3D11_BOX(2000, 2000, 0, 2040, 2040, 1);
+    byte *smalldata = new byte[2048 * 39 + 40];
+    memset(smalldata, 0xfd, 2048 * 39 + 40);
+    ctx->UpdateSubresource(tex2, 0, &smallbox, smalldata, 2048, 0);
+
+    delete[] smalldata;
 
     cmdList = NULL;
 
