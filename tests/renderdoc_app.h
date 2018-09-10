@@ -1,7 +1,7 @@
 /******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2017 Baldur Karlsson
+ * Copyright (c) 2015-2018 Baldur Karlsson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ extern "C" {
 // RenderDoc capture options
 //
 
-typedef enum {
+typedef enum RENDERDOC_CaptureOption {
   // Allow the application to enable vsync
   //
   // Default - enabled
@@ -94,7 +94,7 @@ typedef enum {
   // Default - disabled
   //
   // 1 - Enable built-in API debugging features and records the results into
-  //     the capture logfile, which is matched up with events on replay
+  //     the capture, which is matched up with events on replay
   // 0 - no API debugging is forcibly enabled
   eRENDERDOC_Option_APIValidation = 2,
   eRENDERDOC_Option_DebugDeviceMode = 2,    // deprecated name of this enum
@@ -145,16 +145,20 @@ typedef enum {
   // 0 - Child processes are not hooked by RenderDoc
   eRENDERDOC_Option_HookIntoChildren = 7,
 
-  // By default RenderDoc only includes resources in the final logfile necessary
+  // By default RenderDoc only includes resources in the final capture necessary
   // for that frame, this allows you to override that behaviour.
   //
   // Default - disabled
   //
-  // 1 - all live resources at the time of capture are included in the log
+  // 1 - all live resources at the time of capture are included in the capture
   //     and available for inspection
   // 0 - only the resources referenced by the captured frame are included
   eRENDERDOC_Option_RefAllResources = 8,
 
+  // **NOTE**: As of RenderDoc v1.1 this option has been deprecated. Setting or
+  // getting it will be ignored, to allow compatibility with older versions.
+  // In v1.1 the option acts as if it's always enabled.
+  //
   // By default RenderDoc skips saving initial states for resources where the
   // previous contents don't appear to be used, assuming that writes before
   // reads indicate previous contents aren't used.
@@ -210,7 +214,7 @@ typedef uint32_t(RENDERDOC_CC *pRENDERDOC_GetCaptureOptionU32)(RENDERDOC_Capture
 // If the option is invalid, -FLT_MAX is returned
 typedef float(RENDERDOC_CC *pRENDERDOC_GetCaptureOptionF32)(RENDERDOC_CaptureOption opt);
 
-typedef enum {
+typedef enum RENDERDOC_InputButton {
   // '0' - '9' matches ASCII values
   eRENDERDOC_Key_0 = 0x30,
   eRENDERDOC_Key_1 = 0x31,
@@ -298,7 +302,7 @@ typedef void(RENDERDOC_CC *pRENDERDOC_SetFocusToggleKeys)(RENDERDOC_InputButton 
 // If keys is NULL or num is 0, captures keys will be disabled
 typedef void(RENDERDOC_CC *pRENDERDOC_SetCaptureKeys)(RENDERDOC_InputButton *keys, int num);
 
-typedef enum {
+typedef enum RENDERDOC_OverlayBits {
   // This single bit controls whether the overlay is enabled or disabled globally
   eRENDERDOC_Overlay_Enabled = 0x1,
 
@@ -342,9 +346,9 @@ typedef void(RENDERDOC_CC *pRENDERDOC_Shutdown)();
 // exceptions will pass to the next handler.
 typedef void(RENDERDOC_CC *pRENDERDOC_UnloadCrashHandler)();
 
-// Sets the logfile path template
+// Sets the capture file path template
 //
-// logfile is a UTF-8 string that gives a template for how captures will be named
+// pathtemplate is a UTF-8 string that gives a template for how captures will be named
 // and where they will be saved.
 //
 // Any extension is stripped off the path, and captures are saved in the directory
@@ -355,14 +359,18 @@ typedef void(RENDERDOC_CC *pRENDERDOC_UnloadCrashHandler)();
 //
 // Example:
 //
-// SetLogFilePathTemplate("my_captures/example");
+// SetCaptureFilePathTemplate("my_captures/example");
 //
 // Capture #1 -> my_captures/example_frame123.rdc
 // Capture #2 -> my_captures/example_frame456.rdc
-typedef void(RENDERDOC_CC *pRENDERDOC_SetLogFilePathTemplate)(const char *pathtemplate);
+typedef void(RENDERDOC_CC *pRENDERDOC_SetCaptureFilePathTemplate)(const char *pathtemplate);
 
-// returns the current logfile template, see SetLogFileTemplate above, as a UTF-8 string
-typedef const char *(RENDERDOC_CC *pRENDERDOC_GetLogFilePathTemplate)();
+// returns the current capture path template, see SetCaptureFileTemplate above, as a UTF-8 string
+typedef const char *(RENDERDOC_CC *pRENDERDOC_GetCaptureFilePathTemplate)();
+
+// DEPRECATED: compatibility for code compiled against pre-1.1.2 headers.
+typedef pRENDERDOC_SetCaptureFilePathTemplate pRENDERDOC_SetLogFilePathTemplate;
+typedef pRENDERDOC_GetCaptureFilePathTemplate pRENDERDOC_GetLogFilePathTemplate;
 
 // returns the number of captures that have been made
 typedef uint32_t(RENDERDOC_CC *pRENDERDOC_GetNumCaptures)();
@@ -370,8 +378,8 @@ typedef uint32_t(RENDERDOC_CC *pRENDERDOC_GetNumCaptures)();
 // This function returns the details of a capture, by index. New captures are added
 // to the end of the list.
 //
-// logfile will be filled with the absolute path to the capture file, as a UTF-8 string
-// pathlength will be written with the length in bytes of the logfile string
+// filename will be filled with the absolute path to the capture file, as a UTF-8 string
+// pathlength will be written with the length in bytes of the filename string
 // timestamp will be written with the time of the capture, in seconds since the Unix epoch
 //
 // Any of the parameters can be NULL and they'll be skipped.
@@ -380,16 +388,29 @@ typedef uint32_t(RENDERDOC_CC *pRENDERDOC_GetNumCaptures)();
 // If the index is invalid, the values will be unchanged
 //
 // Note: when captures are deleted in the UI they will remain in this list, so the
-// logfile path may not exist anymore.
-typedef uint32_t(RENDERDOC_CC *pRENDERDOC_GetCapture)(uint32_t idx, char *logfile,
+// capture path may not exist anymore.
+typedef uint32_t(RENDERDOC_CC *pRENDERDOC_GetCapture)(uint32_t idx, char *filename,
                                                       uint32_t *pathlength, uint64_t *timestamp);
 
+// Sets the comments associated with a capture file. These comments are displayed in the
+// UI program when opening.
+//
+// filePath should be a path to the capture file to add comments to. If set to NULL or ""
+// the most recent capture file created made will be used instead.
+// comments should be a NULL-terminated UTF-8 string to add as comments.
+//
+// Any existing comments will be overwritten.
+typedef void(RENDERDOC_CC *pRENDERDOC_SetCaptureFileComments)(const char *filePath,
+                                                              const char *comments);
+
 // returns 1 if the RenderDoc UI is connected to this application, 0 otherwise
+typedef uint32_t(RENDERDOC_CC *pRENDERDOC_IsTargetControlConnected)();
+
+// DEPRECATED: compatibility for code compiled against pre-1.1.1 headers.
 // This was renamed to IsTargetControlConnected in API 1.1.1, the old typedef is kept here for
 // backwards compatibility with old code, it is castable either way since it's ABI compatible
 // as the same function pointer type.
-typedef uint32_t(RENDERDOC_CC *pRENDERDOC_IsRemoteAccessConnected)();
-typedef uint32_t(RENDERDOC_CC *pRENDERDOC_IsTargetControlConnected)();
+typedef pRENDERDOC_IsTargetControlConnected pRENDERDOC_IsRemoteAccessConnected;
 
 // This function will launch the Replay UI associated with the RenderDoc library injected
 // into the running application.
@@ -421,6 +442,15 @@ typedef void *RENDERDOC_DevicePointer;
 //
 // This would be an HWND, GLXDrawable, etc
 typedef void *RENDERDOC_WindowHandle;
+
+// A helper macro for Vulkan, where the device handle cannot be used directly.
+//
+// Passing the VkInstance to this macro will return the RENDERDOC_DevicePointer to use.
+//
+// Specifically, the value needed is the dispatch table pointer, which sits as the first
+// pointer-sized object in the memory pointed to by the VkInstance. Thus we cast to a void** and
+// indirect once.
+#define RENDERDOC_DEVICEPOINTER_FROM_VKINSTANCE(inst) (*((void **)(inst)))
 
 // This sets the RenderDoc in-app overlay in the API/window pair as 'active' and it will
 // respond to keypresses. Neither parameter can be NULL
@@ -478,12 +508,14 @@ typedef uint32_t(RENDERDOC_CC *pRENDERDOC_EndFrameCapture)(RENDERDOC_DevicePoint
 // Note that this means the API returned can be higher than the one you might have requested.
 // e.g. if you are running against a newer RenderDoc that supports 1.0.1, it will be returned
 // instead of 1.0.0. You can check this with the GetAPIVersion entry point
-typedef enum {
+typedef enum RENDERDOC_Version {
   eRENDERDOC_API_Version_1_0_0 = 10000,    // RENDERDOC_API_1_0_0 = 1 00 00
   eRENDERDOC_API_Version_1_0_1 = 10001,    // RENDERDOC_API_1_0_1 = 1 00 01
   eRENDERDOC_API_Version_1_0_2 = 10002,    // RENDERDOC_API_1_0_2 = 1 00 02
   eRENDERDOC_API_Version_1_1_0 = 10100,    // RENDERDOC_API_1_1_0 = 1 01 00
   eRENDERDOC_API_Version_1_1_1 = 10101,    // RENDERDOC_API_1_1_1 = 1 01 01
+  eRENDERDOC_API_Version_1_1_2 = 10102,    // RENDERDOC_API_1_1_2 = 1 01 02
+  eRENDERDOC_API_Version_1_2_0 = 10200,    // RENDERDOC_API_1_2_0 = 1 02 00
 } RENDERDOC_Version;
 
 // API version changelog:
@@ -496,9 +528,13 @@ typedef enum {
 //         function pointer is added to the end of the struct, the original layout is identical
 // 1.1.1 - Refactor: Renamed remote access to target control (to better disambiguate from remote
 //         replay/remote server concept in replay UI)
+// 1.1.2 - Refactor: Renamed "log file" in function names to just capture, to clarify that these
+//         are captures and not debug logging files. This is the first API version in the v1.0
+//         branch.
+// 1.2.0 - Added feature: SetCaptureFileComments() to add comments to a capture file that will be
+//         displayed in the UI program on load.
 
-// eRENDERDOC_API_Version_1_1_0
-typedef struct
+typedef struct RENDERDOC_API_1_2_0
 {
   pRENDERDOC_GetAPIVersion GetAPIVersion;
 
@@ -517,15 +553,37 @@ typedef struct
   pRENDERDOC_Shutdown Shutdown;
   pRENDERDOC_UnloadCrashHandler UnloadCrashHandler;
 
-  pRENDERDOC_SetLogFilePathTemplate SetLogFilePathTemplate;
-  pRENDERDOC_GetLogFilePathTemplate GetLogFilePathTemplate;
+  // Get/SetLogFilePathTemplate was renamed to Get/SetCaptureFilePathTemplate in 1.1.2.
+  // These unions allow old code to continue compiling without changes
+  union
+  {
+    // deprecated name
+    pRENDERDOC_SetLogFilePathTemplate SetLogFilePathTemplate;
+    // current name
+    pRENDERDOC_SetCaptureFilePathTemplate SetCaptureFilePathTemplate;
+  };
+  union
+  {
+    // deprecated name
+    pRENDERDOC_GetLogFilePathTemplate GetLogFilePathTemplate;
+    // current name
+    pRENDERDOC_GetCaptureFilePathTemplate GetCaptureFilePathTemplate;
+  };
 
   pRENDERDOC_GetNumCaptures GetNumCaptures;
   pRENDERDOC_GetCapture GetCapture;
 
   pRENDERDOC_TriggerCapture TriggerCapture;
 
-  pRENDERDOC_IsRemoteAccessConnected IsRemoteAccessConnected;
+  // IsRemoteAccessConnected was renamed to IsTargetControlConnected in 1.1.1.
+  // This union allows old code to continue compiling without changes
+  union
+  {
+    // deprecated name
+    pRENDERDOC_IsRemoteAccessConnected IsRemoteAccessConnected;
+    // current name
+    pRENDERDOC_IsTargetControlConnected IsTargetControlConnected;
+  };
   pRENDERDOC_LaunchReplayUI LaunchReplayUI;
 
   pRENDERDOC_SetActiveWindow SetActiveWindow;
@@ -534,59 +592,19 @@ typedef struct
   pRENDERDOC_IsFrameCapturing IsFrameCapturing;
   pRENDERDOC_EndFrameCapture EndFrameCapture;
 
+  // new function in 1.1.0
   pRENDERDOC_TriggerMultiFrameCapture TriggerMultiFrameCapture;
-} RENDERDOC_API_1_1_0;
 
-typedef RENDERDOC_API_1_1_0 RENDERDOC_API_1_0_0;
-typedef RENDERDOC_API_1_1_0 RENDERDOC_API_1_0_1;
-typedef RENDERDOC_API_1_1_0 RENDERDOC_API_1_0_2;
+  // new function in 1.2.0
+  pRENDERDOC_SetCaptureFileComments SetCaptureFileComments;
+} RENDERDOC_API_1_2_0;
 
-// although this structure is identical to RENDERDOC_API_1_1_0, the member
-// IsRemoteAccessConnected was renamed to IsTargetControlConnected. So that
-// old code can still compile with a new header, we must declare a new struct
-// type. It can be casted back and forth though, so we will still return a
-// pointer to this type for all previous API versions - the above struct is
-// purely legacy for compilation compatibility
-
-// eRENDERDOC_API_Version_1_1_1
-typedef struct
-{
-  pRENDERDOC_GetAPIVersion GetAPIVersion;
-
-  pRENDERDOC_SetCaptureOptionU32 SetCaptureOptionU32;
-  pRENDERDOC_SetCaptureOptionF32 SetCaptureOptionF32;
-
-  pRENDERDOC_GetCaptureOptionU32 GetCaptureOptionU32;
-  pRENDERDOC_GetCaptureOptionF32 GetCaptureOptionF32;
-
-  pRENDERDOC_SetFocusToggleKeys SetFocusToggleKeys;
-  pRENDERDOC_SetCaptureKeys SetCaptureKeys;
-
-  pRENDERDOC_GetOverlayBits GetOverlayBits;
-  pRENDERDOC_MaskOverlayBits MaskOverlayBits;
-
-  pRENDERDOC_Shutdown Shutdown;
-  pRENDERDOC_UnloadCrashHandler UnloadCrashHandler;
-
-  pRENDERDOC_SetLogFilePathTemplate SetLogFilePathTemplate;
-  pRENDERDOC_GetLogFilePathTemplate GetLogFilePathTemplate;
-
-  pRENDERDOC_GetNumCaptures GetNumCaptures;
-  pRENDERDOC_GetCapture GetCapture;
-
-  pRENDERDOC_TriggerCapture TriggerCapture;
-
-  pRENDERDOC_IsTargetControlConnected IsTargetControlConnected;
-  pRENDERDOC_LaunchReplayUI LaunchReplayUI;
-
-  pRENDERDOC_SetActiveWindow SetActiveWindow;
-
-  pRENDERDOC_StartFrameCapture StartFrameCapture;
-  pRENDERDOC_IsFrameCapturing IsFrameCapturing;
-  pRENDERDOC_EndFrameCapture EndFrameCapture;
-
-  pRENDERDOC_TriggerMultiFrameCapture TriggerMultiFrameCapture;
-} RENDERDOC_API_1_1_1;
+typedef RENDERDOC_API_1_2_0 RENDERDOC_API_1_0_0;
+typedef RENDERDOC_API_1_2_0 RENDERDOC_API_1_0_1;
+typedef RENDERDOC_API_1_2_0 RENDERDOC_API_1_0_2;
+typedef RENDERDOC_API_1_2_0 RENDERDOC_API_1_1_0;
+typedef RENDERDOC_API_1_2_0 RENDERDOC_API_1_1_1;
+typedef RENDERDOC_API_1_2_0 RENDERDOC_API_1_1_2;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // RenderDoc API entry point
