@@ -23,36 +23,11 @@
 ******************************************************************************/
 
 #define VMA_IMPLEMENTATION
-
-#include <vulkan/vk_mem_alloc.h>
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
 
 #include "vk_common.h"
 
-// these aren't exported so we make our own stubs
-static VkResult VKAPI_CALL vkCreateDebugReportCallbackEXT(
-    VkInstance instance, const VkDebugReportCallbackCreateInfoEXT *pCreateInfo,
-    const VkAllocationCallbacks *pAllocator, VkDebugReportCallbackEXT *pCallback)
-{
-  PFN_vkCreateDebugReportCallbackEXT ptr = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
-      instance, "vkCreateDebugReportCallbackEXT");
-
-  if(ptr)
-    return ptr(instance, pCreateInfo, pAllocator, pCallback);
-
-  return VK_ERROR_EXTENSION_NOT_PRESENT;
-}
-
-static void VKAPI_CALL vkDestroyDebugReportCallbackEXT(VkInstance instance,
-                                                       VkDebugReportCallbackEXT callback,
-                                                       const VkAllocationCallbacks *pAllocator)
-{
-  PFN_vkDestroyDebugReportCallbackEXT ptr =
-      (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance,
-                                                                 "vkDestroyDebugReportCallbackEXT");
-
-  if(ptr)
-    return ptr(instance, callback, pAllocator);
-}
+#include <vulkan/vk_mem_alloc.h>
 
 static VkBool32 VKAPI_PTR vulkanCallback(VkDebugReportFlagsEXT flags,
                                          VkDebugReportObjectTypeEXT objectType, uint64_t object,
@@ -95,6 +70,12 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
 {
   // parse parameters here to override parameters
   GraphicsTest::Init(argc, argv);
+
+  if(volkInitialize() != VK_SUCCESS)
+  {
+    TEST_ERROR("Couldn't init vulkan");
+    return false;
+  }
 
 #if !defined(HAVE_SHADERC)
 
@@ -170,6 +151,8 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     TEST_ERROR("Error creating instance: %s", vk::to_string(vkr).c_str());
     return false;
   }
+
+  volkLoadInstance((VkInstance)instance);
 
   ResultChecker(callback) =
       instance.createDebugReportCallbackEXT(vk::DebugReportCallbackCreateInfoEXT(
@@ -273,10 +256,32 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
 
   createSwap();
 
+  VmaVulkanFunctions funcs = {
+      vkGetPhysicalDeviceProperties,
+      vkGetPhysicalDeviceMemoryProperties,
+      vkAllocateMemory,
+      vkFreeMemory,
+      vkMapMemory,
+      vkUnmapMemory,
+      vkFlushMappedMemoryRanges,
+      vkInvalidateMappedMemoryRanges,
+      vkBindBufferMemory,
+      vkBindImageMemory,
+      vkGetBufferMemoryRequirements,
+      vkGetImageMemoryRequirements,
+      vkCreateBuffer,
+      vkDestroyBuffer,
+      vkCreateImage,
+      vkDestroyImage,
+      vkGetBufferMemoryRequirements2KHR,
+      vkGetImageMemoryRequirements2KHR,
+  };
+
   VmaAllocatorCreateInfo allocInfo = {};
   allocInfo.physicalDevice = (VkPhysicalDevice)phys;
   allocInfo.device = (VkDevice)device;
   allocInfo.frameInUseCount = uint32_t(swapImages.size() - 1);
+  allocInfo.pVulkanFunctions = &funcs;
 
   vmaCreateAllocator(&allocInfo, &allocator);
 

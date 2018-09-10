@@ -32,6 +32,10 @@
 // don't actually care about this, but it doesn't compile otherwise
 #define VULKAN_HPP_NO_SMART_HANDLE
 
+#include "volk/volk.h"
+
+#define VK_NO_PROTOTYPES
+
 #include <vulkan/vulkan.hpp>
 
 #define GLFW_INCLUDE_VULKAN

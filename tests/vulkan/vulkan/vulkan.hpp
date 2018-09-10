@@ -26523,12 +26523,12 @@ namespace vk
 
   VULKAN_HPP_INLINE void CommandBuffer::setDeviceMaskKHX( uint32_t deviceMask ) const
   {
-    vkCmdSetDeviceMaskKHX( m_commandBuffer, deviceMask );
+    //vkCmdSetDeviceMaskKHX( m_commandBuffer, deviceMask );
   }
 
   VULKAN_HPP_INLINE void CommandBuffer::dispatchBaseKHX( uint32_t baseGroupX, uint32_t baseGroupY, uint32_t baseGroupZ, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ ) const
   {
-    vkCmdDispatchBaseKHX( m_commandBuffer, baseGroupX, baseGroupY, baseGroupZ, groupCountX, groupCountY, groupCountZ );
+    //vkCmdDispatchBaseKHX( m_commandBuffer, baseGroupX, baseGroupY, baseGroupZ, groupCountX, groupCountY, groupCountZ );
   }
 
   VULKAN_HPP_INLINE void CommandBuffer::pushDescriptorSetWithTemplateKHR( DescriptorUpdateTemplateKHR descriptorUpdateTemplate, PipelineLayout layout, uint32_t set, const void* pData ) const
@@ -29741,13 +29741,13 @@ namespace vk
 
   VULKAN_HPP_INLINE void Device::getGroupPeerMemoryFeaturesKHX( uint32_t heapIndex, uint32_t localDeviceIndex, uint32_t remoteDeviceIndex, PeerMemoryFeatureFlagsKHX* pPeerMemoryFeatures ) const
   {
-    vkGetDeviceGroupPeerMemoryFeaturesKHX( m_device, heapIndex, localDeviceIndex, remoteDeviceIndex, reinterpret_cast<VkPeerMemoryFeatureFlagsKHX*>( pPeerMemoryFeatures ) );
+    //vkGetDeviceGroupPeerMemoryFeaturesKHX( m_device, heapIndex, localDeviceIndex, remoteDeviceIndex, reinterpret_cast<VkPeerMemoryFeatureFlagsKHX*>( pPeerMemoryFeatures ) );
   }
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE PeerMemoryFeatureFlagsKHX Device::getGroupPeerMemoryFeaturesKHX( uint32_t heapIndex, uint32_t localDeviceIndex, uint32_t remoteDeviceIndex ) const
   {
     PeerMemoryFeatureFlagsKHX peerMemoryFeatures;
-    vkGetDeviceGroupPeerMemoryFeaturesKHX( m_device, heapIndex, localDeviceIndex, remoteDeviceIndex, reinterpret_cast<VkPeerMemoryFeatureFlagsKHX*>( &peerMemoryFeatures ) );
+    //vkGetDeviceGroupPeerMemoryFeaturesKHX( m_device, heapIndex, localDeviceIndex, remoteDeviceIndex, reinterpret_cast<VkPeerMemoryFeatureFlagsKHX*>( &peerMemoryFeatures ) );
     return peerMemoryFeatures;
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
@@ -29778,39 +29778,39 @@ namespace vk
 
   VULKAN_HPP_INLINE Result Device::getGroupPresentCapabilitiesKHX( DeviceGroupPresentCapabilitiesKHX* pDeviceGroupPresentCapabilities ) const
   {
-    return static_cast<Result>( vkGetDeviceGroupPresentCapabilitiesKHX( m_device, reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHX*>( pDeviceGroupPresentCapabilities ) ) );
+    return Result::eErrorExtensionNotPresent;//static_cast<Result>( vkGetDeviceGroupPresentCapabilitiesKHX( m_device, reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHX*>( pDeviceGroupPresentCapabilities ) ) );
   }
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE ResultValueType<DeviceGroupPresentCapabilitiesKHX>::type Device::getGroupPresentCapabilitiesKHX() const
   {
     DeviceGroupPresentCapabilitiesKHX deviceGroupPresentCapabilities;
-    Result result = static_cast<Result>( vkGetDeviceGroupPresentCapabilitiesKHX( m_device, reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHX*>( &deviceGroupPresentCapabilities ) ) );
+    Result result = Result::eErrorExtensionNotPresent;//static_cast<Result>( vkGetDeviceGroupPresentCapabilitiesKHX( m_device, reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHX*>( &deviceGroupPresentCapabilities ) ) );
     return createResultValue( result, deviceGroupPresentCapabilities, "vk::Device::getGroupPresentCapabilitiesKHX" );
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
   VULKAN_HPP_INLINE Result Device::getGroupSurfacePresentModesKHX( SurfaceKHR surface, DeviceGroupPresentModeFlagsKHX* pModes ) const
   {
-    return static_cast<Result>( vkGetDeviceGroupSurfacePresentModesKHX( m_device, static_cast<VkSurfaceKHR>( surface ), reinterpret_cast<VkDeviceGroupPresentModeFlagsKHX*>( pModes ) ) );
+    return Result::eErrorExtensionNotPresent;//static_cast<Result>( vkGetDeviceGroupSurfacePresentModesKHX( m_device, static_cast<VkSurfaceKHR>( surface ), reinterpret_cast<VkDeviceGroupPresentModeFlagsKHX*>( pModes ) ) );
   }
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE ResultValueType<DeviceGroupPresentModeFlagsKHX>::type Device::getGroupSurfacePresentModesKHX( SurfaceKHR surface ) const
   {
     DeviceGroupPresentModeFlagsKHX modes;
-    Result result = static_cast<Result>( vkGetDeviceGroupSurfacePresentModesKHX( m_device, static_cast<VkSurfaceKHR>( surface ), reinterpret_cast<VkDeviceGroupPresentModeFlagsKHX*>( &modes ) ) );
+    Result result = Result::eErrorExtensionNotPresent;//static_cast<Result>( vkGetDeviceGroupSurfacePresentModesKHX( m_device, static_cast<VkSurfaceKHR>( surface ), reinterpret_cast<VkDeviceGroupPresentModeFlagsKHX*>( &modes ) ) );
     return createResultValue( result, modes, "vk::Device::getGroupSurfacePresentModesKHX" );
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
 
   VULKAN_HPP_INLINE Result Device::acquireNextImage2KHX( const AcquireNextImageInfoKHX* pAcquireInfo, uint32_t* pImageIndex ) const
   {
-    return static_cast<Result>( vkAcquireNextImage2KHX( m_device, reinterpret_cast<const VkAcquireNextImageInfoKHX*>( pAcquireInfo ), pImageIndex ) );
+    return Result::eErrorExtensionNotPresent;//static_cast<Result>( vkAcquireNextImage2KHX( m_device, reinterpret_cast<const VkAcquireNextImageInfoKHX*>( pAcquireInfo ), pImageIndex ) );
   }
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE ResultValue<uint32_t> Device::acquireNextImage2KHX( const AcquireNextImageInfoKHX & acquireInfo ) const
   {
     uint32_t imageIndex;
-    Result result = static_cast<Result>( vkAcquireNextImage2KHX( m_device, reinterpret_cast<const VkAcquireNextImageInfoKHX*>( &acquireInfo ), &imageIndex ) );
+    Result result = Result::eErrorExtensionNotPresent;//static_cast<Result>( vkAcquireNextImage2KHX( m_device, reinterpret_cast<const VkAcquireNextImageInfoKHX*>( &acquireInfo ), &imageIndex ) );
     return createResultValue( result, imageIndex, "vk::Device::acquireNextImage2KHX", { Result::eSuccess, Result::eTimeout, Result::eNotReady, Result::eSuboptimalKHR } );
   }
 #endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
@@ -31137,7 +31137,7 @@ namespace vk
 
   VULKAN_HPP_INLINE Result PhysicalDevice::getPresentRectanglesKHX( SurfaceKHR surface, uint32_t* pRectCount, Rect2D* pRects ) const
   {
-    return static_cast<Result>( vkGetPhysicalDevicePresentRectanglesKHX( m_physicalDevice, static_cast<VkSurfaceKHR>( surface ), pRectCount, reinterpret_cast<VkRect2D*>( pRects ) ) );
+    return Result::eErrorExtensionNotPresent;//static_cast<Result>( vkGetPhysicalDevicePresentRectanglesKHX( m_physicalDevice, static_cast<VkSurfaceKHR>( surface ), pRectCount, reinterpret_cast<VkRect2D*>( pRects ) ) );
   }
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   template <typename Allocator> 
@@ -31148,11 +31148,11 @@ namespace vk
     Result result;
     do
     {
-      result = static_cast<Result>( vkGetPhysicalDevicePresentRectanglesKHX( m_physicalDevice, static_cast<VkSurfaceKHR>( surface ), &rectCount, nullptr ) );
+      result = Result::eErrorExtensionNotPresent;//static_cast<Result>( vkGetPhysicalDevicePresentRectanglesKHX( m_physicalDevice, static_cast<VkSurfaceKHR>( surface ), &rectCount, nullptr ) );
       if ( ( result == Result::eSuccess ) && rectCount )
       {
         rects.resize( rectCount );
-        result = static_cast<Result>( vkGetPhysicalDevicePresentRectanglesKHX( m_physicalDevice, static_cast<VkSurfaceKHR>( surface ), &rectCount, reinterpret_cast<VkRect2D*>( rects.data() ) ) );
+        result = Result::eErrorExtensionNotPresent;//static_cast<Result>( vkGetPhysicalDevicePresentRectanglesKHX( m_physicalDevice, static_cast<VkSurfaceKHR>( surface ), &rectCount, reinterpret_cast<VkRect2D*>( rects.data() ) ) );
       }
     } while ( result == Result::eIncomplete );
     VULKAN_HPP_ASSERT( rectCount <= rects.size() );
@@ -31931,7 +31931,7 @@ namespace vk
 
   VULKAN_HPP_INLINE Result Instance::enumeratePhysicalDeviceGroupsKHX( uint32_t* pPhysicalDeviceGroupCount, PhysicalDeviceGroupPropertiesKHX* pPhysicalDeviceGroupProperties ) const
   {
-    return static_cast<Result>( vkEnumeratePhysicalDeviceGroupsKHX( m_instance, pPhysicalDeviceGroupCount, reinterpret_cast<VkPhysicalDeviceGroupPropertiesKHX*>( pPhysicalDeviceGroupProperties ) ) );
+    return Result::eErrorExtensionNotPresent;//static_cast<Result>( vkEnumeratePhysicalDeviceGroupsKHX( m_instance, pPhysicalDeviceGroupCount, reinterpret_cast<VkPhysicalDeviceGroupPropertiesKHX*>( pPhysicalDeviceGroupProperties ) ) );
   }
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   template <typename Allocator> 
@@ -31942,11 +31942,11 @@ namespace vk
     Result result;
     do
     {
-      result = static_cast<Result>( vkEnumeratePhysicalDeviceGroupsKHX( m_instance, &physicalDeviceGroupCount, nullptr ) );
+      result = Result::eErrorExtensionNotPresent;//static_cast<Result>( vkEnumeratePhysicalDeviceGroupsKHX( m_instance, &physicalDeviceGroupCount, nullptr ) );
       if ( ( result == Result::eSuccess ) && physicalDeviceGroupCount )
       {
         physicalDeviceGroupProperties.resize( physicalDeviceGroupCount );
-        result = static_cast<Result>( vkEnumeratePhysicalDeviceGroupsKHX( m_instance, &physicalDeviceGroupCount, reinterpret_cast<VkPhysicalDeviceGroupPropertiesKHX*>( physicalDeviceGroupProperties.data() ) ) );
+        result = Result::eErrorExtensionNotPresent;//static_cast<Result>( vkEnumeratePhysicalDeviceGroupsKHX( m_instance, &physicalDeviceGroupCount, reinterpret_cast<VkPhysicalDeviceGroupPropertiesKHX*>( physicalDeviceGroupProperties.data() ) ) );
       }
     } while ( result == Result::eIncomplete );
     VULKAN_HPP_ASSERT( physicalDeviceGroupCount <= physicalDeviceGroupProperties.size() );

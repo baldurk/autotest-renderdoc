@@ -154,6 +154,9 @@
     <ClCompile Include="gl\gl_multi_window.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
+    <ClCompile Include="volk\volk.c">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
