@@ -30,39 +30,6 @@ struct D3D11_CBuffer_Zoo : D3D11GraphicsTest
       "Tests every kind of constant that can be in a cbuffer to make sure it's decoded "
       "correctly";
 
-  string common = R"EOSHADER(
-
-struct a2v
-{
-	float3 pos : POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
-};
-
-struct v2f
-{
-	float4 pos : SV_POSITION;
-	float4 col : COLOR0;
-	float4 uv : TEXCOORD0;
-};
-
-)EOSHADER";
-
-  string vertex = R"EOSHADER(
-
-v2f main(a2v IN, uint vid : SV_VertexID)
-{
-	v2f OUT = (v2f)0;
-
-	OUT.pos = float4(IN.pos.xyz, 1);
-	OUT.col = IN.col;
-	OUT.uv = float4(IN.uv, 0, 1);
-
-	return OUT;
-}
-
-)EOSHADER";
-
   string pixel = R"EOSHADER(
 
 cbuffer consts : register(b0)
@@ -155,7 +122,7 @@ cbuffer consts : register(b0)
   float4 test;                            // {228, 229, 230, 231}
 };
 
-float4 main(v2f IN) : SV_Target0
+float4 main() : SV_Target0
 {
 	return test;
 }
@@ -170,8 +137,8 @@ float4 main(v2f IN) : SV_Target0
 
     HRESULT hr = S_OK;
 
-    ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
-    ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
+    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
+    ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     CreateDefaultInputLayout(vsblob);
 

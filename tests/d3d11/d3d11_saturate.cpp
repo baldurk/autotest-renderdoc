@@ -28,21 +28,6 @@ struct Saturate : D3D11GraphicsTest
 {
   static constexpr char *Description = "Tests using saturate, originally for a bug report";
 
-  string vertex = R"EOSHADER(
-
-void main(uint vert : SV_VertexID, out float4 pos : SV_Position)
-{
-  float2 positions[] = {
-    float2(0.0f,  0.0f),
-    float2(1.0f,  0.0f),
-    float2(0.0f, -1.0f),
-  };
-
-  pos = float4(positions[vert], 0, 1);
-}
-
-)EOSHADER";
-
   string pixel = R"EOSHADER(
 
 void main(float4 pos : SV_Position, out float4 a : SV_Target0, out float4 b : SV_Target1)
@@ -80,7 +65,7 @@ void main(float4 pos : SV_Position, out float4 a : SV_Target0, out float4 b : SV
 
     HRESULT hr = S_OK;
 
-    ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
+    ID3DBlobPtr vsblob = Compile(FullscreenQuadVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);

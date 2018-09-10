@@ -28,22 +28,6 @@ struct Discard_View : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test that discards an RTV";
 
-  string vertex = R"EOSHADER(
-
-float4 main(uint vid : SV_VertexID) : SV_POSITION
-{
-	float2 positions[] = {
-		float2(-1.0f,  1.0f),
-		float2( 1.0f,  1.0f),
-		float2(-1.0f, -1.0f),
-		float2( 1.0f, -1.0f),
-	};
-
-	return float4(positions[vid], 0, 1);
-}
-
-)EOSHADER";
-
   string pixel = R"EOSHADER(
 
 cbuffer consts : register(b0)
@@ -68,7 +52,7 @@ float4 main() : SV_Target0
 
     HRESULT hr = S_OK;
 
-    ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
+    ID3DBlobPtr vsblob = Compile(FullscreenQuadVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);

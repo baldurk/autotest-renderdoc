@@ -28,48 +28,6 @@ struct Primitive_Restart : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test of primitive restart in triangle strips with -1 index";
 
-  string common = R"EOSHADER(
-
-struct a2v
-{
-	float3 pos : POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
-};
-
-struct v2f
-{
-	float4 pos : SV_POSITION;
-	float4 col : COLOR0;
-	float4 uv : TEXCOORD0;
-};
-
-)EOSHADER";
-
-  string vertex = R"EOSHADER(
-
-v2f main(a2v IN, uint vid : SV_VertexID)
-{
-	v2f OUT = (v2f)0;
-
-	OUT.pos = float4(IN.pos.xyz, 1);
-	OUT.col = IN.col;
-	OUT.uv = float4(IN.uv, 0, 1);
-
-	return OUT;
-}
-
-)EOSHADER";
-
-  string pixel = R"EOSHADER(
-
-float4 main(v2f IN) : SV_Target0
-{
-	return IN.col;
-}
-
-)EOSHADER";
-
   int main(int argc, char **argv)
   {
     // initialise, create window, create device, etc
@@ -78,8 +36,8 @@ float4 main(v2f IN) : SV_Target0
 
     HRESULT hr = S_OK;
 
-    ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
-    ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
+    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
+    ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_5_0");
 
     CreateDefaultInputLayout(vsblob);
 

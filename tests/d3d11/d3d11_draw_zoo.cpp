@@ -31,13 +31,6 @@ struct D3D11_Draw_Zoo : D3D11GraphicsTest
 
   string common = R"EOSHADER(
 
-struct DefaultA2V
-{
-	float3 pos : POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
-};
-
 struct v2f
 {
 	float4 pos : SV_POSITION;
@@ -51,6 +44,13 @@ struct v2f
 )EOSHADER";
 
   string vertex = R"EOSHADER(
+
+struct DefaultA2V
+{
+	float3 pos : POSITION;
+	float4 col : COLOR0;
+	float2 uv : TEXCOORD0;
+};
 
 v2f main(DefaultA2V IN, uint vid : SV_VertexID, uint instid : SV_InstanceID)
 {

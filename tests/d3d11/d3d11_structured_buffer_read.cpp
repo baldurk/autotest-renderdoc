@@ -29,39 +29,6 @@ struct Structured_Buffer_Read : D3D11GraphicsTest
   static constexpr char *Description =
       "Test reading from structured buffers, with and without offsets";
 
-  string common = R"EOSHADER(
-
-struct a2v
-{
-	float3 pos : POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
-};
-
-struct v2f
-{
-	float4 pos : SV_POSITION;
-	float4 col : COLOR0;
-	float4 uv : TEXCOORD0;
-};
-
-)EOSHADER";
-
-  string vertex = R"EOSHADER(
-
-v2f main(a2v IN, uint vid : SV_VertexID)
-{
-	v2f OUT = (v2f)0;
-
-	OUT.pos = float4(IN.pos.xyz, 1);
-	OUT.col = IN.col;
-	OUT.uv = float4(IN.uv, 0, 1);
-
-	return OUT;
-}
-
-)EOSHADER";
-
   string pixel = R"EOSHADER(
 
 struct mystruct
@@ -72,14 +39,14 @@ struct mystruct
 StructuredBuffer<mystruct> buf1 : register(t0);
 StructuredBuffer<mystruct> buf2 : register(t1);
 
-float4 main(v2f IN) : SV_Target0
+float4 main() : SV_Target0
 {
 	float3 first = float3(buf1[0].data[0], buf1[0].data[1], buf1[0].data[2]) +
 									float3(buf2[0].data[0], buf2[0].data[1], buf2[0].data[2]);
 
 	float last =	float(buf1[0].data[4]) + float(buf2[0].data[4]);
 
-	return IN.col + float4(first, last)/100.0f;
+	return float4(first, last)/100.0f;
 }
 
 )EOSHADER";
@@ -92,8 +59,8 @@ float4 main(v2f IN) : SV_Target0
 
     HRESULT hr = S_OK;
 
-    ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
-    ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
+    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
+    ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     CreateDefaultInputLayout(vsblob);
 

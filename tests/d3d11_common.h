@@ -94,6 +94,10 @@ COM_SMARTPTR(ID3D11DepthStencilView);
 COM_SMARTPTR(ID3D11InfoQueue);
 COM_SMARTPTR(ID3DUserDefinedAnnotation);
 
+extern std::string FullscreenQuadVertex;
+extern std::string DefaultVertex;
+extern std::string DefaultPixel;
+
 #define GET_REFCOUNT(val, obj) \
   do                           \
   {                            \

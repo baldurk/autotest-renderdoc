@@ -28,6 +28,67 @@
 
 #include <stdio.h>
 
+std::string FullscreenQuadVertex = R"EOSHADER(
+
+float4 main(uint vid : SV_VertexID) : SV_POSITION
+{
+	float2 positions[] = {
+		float2(-1.0f,  1.0f),
+		float2( 1.0f,  1.0f),
+		float2(-1.0f, -1.0f),
+		float2( 1.0f, -1.0f),
+	};
+
+	return float4(positions[vid], 0, 1);
+}
+
+)EOSHADER";
+
+std::string DefaultVertex = R"EOSHADER(
+
+struct vertin
+{
+	float3 pos : POSITION;
+	float4 col : COLOR0;
+	float2 uv : TEXCOORD0;
+};
+
+struct v2f
+{
+	float4 pos : SV_POSITION;
+	float4 col : COLOR0;
+	float4 uv : TEXCOORD0;
+};
+
+v2f main(vertin IN, uint vid : SV_VertexID)
+{
+	v2f OUT = (v2f)0;
+
+	OUT.pos = float4(IN.pos.xyz, 1);
+	OUT.col = IN.col;
+	OUT.uv = float4(IN.uv, 0, 1);
+
+	return OUT;
+}
+
+)EOSHADER";
+
+std::string DefaultPixel = R"EOSHADER(
+
+struct v2f
+{
+	float4 pos : SV_POSITION;
+	float4 col : COLOR0;
+	float4 uv : TEXCOORD0;
+};
+
+float4 main(v2f IN) : SV_Target0
+{
+	return IN.col;
+}
+
+)EOSHADER";
+
 #define RENDERDOC_ShaderDebugMagicValue_struct                                \
   {                                                                           \
     0xeab25520, 0x6670, 0x4865, 0x84, 0x29, 0x6c, 0x8, 0x51, 0x54, 0x00, 0xff \
