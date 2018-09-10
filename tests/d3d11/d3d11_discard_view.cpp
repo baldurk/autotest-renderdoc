@@ -24,9 +24,11 @@
 
 #include "../d3d11_common.h"
 
-namespace
+struct Discard_View : D3D11GraphicsTest
 {
-string vertex = R"EOSHADER(
+  static constexpr char *Description = "Test that discards an RTV";
+
+  string vertex = R"EOSHADER(
 
 float4 main(uint vid : SV_VertexID) : SV_POSITION
 {
@@ -42,7 +44,7 @@ float4 main(uint vid : SV_VertexID) : SV_POSITION
 
 )EOSHADER";
 
-string pixel = R"EOSHADER(
+  string pixel = R"EOSHADER(
 
 cbuffer consts : register(b0)
 {
@@ -56,117 +58,108 @@ float4 main() : SV_Target0
 
 )EOSHADER";
 
-struct impl : D3D11GraphicsTest
-{
-  int main(int argc, char **argv);
-
-  ID3D11BufferPtr cb;
-
-  ID3D11VertexShaderPtr vs;
-  ID3D11PixelShaderPtr ps;
-
-  ID3D11Texture2DPtr tex_rt;
-};
-
-int impl::main(int argc, char **argv)
-{
-  d3d11_1 = true;
-
-  // initialise, create window, create device, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  HRESULT hr = S_OK;
-
-  ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
-  ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
-
-  CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-  CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
-
-  MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_R8G8B8A8_UNORM, &tex_rt, NULL, NULL,
-                (ID3D11RenderTargetView **)0x1, NULL);
-
-  ID3D11RenderTargetViewPtr rtv;
-  CD3D11_RENDER_TARGET_VIEW_DESC desc(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
-
-  Vec4f col;
-
-  if(MakeBuffer(eCBuffer, 0, sizeof(Vec4f), 0, DXGI_FORMAT_UNKNOWN, &col, &cb, NULL, NULL, NULL))
+  int main(int argc, char **argv)
   {
-    TEST_ERROR("Failed to create CB");
-    return 1;
-  }
+    d3d11_1 = true;
 
-  D3D11_VIEWPORT view[10];
-  for(int i = 0; i < 10; i++)
-  {
-    view[i].MinDepth = 0.0f;
-    view[i].MaxDepth = 1.0f;
-    view[i].TopLeftX = (float)i * 50.0f;
-    view[i].TopLeftY = 0.0f;
-    view[i].Width = 50.0f;
-    view[i].Height = 250.0f;
-  }
+    // initialise, create window, create device, etc
+    if(!Init(argc, argv))
+      return 3;
 
-  D3D11_VIEWPORT fullview;
-  {
-    fullview.MinDepth = 0.0f;
-    fullview.MaxDepth = 1.0f;
-    fullview.TopLeftX = 0.0f;
-    fullview.TopLeftY = 0.0f;
-    fullview.Width = (float)screenWidth;
-    fullview.Height = (float)screenHeight;
-  }
+    HRESULT hr = S_OK;
 
-  while(Running())
-  {
-    ctx1->DiscardView(bbRTV);
+    ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
+    ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
-    ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    ID3D11VertexShaderPtr vs;
+    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
+    ID3D11PixelShaderPtr ps;
+    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
 
-    ctx->VSSetShader(vs, NULL, 0);
-    ctx->PSSetShader(ps, NULL, 0);
+    ID3D11Texture2DPtr tex_rt;
+    MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_R8G8B8A8_UNORM, &tex_rt, NULL, NULL,
+                  (ID3D11RenderTargetView **)0x1, NULL);
 
-    ctx->PSSetConstantBuffers(0, 1, &cb.GetInterfacePtr());
+    ID3D11RenderTargetViewPtr rtv;
+    CD3D11_RENDER_TARGET_VIEW_DESC desc(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
+    Vec4f col;
+
+    ID3D11BufferPtr cb;
+    if(MakeBuffer(eCBuffer, 0, sizeof(Vec4f), 0, DXGI_FORMAT_UNKNOWN, &col, &cb, NULL, NULL, NULL))
     {
-      ctx->RSSetViewports(1, &fullview);
-
-      rtv = NULL;
-      CHECK_HR(dev->CreateRenderTargetView(tex_rt, &desc, &rtv));
-
-      ctx->OMSetRenderTargets(1, &rtv.GetInterfacePtr(), NULL);
-
-      col = Vec4f(RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), 1.0f);
-      ctx->UpdateSubresource(cb, 0, NULL, &col, sizeof(col), sizeof(col));
-
-      ctx->Draw(4, 0);
+      TEST_ERROR("Failed to create CB");
+      return 1;
     }
 
+    D3D11_VIEWPORT view[10];
     for(int i = 0; i < 10; i++)
     {
-      ctx->RSSetViewports(1, view + i);
-
-      rtv = NULL;
-      CHECK_HR(dev->CreateRenderTargetView(tex_rt, &desc, &rtv));
-
-      ctx->OMSetRenderTargets(1, &rtv.GetInterfacePtr(), NULL);
-
-      col = Vec4f(RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), 1.0f);
-      ctx->UpdateSubresource(cb, 0, NULL, &col, sizeof(col), sizeof(col));
-
-      ctx->Draw(4, 0);
+      view[i].MinDepth = 0.0f;
+      view[i].MaxDepth = 1.0f;
+      view[i].TopLeftX = (float)i * 50.0f;
+      view[i].TopLeftY = 0.0f;
+      view[i].Width = 50.0f;
+      view[i].Height = 250.0f;
     }
 
-    ctx->CopyResource(bbTex, tex_rt);
+    D3D11_VIEWPORT fullview;
+    {
+      fullview.MinDepth = 0.0f;
+      fullview.MaxDepth = 1.0f;
+      fullview.TopLeftX = 0.0f;
+      fullview.TopLeftY = 0.0f;
+      fullview.Width = (float)screenWidth;
+      fullview.Height = (float)screenHeight;
+    }
 
-    Present();
+    while(Running())
+    {
+      ctx1->DiscardView(bbRTV);
+
+      ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+      ctx->VSSetShader(vs, NULL, 0);
+      ctx->PSSetShader(ps, NULL, 0);
+
+      ctx->PSSetConstantBuffers(0, 1, &cb.GetInterfacePtr());
+
+      {
+        ctx->RSSetViewports(1, &fullview);
+
+        rtv = NULL;
+        CHECK_HR(dev->CreateRenderTargetView(tex_rt, &desc, &rtv));
+
+        ctx->OMSetRenderTargets(1, &rtv.GetInterfacePtr(), NULL);
+
+        col = Vec4f(RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), 1.0f);
+        ctx->UpdateSubresource(cb, 0, NULL, &col, sizeof(col), sizeof(col));
+
+        ctx->Draw(4, 0);
+      }
+
+      for(int i = 0; i < 10; i++)
+      {
+        ctx->RSSetViewports(1, view + i);
+
+        rtv = NULL;
+        CHECK_HR(dev->CreateRenderTargetView(tex_rt, &desc, &rtv));
+
+        ctx->OMSetRenderTargets(1, &rtv.GetInterfacePtr(), NULL);
+
+        col = Vec4f(RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), RANDF(0.0f, 1.0f), 1.0f);
+        ctx->UpdateSubresource(cb, 0, NULL, &col, sizeof(col), sizeof(col));
+
+        ctx->Draw(4, 0);
+      }
+
+      ctx->CopyResource(bbTex, tex_rt);
+
+      Present();
+    }
+
+    return 0;
   }
+};
 
-  return 0;
-}
-
-};    // anonymous namespace
-
-REGISTER_TEST("D3D11", "Discard_View", "Test that discards an RTV");
+REGISTER_TEST(Discard_View);

@@ -24,16 +24,20 @@
 
 #include "../gl_common.h"
 
-namespace
+struct GL_CBuffer_Zoo : OpenGLGraphicsTest
 {
-struct a2v
-{
-  Vec3f pos;
-  Vec4f col;
-  Vec2f uv;
-};
+  static constexpr char *Description =
+      "Tests every kind of constant that can be in a cbuffer to make sure it's decoded "
+      "correctly";
 
-string common = R"EOSHADER(
+  struct a2v
+  {
+    Vec3f pos;
+    Vec4f col;
+    Vec2f uv;
+  };
+
+  string common = R"EOSHADER(
 
 #version 420 core
 
@@ -46,7 +50,7 @@ struct v2f
 
 )EOSHADER";
 
-string vertex = R"EOSHADER(
+  string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -64,7 +68,7 @@ void main()
 
 )EOSHADER";
 
-string pixel = R"EOSHADER(
+  string pixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 
@@ -171,99 +175,82 @@ void main()
 
 )EOSHADER";
 
-struct impl : OpenGLGraphicsTest
-{
-  int main(int argc, char **argv);
-
-  GLuint vao;
-  GLuint vb;
-  GLuint cb;
-
-  GLuint fbo;
-  GLuint colattach;
-
-  GLuint program;
-};
-
-int impl::main(int argc, char **argv)
-{
-  // initialise, create window, create context, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  a2v triangle[] = {
-      {
-          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-      },
-      {
-          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-      },
-      {
-          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-      },
-  };
-
-  vao = MakeVAO();
-  glBindVertexArray(vao);
-
-  vb = MakeBuffer();
-  glBindBuffer(GL_ARRAY_BUFFER, vb);
-  glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
-                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
-
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-
-  program = MakeProgram(common + vertex, common + pixel);
-  glObjectLabel(GL_PROGRAM, program, -1, "Full program");
-
-  Vec4f cbufferdata[256];
-
-  for(int i = 0; i < 256; i++)
-    cbufferdata[i] = Vec4f(float(i * 4 + 0), float(i * 4 + 1), float(i * 4 + 2), float(i * 4 + 3));
-
-  cb = MakeBuffer();
-  glBindBuffer(GL_UNIFORM_BUFFER, cb);
-  glBufferStorage(GL_UNIFORM_BUFFER, sizeof(cbufferdata), cbufferdata, GL_MAP_WRITE_BIT);
-
-  fbo = MakeFBO();
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-  // Color render texture
-  colattach = MakeTexture();
-
-  glBindTexture(GL_TEXTURE_2D, colattach);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, screenWidth, screenHeight);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colattach, 0);
-
-  while(Running())
+  int main(int argc, char **argv)
   {
-    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-    glClearBufferfv(GL_COLOR, 0, col);
+    // initialise, create window, create context, etc
+    if(!Init(argc, argv))
+      return 3;
 
+    a2v triangle[] = {
+        {
+            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+        },
+        {
+            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+        },
+        {
+            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+        },
+    };
+
+    GLuint vao = MakeVAO();
     glBindVertexArray(vao);
 
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, cb);
+    GLuint vb = MakeBuffer();
+    glBindBuffer(GL_ARRAY_BUFFER, vb);
+    glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 
-    glUseProgram(program);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                          (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-    glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    GLuint program = MakeProgram(common + vertex, common + pixel);
+    glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
-    Present();
+    Vec4f cbufferdata[256];
+
+    for(int i = 0; i < 256; i++)
+      cbufferdata[i] = Vec4f(float(i * 4 + 0), float(i * 4 + 1), float(i * 4 + 2), float(i * 4 + 3));
+
+    GLuint cb = MakeBuffer();
+    glBindBuffer(GL_UNIFORM_BUFFER, cb);
+    glBufferStorage(GL_UNIFORM_BUFFER, sizeof(cbufferdata), cbufferdata, GL_MAP_WRITE_BIT);
+
+    GLuint fbo = MakeFBO();
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    // Color render texture
+    GLuint colattach = MakeTexture();
+
+    glBindTexture(GL_TEXTURE_2D, colattach);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, screenWidth, screenHeight);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colattach, 0);
+
+    while(Running())
+    {
+      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+      glClearBufferfv(GL_COLOR, 0, col);
+
+      glBindVertexArray(vao);
+
+      glBindBufferBase(GL_UNIFORM_BUFFER, 0, cb);
+
+      glUseProgram(program);
+
+      glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+
+      Present();
+    }
+
+    return 0;
   }
+};
 
-  return 0;
-}
-
-};    // anonymous namespace
-
-REGISTER_TEST("GL", "CBuffer_Zoo",
-              "Tests every kind of constant that can be in a cbuffer to make sure it's decoded "
-              "correctly");
+REGISTER_TEST(GL_CBuffer_Zoo);

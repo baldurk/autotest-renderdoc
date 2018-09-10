@@ -24,16 +24,19 @@
 
 #include "../vk_common.h"
 
-namespace
+struct VK_CBuffer_Zoo : VulkanGraphicsTest
 {
-struct a2v
-{
-  Vec3f pos;
-  Vec4f col;
-  Vec2f uv;
-};
+  static constexpr char *Description =
+      "Tests every kind of constant that can be in a cbuffer to make sure it's decoded correctly.";
 
-std::string common = R"EOSHADER(
+  struct a2v
+  {
+    Vec3f pos;
+    Vec4f col;
+    Vec2f uv;
+  };
+
+  std::string common = R"EOSHADER(
 
 #version 420 core
 
@@ -46,7 +49,7 @@ struct v2f
 
 )EOSHADER";
 
-std::string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -64,7 +67,7 @@ void main()
 
 )EOSHADER";
 
-std::string glslpixel = R"EOSHADER(
+  std::string glslpixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 
@@ -171,7 +174,7 @@ void main()
 
 )EOSHADER";
 
-std::string hlslpixel = R"EOSHADER(
+  std::string hlslpixel = R"EOSHADER(
 
 layout(set = 0, binding = 0) cbuffer consts
 {
@@ -272,219 +275,206 @@ float4 main() : SV_Target0
 
 )EOSHADER";
 
-struct impl : VulkanGraphicsTest
-{
-  int main(int argc, char **argv);
-
-  vk::PipelineLayout layout;
-  vk::ImageView imgview;
-  vk::RenderPass renderPass;
-  vk::Framebuffer framebuffer;
-  vk::Pipeline glslpipe;
-  vk::Pipeline hlslpipe;
-
-  vk::DescriptorSetLayout setlayout;
-  vk::DescriptorPool descpool;
-
-  AllocatedImage img;
-  AllocatedBuffer vb;
-  AllocatedBuffer cb;
-
-  ~impl()
+  int main(int argc, char **argv)
   {
-    if(device)
+    // initialise, create window, create context, etc
+    if(!Init(argc, argv))
+      return 3;
+
+    vk::ShaderModule vert =
+        CompileShaderModule(common + vertex, ShaderLang::glsl, ShaderStage::vert, "main");
+    vk::ShaderModule glslfrag =
+        CompileShaderModule(common + glslpixel, ShaderLang::glsl, ShaderStage::frag, "main");
+    vk::ShaderModule hlslfrag =
+        CompileShaderModule(common + hlslpixel, ShaderLang::hlsl, ShaderStage::frag, "main");
+
+    if(!vert || !glslfrag || !hlslfrag)
+      return 4;
+
+    vk::DescriptorSetLayoutBinding bindings[] = {
+        {0, vk::DescriptorType::eUniformBuffer, 1, vk::ShaderStageFlagBits::eFragment},
+    };
+
+    vk::DescriptorSetLayout setlayout;
+    ResultChecker(setlayout) = device.createDescriptorSetLayout({{}, 1, bindings});
+
+    vk::PipelineLayout layout;
+    ResultChecker(layout) = device.createPipelineLayout({{}, 1, &setlayout});
+
+    AllocatedImage img;
+    img.create(allocator,
+               vk::ImageCreateInfo({}, vk::ImageType::e2D, vk::Format::eR32G32B32A32Sfloat,
+                                   vk::Extent3D(scissor.extent.width, scissor.extent.height, 1), 1,
+                                   1, vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
+                                   vk::ImageUsageFlagBits::eColorAttachment),
+               VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_GPU_ONLY}));
+
+    vk::ImageView imgview;
+    ResultChecker(imgview) = device.createImageView({
+        {},
+        img.image,
+        vk::ImageViewType::e2D,
+        vk::Format::eR32G32B32A32Sfloat,
+        vk::ComponentMapping(),
+        vk::ImageSubresourceRange(),
+    });
+
+    RenderPassCreator rpCreate;
+
+    rpCreate.atts.push_back(vk::AttachmentDescription()
+                                .setFormat(vk::Format::eR32G32B32A32Sfloat)
+                                .setLoadOp(vk::AttachmentLoadOp::eDontCare)
+                                .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                                .setInitialLayout(vk::ImageLayout::eUndefined)
+                                .setFinalLayout(vk::ImageLayout::eGeneral));
+
+    rpCreate.addSub({vk::AttachmentReference(0, vk::ImageLayout::eGeneral)});
+
+    vk::RenderPass renderPass;
+    ResultChecker(renderPass) = device.createRenderPass(rpCreate.bake());
+
+    vk::Framebuffer framebuffer;
+    ResultChecker(framebuffer) = device.createFramebuffer(vk::FramebufferCreateInfo(
+        {}, renderPass, 1, &imgview, scissor.extent.width, scissor.extent.height, 1));
+
+    PipelineCreator pipeCreate;
+
+    pipeCreate.layout = layout;
+    pipeCreate.renderPass = renderPass;
+
+    pipeCreate.binds.push_back(
+        vk::VertexInputBindingDescription(0, sizeof(a2v), vk::VertexInputRate::eVertex));
+    pipeCreate.attrs.push_back(
+        vk::VertexInputAttributeDescription(0, 0, formatof(a2v::pos), offsetof(a2v, pos)));
+    pipeCreate.attrs.push_back(
+        vk::VertexInputAttributeDescription(1, 0, formatof(a2v::col), offsetof(a2v, col)));
+    pipeCreate.attrs.push_back(
+        vk::VertexInputAttributeDescription(2, 0, formatof(a2v::uv), offsetof(a2v, uv)));
+
+    pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
+    pipeCreate.addShader(glslfrag, vk::ShaderStageFlagBits::eFragment);
+
+    vk::Pipeline glslpipe;
+    ResultChecker(glslpipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
+
+    pipeCreate.clearShaders();
+    pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
+    pipeCreate.addShader(hlslfrag, vk::ShaderStageFlagBits::eFragment);
+
+    vk::Pipeline hlslpipe;
+    ResultChecker(hlslpipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
+
+    device.destroyShaderModule(vert);
+    device.destroyShaderModule(hlslfrag);
+    device.destroyShaderModule(glslfrag);
+
+    a2v triangle[] = {
+        {
+            Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+        },
+        {
+            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+        },
+        {
+            Vec3f(0.5f, 0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+        },
+    };
+
+    AllocatedBuffer vb;
+    vb.create(allocator,
+              vk::BufferCreateInfo({}, sizeof(triangle), vk::BufferUsageFlagBits::eVertexBuffer |
+                                                             vk::BufferUsageFlagBits::eTransferDst),
+              VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
+
+    void *ptr = vb.map();
+    memcpy(ptr, triangle, sizeof(triangle));
+    vb.unmap();
+
+    Vec4f cbufferdata[256];
+
+    for(int i = 0; i < 256; i++)
+      cbufferdata[i] = Vec4f(float(i * 4 + 0), float(i * 4 + 1), float(i * 4 + 2), float(i * 4 + 3));
+
+    AllocatedBuffer cb;
+    cb.create(allocator, vk::BufferCreateInfo({}, sizeof(cbufferdata),
+                                              vk::BufferUsageFlagBits::eUniformBuffer |
+                                                  vk::BufferUsageFlagBits::eTransferDst),
+              VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
+
+    ptr = cb.map();
+    memcpy(ptr, cbufferdata, sizeof(cbufferdata));
+    cb.unmap();
+
+    vk::DescriptorPoolSize poolSizes[] = {
+        vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, 1)};
+
+    vk::DescriptorPool descpool;
+    ResultChecker(descpool) = device.createDescriptorPool({{}, 1, 1, poolSizes});
+
+    std::vector<vk::DescriptorSet> descsets;
+    ResultChecker(descsets) = device.allocateDescriptorSets({descpool, 1, &setlayout});
+
+    vk::DescriptorBufferInfo bufInfo(cb.buffer, 0, VK_WHOLE_SIZE);
+    device.updateDescriptorSets(
+        {
+            vk::WriteDescriptorSet(descsets[0], 0, 0, 1, vk::DescriptorType::eUniformBuffer, NULL,
+                                   &bufInfo, NULL),
+        },
+        {});
+
+    while(Running())
     {
-      device.destroyPipelineLayout(layout);
-      device.destroyImageView(imgview);
-      device.destroyRenderPass(renderPass);
-      device.destroyFramebuffer(framebuffer);
-      device.destroyPipeline(glslpipe);
-      device.destroyPipeline(hlslpipe);
-      device.destroyDescriptorSetLayout(setlayout);
-      device.destroyDescriptorPool(descpool);
+      vk::CommandBuffer cmd = GetCommandBuffer();
+
+      cmd.begin(vk::CommandBufferBeginInfo());
+
+      vk::Image img =
+          StartUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
+
+      cmd.clearColorImage(img, vk::ImageLayout::eGeneral,
+                          std::array<float, 4>({0.4f, 0.5f, 0.6f, 1.0f}),
+                          {vk::ImageSubresourceRange()});
+
+      cmd.beginRenderPass(vk::RenderPassBeginInfo(renderPass, framebuffer, scissor),
+                          vk::SubpassContents::eInline);
+
+      cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0, {descsets[0]}, {});
+      cmd.setViewport(0, {viewport});
+      cmd.setScissor(0, {scissor});
+      cmd.bindVertexBuffers(0, {vb.buffer}, {0});
+
+      cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, glslpipe);
+      cmd.draw(3, 1, 0, 0);
+
+      cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, hlslpipe);
+      cmd.draw(3, 1, 0, 0);
+
+      cmd.endRenderPass();
+
+      FinishUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
+
+      cmd.end();
+
+      Submit(0, 1, {cmd});
+
+      Present();
     }
+
+    device.destroyPipelineLayout(layout);
+    device.destroyImageView(imgview);
+    device.destroyRenderPass(renderPass);
+    device.destroyFramebuffer(framebuffer);
+    device.destroyPipeline(glslpipe);
+    device.destroyPipeline(hlslpipe);
+    device.destroyDescriptorSetLayout(setlayout);
+    device.destroyDescriptorPool(descpool);
 
     img.destroy();
     vb.destroy();
     cb.destroy();
+
+    return 0;
   }
 };
 
-int impl::main(int argc, char **argv)
-{
-  // initialise, create window, create context, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  vk::ShaderModule vert =
-      CompileShaderModule(common + vertex, ShaderLang::glsl, ShaderStage::vert, "main");
-  vk::ShaderModule glslfrag =
-      CompileShaderModule(common + glslpixel, ShaderLang::glsl, ShaderStage::frag, "main");
-  vk::ShaderModule hlslfrag =
-      CompileShaderModule(common + hlslpixel, ShaderLang::hlsl, ShaderStage::frag, "main");
-
-  if(!vert || !glslfrag || !hlslfrag)
-    return 4;
-
-  vk::DescriptorSetLayoutBinding bindings[] = {
-      {0, vk::DescriptorType::eUniformBuffer, 1, vk::ShaderStageFlagBits::eFragment},
-  };
-  ResultChecker(setlayout) = device.createDescriptorSetLayout({{}, 1, bindings});
-
-  ResultChecker(layout) = device.createPipelineLayout({{}, 1, &setlayout});
-
-  img.create(allocator,
-             vk::ImageCreateInfo({}, vk::ImageType::e2D, vk::Format::eR32G32B32A32Sfloat,
-                                 vk::Extent3D(scissor.extent.width, scissor.extent.height, 1), 1, 1,
-                                 vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
-                                 vk::ImageUsageFlagBits::eColorAttachment),
-             VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_GPU_ONLY}));
-
-  ResultChecker(imgview) = device.createImageView({
-      {},
-      img.image,
-      vk::ImageViewType::e2D,
-      vk::Format::eR32G32B32A32Sfloat,
-      vk::ComponentMapping(),
-      vk::ImageSubresourceRange(),
-  });
-
-  RenderPassCreator rpCreate;
-
-  rpCreate.atts.push_back(vk::AttachmentDescription()
-                              .setFormat(vk::Format::eR32G32B32A32Sfloat)
-                              .setLoadOp(vk::AttachmentLoadOp::eDontCare)
-                              .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
-                              .setInitialLayout(vk::ImageLayout::eUndefined)
-                              .setFinalLayout(vk::ImageLayout::eGeneral));
-
-  rpCreate.addSub({vk::AttachmentReference(0, vk::ImageLayout::eGeneral)});
-
-  ResultChecker(renderPass) = device.createRenderPass(rpCreate.bake());
-
-  ResultChecker(framebuffer) = device.createFramebuffer(vk::FramebufferCreateInfo(
-      {}, renderPass, 1, &imgview, scissor.extent.width, scissor.extent.height, 1));
-
-  PipelineCreator pipeCreate;
-
-  pipeCreate.layout = layout;
-  pipeCreate.renderPass = renderPass;
-
-  pipeCreate.binds.push_back(
-      vk::VertexInputBindingDescription(0, sizeof(a2v), vk::VertexInputRate::eVertex));
-  pipeCreate.attrs.push_back(
-      vk::VertexInputAttributeDescription(0, 0, formatof(a2v::pos), offsetof(a2v, pos)));
-  pipeCreate.attrs.push_back(
-      vk::VertexInputAttributeDescription(1, 0, formatof(a2v::col), offsetof(a2v, col)));
-  pipeCreate.attrs.push_back(
-      vk::VertexInputAttributeDescription(2, 0, formatof(a2v::uv), offsetof(a2v, uv)));
-
-  pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
-  pipeCreate.addShader(glslfrag, vk::ShaderStageFlagBits::eFragment);
-
-  ResultChecker(glslpipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
-
-  pipeCreate.clearShaders();
-  pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
-  pipeCreate.addShader(hlslfrag, vk::ShaderStageFlagBits::eFragment);
-
-  ResultChecker(hlslpipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
-
-  device.destroyShaderModule(vert);
-  device.destroyShaderModule(hlslfrag);
-  device.destroyShaderModule(glslfrag);
-
-  a2v triangle[] = {
-      {
-          Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-      },
-      {
-          Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-      },
-      {
-          Vec3f(0.5f, 0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-      },
-  };
-
-  vb.create(allocator,
-            vk::BufferCreateInfo({}, sizeof(triangle), vk::BufferUsageFlagBits::eVertexBuffer |
-                                                           vk::BufferUsageFlagBits::eTransferDst),
-            VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
-
-  void *ptr = vb.map();
-  memcpy(ptr, triangle, sizeof(triangle));
-  vb.unmap();
-
-  Vec4f cbufferdata[256];
-
-  for(int i = 0; i < 256; i++)
-    cbufferdata[i] = Vec4f(float(i * 4 + 0), float(i * 4 + 1), float(i * 4 + 2), float(i * 4 + 3));
-
-  cb.create(allocator,
-            vk::BufferCreateInfo({}, sizeof(cbufferdata), vk::BufferUsageFlagBits::eUniformBuffer |
-                                                              vk::BufferUsageFlagBits::eTransferDst),
-            VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
-
-  ptr = cb.map();
-  memcpy(ptr, cbufferdata, sizeof(cbufferdata));
-  cb.unmap();
-
-  vk::DescriptorPoolSize poolSizes[] = {vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, 1)};
-  ResultChecker(descpool) = device.createDescriptorPool({{}, 1, 1, poolSizes});
-
-  std::vector<vk::DescriptorSet> descsets;
-  ResultChecker(descsets) = device.allocateDescriptorSets({descpool, 1, &setlayout});
-
-  vk::DescriptorBufferInfo bufInfo(cb.buffer, 0, VK_WHOLE_SIZE);
-  device.updateDescriptorSets(
-      {
-          vk::WriteDescriptorSet(descsets[0], 0, 0, 1, vk::DescriptorType::eUniformBuffer, NULL,
-                                 &bufInfo, NULL),
-      },
-      {});
-
-  while(Running())
-  {
-    vk::CommandBuffer cmd = GetCommandBuffer();
-
-    cmd.begin(vk::CommandBufferBeginInfo());
-
-    vk::Image img =
-        StartUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
-
-    cmd.clearColorImage(img, vk::ImageLayout::eGeneral,
-                        std::array<float, 4>({0.4f, 0.5f, 0.6f, 1.0f}),
-                        {vk::ImageSubresourceRange()});
-
-    cmd.beginRenderPass(vk::RenderPassBeginInfo(renderPass, framebuffer, scissor),
-                        vk::SubpassContents::eInline);
-
-    cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0, {descsets[0]}, {});
-    cmd.setViewport(0, {viewport});
-    cmd.setScissor(0, {scissor});
-    cmd.bindVertexBuffers(0, {vb.buffer}, {0});
-
-    cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, glslpipe);
-    cmd.draw(3, 1, 0, 0);
-
-    cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, hlslpipe);
-    cmd.draw(3, 1, 0, 0);
-
-    cmd.endRenderPass();
-
-    FinishUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
-
-    cmd.end();
-
-    Submit(0, 1, {cmd});
-
-    Present();
-  }
-
-  return 0;
-}
-};    // anonymous namespace
-
-REGISTER_TEST("VK", "CBuffer_Zoo",
-              "Tests every kind of constant that can be in a cbuffer to make sure it's decoded "
-              "correctly");
+REGISTER_TEST(VK_CBuffer_Zoo);

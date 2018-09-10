@@ -24,16 +24,19 @@
 
 #include "../gl_common.h"
 
-namespace
+struct Unsized_MS_FBO_Attachment : OpenGLGraphicsTest
 {
-struct a2v
-{
-  Vec3f pos;
-  Vec4f col;
-  Vec2f uv;
-};
+  static constexpr char *Description =
+      "Creates a MS FBO with one attachment created with an unsized internal format";
 
-string common = R"EOSHADER(
+  struct a2v
+  {
+    Vec3f pos;
+    Vec4f col;
+    Vec2f uv;
+  };
+
+  string common = R"EOSHADER(
 
 #version 420 core
 
@@ -46,7 +49,7 @@ struct v2f
 
 )EOSHADER";
 
-string vertex = R"EOSHADER(
+  string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -64,7 +67,7 @@ void main()
 
 )EOSHADER";
 
-string pixel = R"EOSHADER(
+  string pixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 
@@ -77,119 +80,104 @@ void main()
 
 )EOSHADER";
 
-struct impl : OpenGLGraphicsTest
-{
-  int main(int argc, char **argv);
-
-  GLuint vao;
-  GLuint vb;
-
-  GLuint fbo;
-  GLuint attachments[3];
-  static const GLsizei numSamples = 8;
-
-  GLuint program;
-};
-
-int impl::main(int argc, char **argv)
-{
-  // initialise, create window, create context, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  a2v triangle[] = {
-      {
-          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-      },
-      {
-          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-      },
-      {
-          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-      },
-  };
-
-  vao = MakeVAO();
-  glBindVertexArray(vao);
-
-  vb = MakeBuffer();
-  glBindBuffer(GL_ARRAY_BUFFER, vb);
-  glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
-                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
-
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-
-  program = MakeProgram(common + vertex, common + pixel);
-
-  fbo = MakeFBO();
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-  // Color render texture
-  for(int i = 0; i < 3; i++)
-    attachments[i] = MakeTexture();
-
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[0]);
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB10_A2, screenWidth,
-                          screenHeight, false);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
-                         attachments[0], 0);
-
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[1]);
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB, screenWidth, screenHeight,
-                          false);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D_MULTISAMPLE,
-                         attachments[1], 0);
-
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[2]);
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_DEPTH_COMPONENT24, screenWidth,
-                          screenHeight, false);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE,
-                         attachments[2], 0);
-
-  glDepthFunc(GL_ALWAYS);
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(GL_TRUE);
-
-  while(Running())
+  int main(int argc, char **argv)
   {
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    GLenum bufs[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, bufs);
+    // initialise, create window, create context, etc
+    if(!Init(argc, argv))
+      return 3;
 
-    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-    glClearBufferfv(GL_COLOR, 0, col);
-    glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
+    a2v triangle[] = {
+        {
+            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+        },
+        {
+            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+        },
+        {
+            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+        },
+    };
 
+    GLuint vao = MakeVAO();
     glBindVertexArray(vao);
 
-    glUseProgram(program);
+    GLuint vb = MakeBuffer();
+    glBindBuffer(GL_ARRAY_BUFFER, vb);
+    glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 
-    glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                          (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    GLuint program = MakeProgram(common + vertex, common + pixel);
 
-    glDrawBuffer(GL_BACK_LEFT);
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    GLuint fbo = MakeFBO();
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight,
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    // Color render texture
+    GLuint attachments[] = {MakeTexture(), MakeTexture(), MakeTexture()};
 
-    Present();
+    static const GLsizei numSamples = 8;
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[0]);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB10_A2, screenWidth,
+                            screenHeight, false);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+                           attachments[0], 0);
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[1]);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_RGB, screenWidth,
+                            screenHeight, false);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D_MULTISAMPLE,
+                           attachments[1], 0);
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, attachments[2]);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, numSamples, GL_DEPTH_COMPONENT24,
+                            screenWidth, screenHeight, false);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE,
+                           attachments[2], 0);
+
+    glDepthFunc(GL_ALWAYS);
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+
+    while(Running())
+    {
+      glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+      GLenum bufs[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+      glDrawBuffers(2, bufs);
+
+      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+      glClearBufferfv(GL_COLOR, 0, col);
+      glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
+
+      glBindVertexArray(vao);
+
+      glUseProgram(program);
+
+      glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+      glDrawBuffer(GL_BACK_LEFT);
+      glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+      glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight,
+                        GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+      Present();
+    }
+
+    return 0;
   }
+};
 
-  return 0;
-}
-
-};    // anonymous namespace
-
-REGISTER_TEST("GL", "Unsized_MS_FBO_Attachment",
-              "Creates a MS FBO with one attachment created with an unsized internal format");
+REGISTER_TEST(Unsized_MS_FBO_Attachment);

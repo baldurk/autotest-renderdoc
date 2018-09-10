@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     printf("\n");
 
     for(const TestMetadata &test : tests)
-      printf("%s::%s -\n\t%s\n\n", test.API, test.Name, test.Description);
+      printf("%s::%s -\n\t%s\n\n", test.APIName(), test.Name, test.Description);
 
     fflush(stdout);
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
   for(const TestMetadata &test : tests)
   {
-    std::string fullname = test.API;
+    std::string fullname = test.APIName();
     fullname += "::";
     fullname += test.Name;
 

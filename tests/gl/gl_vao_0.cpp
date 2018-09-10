@@ -24,16 +24,18 @@
 
 #include "../gl_common.h"
 
-namespace
+struct VAO_0 : OpenGLGraphicsTest
 {
-struct a2v
-{
-  Vec3f pos;
-  Vec4f col;
-  Vec2f uv;
-};
+  static constexpr char *Description = "Uses VAO 0 (i.e. never binds a VAO)";
 
-string common = R"EOSHADER(
+  struct a2v
+  {
+    Vec3f pos;
+    Vec4f col;
+    Vec2f uv;
+  };
+
+  string common = R"EOSHADER(
 
 #version 420 core
 
@@ -46,7 +48,7 @@ struct v2f
 
 )EOSHADER";
 
-string vertex = R"EOSHADER(
+  string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -64,7 +66,7 @@ void main()
 
 )EOSHADER";
 
-string pixel = R"EOSHADER(
+  string pixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 
@@ -77,74 +79,63 @@ void main()
 
 )EOSHADER";
 
-struct impl : OpenGLGraphicsTest
-{
-  int main(int argc, char **argv);
+  int main(int argc, char **argv)
+  {
+    coreProfile = false;
 
-  GLuint ib;
-  GLuint vb;
+    // initialise, create window, create context, etc
+    if(!Init(argc, argv))
+      return 3;
 
-  GLuint program;
+    a2v triangle[] = {
+        {
+            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+        },
+        {
+            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+        },
+        {
+            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+        },
+    };
+
+    GLuint vb = MakeBuffer();
+    glBindBuffer(GL_ARRAY_BUFFER, vb);
+    glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                          (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    uint32_t idxs[3] = {0, 1, 2};
+    GLuint ib = MakeBuffer();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
+    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 3, idxs, 0);
+
+    GLuint program = MakeProgram(common + vertex, common + pixel);
+    glObjectLabel(GL_PROGRAM, program, -1, "Full program");
+
+    while(Running())
+    {
+      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+      glClearBufferfv(GL_COLOR, 0, col);
+
+      glUseProgram(program);
+
+      glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+
+      glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
+
+      Present();
+    }
+
+    return 0;
+  }
 };
 
-int impl::main(int argc, char **argv)
-{
-  coreProfile = false;
-
-  // initialise, create window, create context, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  a2v triangle[] = {
-      {
-          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-      },
-      {
-          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-      },
-      {
-          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-      },
-  };
-
-  vb = MakeBuffer();
-  glBindBuffer(GL_ARRAY_BUFFER, vb);
-  glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
-                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
-
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-
-  uint32_t idxs[3] = {0, 1, 2};
-  ib = MakeBuffer();
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
-  glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 3, idxs, 0);
-
-  program = MakeProgram(common + vertex, common + pixel);
-  glObjectLabel(GL_PROGRAM, program, -1, "Full program");
-
-  while(Running())
-  {
-    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-    glClearBufferfv(GL_COLOR, 0, col);
-
-    glUseProgram(program);
-
-    glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
-
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
-
-    Present();
-  }
-
-  return 0;
-}
-
-};    // anonymous namespace
-
-REGISTER_TEST("GL", "VAO_0", "Uses VAO 0 (i.e. never binds a VAO)");
+REGISTER_TEST(VAO_0);

@@ -121,6 +121,8 @@ inline void SetDebugName(T pObj, const char *name)
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
+  static const TestAPI API = TestAPI::D3D11;
+
   D3D11GraphicsTest()
       : backbufferFmt(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB),
         backbufferCount(2),

@@ -24,16 +24,19 @@
 
 #include "../d3d11_common.h"
 
-namespace
+struct Many_UAVs : D3D11GraphicsTest
 {
-struct a2v
-{
-  Vec3f pos;
-  Vec4f col;
-  Vec2f uv;
-};
+  static constexpr char *Description =
+      "Test using more than 8 compute shader UAVs (D3D11.1 feature)";
 
-string compute = R"EOSHADER(
+  struct a2v
+  {
+    Vec3f pos;
+    Vec4f col;
+    Vec2f uv;
+  };
+
+  string compute = R"EOSHADER(
 
 RWBuffer<uint4> uav : register(u20);
 
@@ -45,62 +48,53 @@ void main()
 
 )EOSHADER";
 
-struct impl : D3D11GraphicsTest
-{
-  int main(int argc, char **argv);
+  int main(int argc, char **argv)
+  {
+    d3d11_1 = true;
 
-  ID3D11UnorderedAccessViewPtr uav;
+    // initialise, create window, create device, etc
+    if(!Init(argc, argv))
+      return 3;
 
-  ID3D11BufferPtr buf;
-  ID3D11ComputeShaderPtr cs;
+    HRESULT hr = S_OK;
+
+    ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
+
+    ID3D11ComputeShaderPtr cs;
+    CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+
+    ID3D11BufferPtr buf;
+    ID3D11UnorderedAccessViewPtr uav;
+    if(MakeBuffer(eCompBuffer, 0, sizeof(uint32_t) * 4, sizeof(uint32_t) * 4,
+                  DXGI_FORMAT_R32G32B32A32_UINT, NULL, &buf, NULL, &uav, NULL))
+    {
+      TEST_ERROR("Failed to create UAV");
+      return 1;
+    }
+
+    for(int frame = 0; frame < 10 && Running(); frame++)
+    {
+      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+      ctx->ClearRenderTargetView(bbRTV, col);
+
+      ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)col);
+
+      ctx->CSSetUnorderedAccessViews(20, 1, &uav.GetInterfacePtr(), NULL);
+      ctx->CSSetShader(cs, NULL, 0);
+
+      ctx->Dispatch(1, 1, 1);
+
+      vector<byte> contents = GetBufferData(buf);
+
+      uint32_t *u32 = (uint32_t *)&contents[0];
+
+      TEST_LOG("Data: %u %u %u %u", u32[0], u32[1], u32[2], u32[3]);
+
+      Present();
+    }
+
+    return 0;
+  }
 };
 
-int impl::main(int argc, char **argv)
-{
-  d3d11_1 = true;
-
-  // initialise, create window, create device, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  HRESULT hr = S_OK;
-
-  ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-
-  CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
-
-  if(MakeBuffer(eCompBuffer, 0, sizeof(uint32_t) * 4, sizeof(uint32_t) * 4,
-                DXGI_FORMAT_R32G32B32A32_UINT, NULL, &buf, NULL, &uav, NULL))
-  {
-    TEST_ERROR("Failed to create UAV");
-    return 1;
-  }
-
-  for(int frame = 0; frame < 10 && Running(); frame++)
-  {
-    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-    ctx->ClearRenderTargetView(bbRTV, col);
-
-    ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)col);
-
-    ctx->CSSetUnorderedAccessViews(20, 1, &uav.GetInterfacePtr(), NULL);
-    ctx->CSSetShader(cs, NULL, 0);
-
-    ctx->Dispatch(1, 1, 1);
-
-    vector<byte> contents = GetBufferData(buf);
-
-    uint32_t *u32 = (uint32_t *)&contents[0];
-
-    TEST_LOG("Data: %u %u %u %u", u32[0], u32[1], u32[2], u32[3]);
-
-    Present();
-  }
-
-  return 0;
-}
-
-};    // anonymous namespace
-
-REGISTER_TEST("D3D11_1", "Many_UAVs",
-              "Test using more than 8 compute shader UAVs (D3D11.1 feature)");
+REGISTER_TEST(Many_UAVs);

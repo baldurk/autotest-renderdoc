@@ -116,7 +116,7 @@ struct GraphicsTest
   }
 
   virtual ~GraphicsTest() {}
-  virtual int main(int argc, char **argv) = 0;
+  virtual int main(int argc, char **argv) { return 9; }
   virtual bool Init(int argc, char **argv);
 
   void StartFrameCapture(void *device = NULL, void *wnd = NULL);
@@ -129,20 +129,38 @@ struct GraphicsTest
   bool headless;
 };
 
+enum class TestAPI
+{
+  D3D11,
+  Vulkan,
+  OpenGL,
+};
+
 struct TestMetadata
 {
-  const char *API;
+  TestAPI API;
   const char *Name;
   const char *Description;
   GraphicsTest *test;
 
+  const char *APIName() const
+  {
+    switch(API)
+    {
+      case TestAPI::D3D11: return "D3D11";
+      case TestAPI::Vulkan: return "VK";
+      case TestAPI::OpenGL: return "GL";
+    }
+
+    return "???";
+  }
+
   bool operator<(const TestMetadata &o)
   {
-    int ret = strcmp(API, o.API);
-    if(ret != 0)
-      return ret < 0;
+    if(API != o.API)
+      return API < o.API;
 
-    ret = strcmp(Name, o.Name);
+    int ret = strcmp(Name, o.Name);
     if(ret != 0)
       return ret < 0;
 
@@ -152,23 +170,23 @@ struct TestMetadata
 
 void RegisterTest(TestMetadata test);
 
-#define REGISTER_TEST(a, n, d) \
-  namespace                    \
-  {                            \
-  struct TestRegistration      \
-  {                            \
-    impl m_impl;               \
-    TestRegistration()         \
-    {                          \
-      TestMetadata test;       \
-      test.API = a;            \
-      test.Name = n;           \
-      test.Description = d;    \
-      test.test = &m_impl;     \
-      RegisterTest(test);      \
-    }                          \
-  };                           \
-  };                           \
+#define REGISTER_TEST(TestName)                 \
+  namespace                                     \
+  {                                             \
+  struct TestRegistration                       \
+  {                                             \
+    TestName m_impl;                            \
+    TestRegistration()                          \
+    {                                           \
+      TestMetadata test;                        \
+      test.API = TestName::API;                 \
+      test.Name = #TestName;                    \
+      test.Description = TestName::Description; \
+      test.test = &m_impl;                      \
+      RegisterTest(test);                       \
+    }                                           \
+  };                                            \
+  };                                            \
   static TestRegistration Anon##__LINE__;
 
 std::string GetCWD();

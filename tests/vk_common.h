@@ -199,6 +199,8 @@ vk::Format FormatFromObj();
 
 struct VulkanGraphicsTest : public GraphicsTest
 {
+  static const TestAPI API = TestAPI::Vulkan;
+
   VulkanGraphicsTest();
   ~VulkanGraphicsTest();
 

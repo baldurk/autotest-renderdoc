@@ -24,9 +24,11 @@
 
 #include "../d3d11_common.h"
 
-namespace
+struct Byte_Address_Buffers : D3D11GraphicsTest
 {
-string compute = R"EOSHADER(
+  static constexpr char *Description = "Tests reading and writing from byte address buffers";
+
+  string compute = R"EOSHADER(
 
 ByteAddressBuffer inbuf : register(t0);
 RWByteAddressBuffer outbuf : register(u0);
@@ -43,71 +45,61 @@ void main()
 
 )EOSHADER";
 
-struct impl : D3D11GraphicsTest
-{
-  int main(int argc, char **argv);
+  int main(int argc, char **argv)
+  {
+    // initialise, create window, create device, etc
+    if(!Init(argc, argv))
+      return 3;
 
-  ID3D11BufferPtr buf;
-  ID3D11UnorderedAccessViewPtr uav;
+    HRESULT hr = S_OK;
 
-  ID3D11BufferPtr buf2;
-  ID3D11ShaderResourceViewPtr srv;
+    ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
 
-  ID3D11ComputeShaderPtr cs;
+    ID3D11ComputeShaderPtr cs;
+    CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+
+    ID3D11BufferPtr buf;
+    ID3D11UnorderedAccessViewPtr uav;
+    if(MakeBuffer(BufType(eCompBuffer | eRawBuffer), 0, sizeof(uint32_t) * 128, sizeof(uint32_t),
+                  DXGI_FORMAT_R32_TYPELESS, NULL, &buf, NULL, &uav, NULL))
+    {
+      TEST_ERROR("Failed to create UAV");
+      return 1;
+    }
+
+    ID3D11BufferPtr buf2;
+    ID3D11ShaderResourceViewPtr srv;
+    if(MakeBuffer(BufType(eCompBuffer | eRawBuffer), 0, sizeof(uint32_t) * 128, sizeof(uint32_t),
+                  DXGI_FORMAT_R32_TYPELESS, NULL, &buf2, &srv, NULL, NULL))
+    {
+      TEST_ERROR("Failed to create UAV");
+      return 1;
+    }
+
+    uint32_t data[128] = {};
+    for(int i = 0; i < 128; i++)
+      data[i] = (uint32_t)rand();
+
+    ctx->UpdateSubresource(buf2, 0, NULL, data, sizeof(uint32_t) * 128, sizeof(uint32_t) * 128);
+
+    while(Running())
+    {
+      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+      ctx->ClearRenderTargetView(bbRTV, col);
+
+      ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)col);
+
+      ctx->CSSetShaderResources(0, 1, &srv.GetInterfacePtr());
+      ctx->CSSetUnorderedAccessViews(0, 1, &uav.GetInterfacePtr(), NULL);
+      ctx->CSSetShader(cs, NULL, 0);
+
+      ctx->Dispatch(1, 1, 1);
+
+      Present();
+    }
+
+    return 0;
+  }
 };
 
-int impl::main(int argc, char **argv)
-{
-  // initialise, create window, create device, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  HRESULT hr = S_OK;
-
-  ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-
-  CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
-
-  if(MakeBuffer(BufType(eCompBuffer | eRawBuffer), 0, sizeof(uint32_t) * 128, sizeof(uint32_t),
-                DXGI_FORMAT_R32_TYPELESS, NULL, &buf, NULL, &uav, NULL))
-  {
-    TEST_ERROR("Failed to create UAV");
-    return 1;
-  }
-
-  if(MakeBuffer(BufType(eCompBuffer | eRawBuffer), 0, sizeof(uint32_t) * 128, sizeof(uint32_t),
-                DXGI_FORMAT_R32_TYPELESS, NULL, &buf2, &srv, NULL, NULL))
-  {
-    TEST_ERROR("Failed to create UAV");
-    return 1;
-  }
-
-  uint32_t data[128] = {};
-  for(int i = 0; i < 128; i++)
-    data[i] = (uint32_t)rand();
-
-  ctx->UpdateSubresource(buf2, 0, NULL, data, sizeof(uint32_t) * 128, sizeof(uint32_t) * 128);
-
-  while(Running())
-  {
-    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-    ctx->ClearRenderTargetView(bbRTV, col);
-
-    ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)col);
-
-    ctx->CSSetShaderResources(0, 1, &srv.GetInterfacePtr());
-    ctx->CSSetUnorderedAccessViews(0, 1, &uav.GetInterfacePtr(), NULL);
-    ctx->CSSetShader(cs, NULL, 0);
-
-    ctx->Dispatch(1, 1, 1);
-
-    Present();
-  }
-
-  return 0;
-}
-
-};    // anonymous namespace
-
-REGISTER_TEST("D3D11", "Byte_Address_Buffers",
-              "Tests reading and writing from byte address buffers");
+REGISTER_TEST(Byte_Address_Buffers);

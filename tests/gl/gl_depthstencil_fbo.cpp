@@ -24,16 +24,19 @@
 
 #include "../gl_common.h"
 
-namespace
+struct DepthStencil_FBO : OpenGLGraphicsTest
 {
-struct a2v
-{
-  Vec3f pos;
-  Vec4f col;
-  Vec2f uv;
-};
+  static constexpr char *Description =
+      "Creates a depth-stencil FBO and writes both depth and stencil to it";
 
-string common = R"EOSHADER(
+  struct a2v
+  {
+    Vec3f pos;
+    Vec4f col;
+    Vec2f uv;
+  };
+
+  string common = R"EOSHADER(
 
 #version 420 core
 
@@ -46,7 +49,7 @@ struct v2f
 
 )EOSHADER";
 
-string vertex = R"EOSHADER(
+  string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -64,7 +67,7 @@ void main()
 
 )EOSHADER";
 
-string pixel = R"EOSHADER(
+  string pixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 
@@ -77,7 +80,7 @@ void main()
 
 )EOSHADER";
 
-string copypixel = R"EOSHADER(
+  string copypixel = R"EOSHADER(
 
 layout (binding = 0) uniform usampler2D stencilAttach;
 layout (binding = 1) uniform sampler2D colorAttach;
@@ -105,131 +108,113 @@ void main()
 
 )EOSHADER";
 
-struct impl : OpenGLGraphicsTest
-{
-  int main(int argc, char **argv);
-
-  GLuint vao;
-  GLuint vb;
-
-  GLuint fbo;
-  GLuint attachments[3];
-  GLuint view;
-
-  GLuint program;
-  GLuint copyprogram;
-};
-
-int impl::main(int argc, char **argv)
-{
-  // initialise, create window, create context, etc
-  if(!Init(argc, argv))
-    return 3;
-
-  a2v triangle[] = {
-      {
-          Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-      },
-      {
-          Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-      },
-      {
-          Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-      },
-  };
-
-  vao = MakeVAO();
-  glBindVertexArray(vao);
-
-  vb = MakeBuffer();
-  glBindBuffer(GL_ARRAY_BUFFER, vb);
-  glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
-                        (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
-
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-
-  program = MakeProgram(common + vertex, common + pixel);
-
-  copyprogram = MakeProgram(common + vertex, common + copypixel);
-
-  fbo = MakeFBO();
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-  // Color render texture
-  for(int i = 0; i < 3; i++)
-    attachments[i] = MakeTexture();
-
-  glBindTexture(GL_TEXTURE_2D, attachments[0]);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, screenWidth, screenHeight);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, attachments[0], 0);
-
-  glBindTexture(GL_TEXTURE_2D, attachments[1]);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, attachments[1],
-                         0);
-
-  GLenum err = glGetError();
-
-  view = MakeTexture();
-  glTextureView(view, GL_TEXTURE_2D, attachments[1], GL_DEPTH24_STENCIL8, 0, 1, 0, 1);
-
-  glTextureParameteri(view, GL_DEPTH_STENCIL_TEXTURE_MODE, GL_STENCIL_INDEX);
-
-  glDepthFunc(GL_ALWAYS);
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(GL_TRUE);
-
-  glStencilFunc(GL_ALWAYS, 0xcc, 0xff);
-  glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-  glEnable(GL_STENCIL_TEST);
-  glStencilMask(0xff);
-
-  while(Running())
+  int main(int argc, char **argv)
   {
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    GLenum bufs[] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, bufs);
+    // initialise, create window, create context, etc
+    if(!Init(argc, argv))
+      return 3;
 
-    float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-    glClearBufferfv(GL_COLOR, 0, col);
-    glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
+    a2v triangle[] = {
+        {
+            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
+        },
+        {
+            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
+        },
+        {
+            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
+        },
+    };
 
+    GLuint vao = MakeVAO();
     glBindVertexArray(vao);
 
-    glUseProgram(program);
+    GLuint vb = MakeBuffer();
+    glBindBuffer(GL_ARRAY_BUFFER, vb);
+    glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 
-    glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+                          (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GLuint program = MakeProgram(common + vertex, common + pixel);
 
-    glUseProgram(copyprogram);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, view);
-    glActiveTexture(GL_TEXTURE1);
+    GLuint copyprogram = MakeProgram(common + vertex, common + copypixel);
+
+    GLuint fbo = MakeFBO();
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    // Color render texture
+    GLuint attachments[] = {MakeTexture(), MakeTexture(), MakeTexture()};
+
     glBindTexture(GL_TEXTURE_2D, attachments[0]);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, screenWidth, screenHeight);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, attachments[0], 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindTexture(GL_TEXTURE_2D, attachments[1]);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
+                           attachments[1], 0);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GLenum err = glGetError();
 
-    Present();
+    GLuint view = MakeTexture();
+    glTextureView(view, GL_TEXTURE_2D, attachments[1], GL_DEPTH24_STENCIL8, 0, 1, 0, 1);
+
+    glTextureParameteri(view, GL_DEPTH_STENCIL_TEXTURE_MODE, GL_STENCIL_INDEX);
+
+    glDepthFunc(GL_ALWAYS);
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+
+    glStencilFunc(GL_ALWAYS, 0xcc, 0xff);
+    glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+    glEnable(GL_STENCIL_TEST);
+    glStencilMask(0xff);
+
+    while(Running())
+    {
+      glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+      GLenum bufs[] = {GL_COLOR_ATTACHMENT0};
+      glDrawBuffers(1, bufs);
+
+      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
+      glClearBufferfv(GL_COLOR, 0, col);
+      glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0f, 0);
+
+      glBindVertexArray(vao);
+
+      glUseProgram(program);
+
+      glViewport(0, 0, GLsizei(screenWidth), GLsizei(screenHeight));
+
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+      glUseProgram(copyprogram);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, view);
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, attachments[0]);
+
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, 0);
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, 0);
+
+      Present();
+    }
+
+    return 0;
   }
+};
 
-  return 0;
-}
-
-};    // anonymous namespace
-
-REGISTER_TEST("GL", "DepthStencil_FBO",
-              "Creates a depth-stencil FBO and writes both depth and stencil to it");
+REGISTER_TEST(DepthStencil_FBO);

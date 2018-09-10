@@ -34,6 +34,8 @@
 
 struct OpenGLGraphicsTest : public GraphicsTest
 {
+  static const TestAPI API = TestAPI::OpenGL;
+
   ~OpenGLGraphicsTest();
 
   bool Init(int argc, char **argv);
