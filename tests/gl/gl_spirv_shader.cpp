@@ -24,8 +24,6 @@
 
 #include "../gl_common.h"
 
-#include <shaderc/shaderc.hpp>
-
 namespace
 {
 struct a2v
@@ -86,34 +84,6 @@ void main()
 
 )EOSHADER";
 
-shaderc::Compiler *compiler;
-
-std::vector<uint32_t> CompileGlslToSpv(const std::string &source_text,
-                                       shaderc_shader_kind shader_kind, const char *input_file_name)
-{
-#if defined(HAVE_SHADERC)
-  shaderc::CompileOptions options;
-
-  options.SetGenerateDebugInfo();
-  options.SetOptimizationLevel(shaderc_optimization_level_zero);
-  options.SetSourceLanguage(shaderc_source_language_glsl);
-  options.SetTargetEnvironment(shaderc_target_env_opengl, 0);
-
-  shaderc::SpvCompilationResult code =
-      compiler->CompileGlslToSpv(source_text, shader_kind, input_file_name, "main", options);
-
-  if(code.GetCompilationStatus() != shaderc_compilation_status_success)
-  {
-    TEST_ERROR("Failed to compile shader: %s", code.GetErrorMessage().c_str());
-    return {};
-  }
-
-  return std::vector<uint32_t>(code.begin(), code.end());
-#endif
-
-  return {};
-}
-
 struct impl : OpenGLGraphicsTest
 {
   int main(int argc, char **argv);
@@ -132,11 +102,15 @@ int impl::main(int argc, char **argv)
 {
   debugDevice = true;
 
-  LoadLibraryA("C:/projects/renderdoc/x64/development/renderdoc.dll");
-
   // initialise, create window, create context, etc
   if(!Init(argc, argv))
     return 3;
+
+  if(!SpvCompilationSupported())
+  {
+    TEST_ERROR("Can't run SPIR-V test without glslc in PATH");
+    return 2;
+  }
 
   a2v triangle[] = {
       {
@@ -204,13 +178,10 @@ int impl::main(int argc, char **argv)
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
 
-    compiler = new shaderc::Compiler();
-
-    std::vector<uint32_t> vsSPIRV = CompileGlslToSpv(vertex, shaderc_vertex_shader, "tri.vert");
-    std::vector<uint32_t> fsSPIRV = CompileGlslToSpv(pixel, shaderc_fragment_shader, "tri.frag");
-
-    delete compiler;
-    compiler = NULL;
+    std::vector<uint32_t> vsSPIRV =
+        CompileShaderToSpv(vertex, ShaderLang::glsl, ShaderStage::vert, "main");
+    std::vector<uint32_t> fsSPIRV =
+        CompileShaderToSpv(pixel, ShaderLang::glsl, ShaderStage::frag, "main");
 
     glShaderBinary(1, &vs, GL_SHADER_BINARY_FORMAT_SPIR_V, vsSPIRV.data(),
                    (GLsizei)vsSPIRV.size() * 4);

@@ -44,6 +44,25 @@ typedef uint8_t byte;
 
 #include <math.h>
 
+enum class ShaderLang
+{
+  glsl,
+  hlsl
+};
+enum class ShaderStage
+{
+  vert,
+  frag,
+  tesscontrol,
+  tesseval,
+  geom,
+  comp
+};
+
+bool SpvCompilationSupported();
+std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderLang lang,
+                                         ShaderStage stage, const char *entry_point);
+
 struct Vec2f
 {
   Vec2f(float X = 0.0f, float Y = 0.0f)

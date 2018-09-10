@@ -77,17 +77,12 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     return false;
   }
 
-#if !defined(HAVE_SHADERC)
+  if(!SpvCompilationSupported())
+  {
+    TEST_ERROR("glslc must be in PATH to run vulkan tests");
+    return false;
+  }
 
-#if _MSC_VER
-#pragma message("Warning: shaderc not found, check %VULKAN_SDK%")
-#else
-#warning("Warning: shaderc not found, check $VULKAN_SDK")
-#endif
-
-  TEST_ERROR("Can't run Vulkan tests - shaderc not available at build time");
-  return false;
-#else
   if(!glfwInit())
   {
     TEST_ERROR("Failed to init GLFW");
@@ -252,8 +247,6 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   ResultChecker(cmdPool) = device.createCommandPool(
       vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlagBits::eResetCommandBuffer));
 
-  compiler = new shaderc::Compiler();
-
   createSwap();
 
   VmaVulkanFunctions funcs = {
@@ -286,15 +279,10 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   vmaCreateAllocator(&allocInfo, &allocator);
 
   return true;
-#endif    // !defined(HAVE_SHADERC)
 }
 
 VulkanGraphicsTest::~VulkanGraphicsTest()
 {
-#if defined(HAVE_SHADERC)
-  delete compiler;
-#endif
-
   vmaDestroyAllocator(allocator);
 
   if(device)
@@ -413,62 +401,21 @@ void VulkanGraphicsTest::Present()
   acquireImage();
 }
 
-vk::ShaderModule VulkanGraphicsTest::CompileShaderToSpv(const std::string &source_text,
-                                                        shaderc_shader_kind shader_kind,
-                                                        const char *input_file_name,
-                                                        const shaderc::CompileOptions &options)
+vk::ShaderModule VulkanGraphicsTest::CompileShaderModule(const std::string &source_text,
+                                                         ShaderLang lang, ShaderStage stage,
+                                                         const char *entry_point)
 {
   vk::ShaderModule ret;
 
-#if defined(HAVE_SHADERC)
-  shaderc::SpvCompilationResult code =
-      compiler->CompileGlslToSpv(source_text, shader_kind, input_file_name, "main", options);
+  std::vector<uint32_t> spirv = ::CompileShaderToSpv(source_text, lang, stage, entry_point);
 
-  if(code.GetCompilationStatus() != shaderc_compilation_status_success)
-  {
-    TEST_ERROR("Failed to compile shader: %s", code.GetErrorMessage().c_str());
+  if(spirv.empty())
     return ret;
-  }
 
   ResultChecker(ret) = device.createShaderModule(
-      vk::ShaderModuleCreateInfo({}, (code.end() - code.begin()) * 4, code.begin()));
-#endif
+      vk::ShaderModuleCreateInfo({}, spirv.size() * sizeof(uint32_t), spirv.data()));
 
   return ret;
-}
-
-vk::ShaderModule VulkanGraphicsTest::CompileGlslToSpv(const std::string &source_text,
-                                                      shaderc_shader_kind shader_kind,
-                                                      const char *input_file_name)
-{
-#if defined(HAVE_SHADERC)
-  shaderc::CompileOptions options;
-
-  options.SetGenerateDebugInfo();
-  options.SetOptimizationLevel(shaderc_optimization_level_zero);
-  options.SetSourceLanguage(shaderc_source_language_glsl);
-
-  return CompileShaderToSpv(source_text, shader_kind, input_file_name, options);
-#endif
-
-  return {};
-}
-
-vk::ShaderModule VulkanGraphicsTest::CompileHlslToSpv(const std::string &source_text,
-                                                      shaderc_shader_kind shader_kind,
-                                                      const char *input_file_name)
-{
-#if defined(HAVE_SHADERC)
-  shaderc::CompileOptions options;
-
-  options.SetGenerateDebugInfo();
-  options.SetOptimizationLevel(shaderc_optimization_level_zero);
-  options.SetSourceLanguage(shaderc_source_language_hlsl);
-
-  return CompileShaderToSpv(source_text, shader_kind, input_file_name, options);
-#endif
-
-  return {};
 }
 
 vk::CommandBuffer VulkanGraphicsTest::GetCommandBuffer()

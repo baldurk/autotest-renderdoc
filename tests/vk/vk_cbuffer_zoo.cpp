@@ -316,10 +316,12 @@ int impl::main(int argc, char **argv)
   if(!Init(argc, argv))
     return 3;
 
-  vk::ShaderModule vert = CompileGlslToSpv(common + vertex, shaderc_vertex_shader, "tri.vert");
+  vk::ShaderModule vert =
+      CompileShaderModule(common + vertex, ShaderLang::glsl, ShaderStage::vert, "main");
   vk::ShaderModule glslfrag =
-      CompileGlslToSpv(common + glslpixel, shaderc_fragment_shader, "tri.frag");
-  vk::ShaderModule hlslfrag = CompileHlslToSpv(hlslpixel, shaderc_fragment_shader, "trifrag.hlsl");
+      CompileShaderModule(common + glslpixel, ShaderLang::glsl, ShaderStage::frag, "main");
+  vk::ShaderModule hlslfrag =
+      CompileShaderModule(common + hlslpixel, ShaderLang::hlsl, ShaderStage::frag, "main");
 
   if(!vert || !glslfrag || !hlslfrag)
     return 4;

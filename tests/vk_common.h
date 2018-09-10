@@ -41,8 +41,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <shaderc/shaderc.hpp>
-
 #include <vulkan/vk_mem_alloc.h>
 
 #include <list>
@@ -213,13 +211,8 @@ struct VulkanGraphicsTest : public GraphicsTest
   void Submit(int index, int totalSubmits, const std::vector<vk::CommandBuffer> &cmds);
   void Present();
 
-  vk::ShaderModule CompileShaderToSpv(const std::string &source_text,
-                                      shaderc_shader_kind shader_kind, const char *input_file_name,
-                                      const shaderc::CompileOptions &options);
-  vk::ShaderModule CompileGlslToSpv(const std::string &source_text, shaderc_shader_kind shader_kind,
-                                    const char *input_file_name);
-  vk::ShaderModule CompileHlslToSpv(const std::string &source_text, shaderc_shader_kind shader_kind,
-                                    const char *input_file_name);
+  vk::ShaderModule CompileShaderModule(const std::string &source_text, ShaderLang lang,
+                                       ShaderStage stage, const char *entry_point);
   vk::CommandBuffer GetCommandBuffer();
 
   void resize();
@@ -256,9 +249,6 @@ struct VulkanGraphicsTest : public GraphicsTest
 
   vk::Viewport viewport;
   vk::Rect2D scissor;
-
-  // shaderc compiler
-  shaderc::Compiler *compiler;
 
   // glfw
   GLFWwindow *win = NULL;
