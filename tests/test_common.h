@@ -171,8 +171,6 @@ void RegisterTest(TestMetadata test);
   };                           \
   static TestRegistration Anon##__LINE__;
 
-extern std::string lipsum;
-
 std::string GetCWD();
 
 #ifndef ARRAY_COUNT
