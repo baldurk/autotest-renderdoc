@@ -143,16 +143,6 @@ int impl::main(int argc, char **argv)
   strides.push_back(4 * sizeof(float));
   strides.push_back(8 * sizeof(float));
 
-  ID3D11ShaderReflection *foo = NULL;
-  D3DReflect(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), __uuidof(ID3D11ShaderReflection),
-             (void **)&foo);
-
-  D3D11_SIGNATURE_PARAMETER_DESC outdesc0;
-  foo->GetOutputParameterDesc(0, &outdesc0);
-
-  D3D11_SIGNATURE_PARAMETER_DESC outdesc1;
-  foo->GetOutputParameterDesc(1, &outdesc1);
-
   CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
   CHECK_HR(dev->CreateGeometryShaderWithStreamOutput(
       vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &sodecl[0], (UINT)sodecl.size(),

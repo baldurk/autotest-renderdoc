@@ -28,8 +28,6 @@
 
 #include <stdio.h>
 
-#pragma comment(lib, "d3dcompiler.lib")
-
 #define RENDERDOC_ShaderDebugMagicValue_struct                                \
   {                                                                           \
     0xeab25520, 0x6670, 0x4865, 0x84, 0x29, 0x6c, 0x8, 0x51, 0x54, 0x00, 0xff \
@@ -50,6 +48,21 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
   return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+typedef HRESULT(WINAPI *pD3DStripShader)(_In_reads_bytes_(BytecodeLength) LPCVOID pShaderBytecode,
+                                         _In_ SIZE_T BytecodeLength, _In_ UINT uStripFlags,
+                                         _Out_ ID3DBlob **ppStrippedBlob);
+typedef HRESULT(WINAPI *pD3DSetBlobPart)(_In_reads_bytes_(SrcDataSize) LPCVOID pSrcData,
+                                         _In_ SIZE_T SrcDataSize, _In_ D3D_BLOB_PART Part,
+                                         _In_ UINT Flags, _In_reads_bytes_(PartSize) LPCVOID pPart,
+                                         _In_ SIZE_T PartSize, _Out_ ID3DBlob **ppNewShader);
+
+pD3DCompile dyn_D3DCompile = NULL;
+pD3DStripShader dyn_D3DStripShader = NULL;
+pD3DSetBlobPart dyn_D3DSetBlobPart = NULL;
+
+PFN_D3D11_CREATE_DEVICE dyn_D3D11CreateDevice = NULL;
+PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN dyn_D3D11CreateDeviceAndSwapChain = NULL;
+
 bool D3D11GraphicsTest::Init(int argc, char **argv)
 {
   // parse parameters here to override parameters
@@ -57,6 +70,31 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 
   // D3D11 specific can go here
   // ...
+
+  HMODULE d3d11 = LoadLibraryA("d3d11.dll");
+  HMODULE d3dcompiler = LoadLibraryA("d3dcompiler_47.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_46.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_45.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_44.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_43.dll");
+
+  if(!d3d11 || !d3dcompiler)
+  {
+    TEST_ERROR("Couldn't load D3D11");
+    return false;
+  }
+
+  dyn_D3D11CreateDevice = (PFN_D3D11_CREATE_DEVICE)GetProcAddress(d3d11, "D3D11CreateDevice");
+  dyn_D3D11CreateDeviceAndSwapChain = (PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN)GetProcAddress(
+      d3d11, "D3D11CreateDeviceAndSwapChain");
+
+  dyn_D3DCompile = (pD3DCompile)GetProcAddress(d3dcompiler, "D3DCompile");
+  dyn_D3DStripShader = (pD3DStripShader)GetProcAddress(d3dcompiler, "D3DStripShader");
+  dyn_D3DSetBlobPart = (pD3DSetBlobPart)GetProcAddress(d3dcompiler, "D3DSetBlobPart");
 
   D3D_FEATURE_LEVEL features[] = {D3D_FEATURE_LEVEL_11_0};
   D3D_DRIVER_TYPE driver = D3D_DRIVER_TYPE_HARDWARE;
@@ -68,28 +106,28 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 
   if(headless)
   {
-    hr = D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
-                           features, 1, D3D11_SDK_VERSION, &dev, NULL, &ctx);
+    hr = dyn_D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
+                               features, 1, D3D11_SDK_VERSION, &dev, NULL, &ctx);
 
     // if it failed but on a high feature level, try again on warp
     if(FAILED(hr) && features[0] != D3D_FEATURE_LEVEL_11_0)
     {
       driver = D3D_DRIVER_TYPE_WARP;
-      hr = D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
-                             features, 1, D3D11_SDK_VERSION, &dev, NULL, &ctx);
+      hr = dyn_D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
+                                 features, 1, D3D11_SDK_VERSION, &dev, NULL, &ctx);
     }
 
     // if it failed again on a high feature level, try last on ref
     if(FAILED(hr) && features[0] != D3D_FEATURE_LEVEL_11_0)
     {
       driver = D3D_DRIVER_TYPE_REFERENCE;
-      hr = D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
-                             features, 1, D3D11_SDK_VERSION, &dev, NULL, &ctx);
+      hr = dyn_D3D11CreateDevice(NULL, driver, NULL, debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
+                                 features, 1, D3D11_SDK_VERSION, &dev, NULL, &ctx);
     }
 
     if(FAILED(hr))
     {
-      TEST_ERROR("D3D11CreateDeviceAndSwapChain failed: %x", hr);
+      TEST_ERROR("D3D11CreateDevice failed: %x", hr);
       return false;
     }
 
@@ -143,26 +181,26 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
   swapDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
   swapDesc.Flags = 0;
 
-  hr = D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
-                                     debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1,
-                                     D3D11_SDK_VERSION, &swapDesc, &swap, &dev, NULL, &ctx);
+  hr = dyn_D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
+                                         debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1,
+                                         D3D11_SDK_VERSION, &swapDesc, &swap, &dev, NULL, &ctx);
 
   // if it failed but on a high feature level, try again on warp
   if(FAILED(hr))
   {
     driver = D3D_DRIVER_TYPE_WARP;
-    hr = D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
-                                       debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1,
-                                       D3D11_SDK_VERSION, &swapDesc, &swap, &dev, NULL, &ctx);
+    hr = dyn_D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
+                                           debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1,
+                                           D3D11_SDK_VERSION, &swapDesc, &swap, &dev, NULL, &ctx);
   }
 
   // if it failed again on a high feature level, try last on ref
   if(FAILED(hr))
   {
     driver = D3D_DRIVER_TYPE_REFERENCE;
-    hr = D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
-                                       debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1,
-                                       D3D11_SDK_VERSION, &swapDesc, &swap, &dev, NULL, &ctx);
+    hr = dyn_D3D11CreateDeviceAndSwapChain(NULL, driver, NULL,
+                                           debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0, features, 1,
+                                           D3D11_SDK_VERSION, &swapDesc, &swap, &dev, NULL, &ctx);
   }
 
   if(FAILED(hr))
@@ -226,10 +264,11 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile,
   ID3DBlobPtr blob = NULL;
   ID3DBlobPtr error = NULL;
 
-  HRESULT hr = D3DCompile(src.c_str(), src.length(), "", NULL, NULL, entry.c_str(), profile.c_str(),
-                          D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_DEBUG |
-                              D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_OPTIMIZATION_LEVEL0,
-                          0, &blob, &error);
+  HRESULT hr =
+      dyn_D3DCompile(src.c_str(), src.length(), "", NULL, NULL, entry.c_str(), profile.c_str(),
+                     D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_DEBUG |
+                         D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_OPTIMIZATION_LEVEL0,
+                     0, &blob, &error);
 
   if(FAILED(hr))
   {
@@ -248,8 +287,8 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile,
 
     ID3DBlobPtr stripped = NULL;
 
-    D3DStripShader(blob->GetBufferPointer(), blob->GetBufferSize(),
-                   D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO, &stripped);
+    dyn_D3DStripShader(blob->GetBufferPointer(), blob->GetBufferSize(),
+                       D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO, &stripped);
 
     blob = NULL;
 
@@ -304,8 +343,8 @@ ID3DBlobPtr D3D11GraphicsTest::SetBlobPath(string name, ID3DBlob *blob)
 
   memcpy(&pathData[0], &RENDERDOC_ShaderDebugMagicValue, sizeof(RENDERDOC_ShaderDebugMagicValue));
 
-  D3DSetBlobPart(blob->GetBufferPointer(), blob->GetBufferSize(), D3D_BLOB_PRIVATE_DATA, 0,
-                 pathData.c_str(), pathData.size() + 1, &newBlob);
+  dyn_D3DSetBlobPart(blob->GetBufferPointer(), blob->GetBufferSize(), D3D_BLOB_PRIVATE_DATA, 0,
+                     pathData.c_str(), pathData.size() + 1, &newBlob);
 
   return newBlob;
 }
