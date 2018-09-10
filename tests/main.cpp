@@ -109,7 +109,7 @@ int main(int argc, char **argv)
     fullname += "::";
     fullname += test.Name;
 
-    if(fullname == argv[1])
+    if(fullname == argv[1] || !strcmp(argv[1], test.Name))
     {
       TEST_LOG("\n\n======\nRunning %s\n\n", argv[1]);
       int ret = test.test->main(argc, argv);
