@@ -108,6 +108,15 @@ struct Vec4f
   float x, y, z, w;
 };
 
+struct DefaultA2V
+{
+  Vec3f pos;
+  Vec4f col;
+  Vec2f uv;
+};
+
+extern DefaultA2V DefaultTri[3];
+
 struct GraphicsTest
 {
   GraphicsTest()

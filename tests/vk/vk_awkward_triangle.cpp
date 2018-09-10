@@ -30,7 +30,7 @@ struct Awkward_Triangle : VulkanGraphicsTest
       "Draws a triangle but using vertex buffers in formats that only support VBs and not "
       "any other type of buffer use (i.e. requiring manual decode)";
 
-  struct a2v
+  struct vertin
   {
     int16_t pos[3];
     uint16_t col[4];
@@ -127,13 +127,14 @@ void main()
     pipeCreate.renderPass = renderPass;
 
     pipeCreate.binds.push_back(
-        vk::VertexInputBindingDescription(0, sizeof(a2v), vk::VertexInputRate::eVertex));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(0, 0, vk::Format::eR16G16B16Snorm, offsetof(a2v, pos)));
+        vk::VertexInputBindingDescription(0, sizeof(vertin), vk::VertexInputRate::eVertex));
+
     pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(
-        1, 0, vk::Format::eR16G16B16A16Uscaled, offsetof(a2v, col)));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(2, 0, vk::Format::eR64G64B64Sfloat, offsetof(a2v, uv)));
+        0, 0, vk::Format::eR16G16B16Snorm, offsetof(vertin, pos)));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(
+        1, 0, vk::Format::eR16G16B16A16Uscaled, offsetof(vertin, col)));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(
+        2, 0, vk::Format::eR64G64B64Sfloat, offsetof(vertin, uv)));
 
     pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
     pipeCreate.addShader(frag, vk::ShaderStageFlagBits::eFragment);
@@ -144,7 +145,7 @@ void main()
     device.destroyShaderModule(vert);
     device.destroyShaderModule(frag);
 
-    a2v triangle[] = {
+    vertin triangle[] = {
         {
             {-16000, 16000, 0},
             {51515, 2945, 5893, 492},

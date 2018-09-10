@@ -28,13 +28,6 @@ struct Overdraw_Stress : D3D11GraphicsTest
 {
   static constexpr char *Description = "Renders a lot of overlapping triangles";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   string common = R"EOSHADER(
 
 struct a2v
@@ -88,23 +81,7 @@ float4 main(v2f IN, bool fface : SV_IsFrontFace) : SV_Target0
     ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
-    D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
-        {
-            "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-        {
-            "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-        {
-            "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-    };
-
-    ID3D11InputLayoutPtr layout;
-    CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(),
-                                    vsblob->GetBufferSize(), &layout));
+    CreateDefaultInputLayout(vsblob);
 
     ID3D11VertexShaderPtr vs;
     CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
@@ -150,7 +127,7 @@ float4 main(v2f IN, bool fface : SV_IsFrontFace) : SV_Target0
 
     const size_t numVerts = 1200;
 
-    a2v triangle[numVerts] = {0};
+    DefaultA2V triangle[numVerts] = {0};
 
     for(int i = 0; i < numVerts; i++)
     {
@@ -178,11 +155,11 @@ float4 main(v2f IN, bool fface : SV_IsFrontFace) : SV_Target0
 
       ctx->ClearDepthStencilView(bbDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-      UINT stride = sizeof(a2v);
+      UINT stride = sizeof(DefaultA2V);
       UINT offset = 0;
       ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      ctx->IASetInputLayout(layout);
+      ctx->IASetInputLayout(defaultLayout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);

@@ -161,6 +161,8 @@ struct D3D11GraphicsTest : public GraphicsTest
   ID3DBlobPtr SetBlobPath(string name, ID3DBlob *blob);
   void SetBlobPath(string name, ID3D11DeviceChild *shader);
 
+  void CreateDefaultInputLayout(ID3DBlobPtr vsblob);
+
   int MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt,
                  void *data, ID3D11Buffer **buf, ID3D11ShaderResourceView **srv,
                  ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv);
@@ -194,6 +196,8 @@ struct D3D11GraphicsTest : public GraphicsTest
   HWND wnd;
 
   IDXGISwapChainPtr swap;
+
+  ID3D11InputLayoutPtr defaultLayout;
 
   ID3D11Texture2DPtr bbTex;
   ID3D11RenderTargetViewPtr bbRTV;

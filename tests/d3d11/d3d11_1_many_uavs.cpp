@@ -29,13 +29,6 @@ struct Many_UAVs : D3D11GraphicsTest
   static constexpr char *Description =
       "Test using more than 8 compute shader UAVs (D3D11.1 feature)";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   string compute = R"EOSHADER(
 
 RWBuffer<uint4> uav : register(u20);

@@ -30,7 +30,7 @@ struct Debug_Shader : D3D11GraphicsTest
       "Tests simple shader debugging identities by rendering many small triangles and "
       "performing one calculation to each to an F32 target";
 
-  struct a2v
+  struct ConstsA2V
   {
     Vec3f pos;
     float zero;
@@ -40,7 +40,7 @@ struct Debug_Shader : D3D11GraphicsTest
 
   string common = R"EOSHADER(
 
-struct a2v
+struct consts
 {
 	float3 pos : POSITION;
 	float zeroVal : ZERO;
@@ -61,7 +61,7 @@ struct v2f
 
   string vertex = R"EOSHADER(
 
-v2f main(a2v IN, uint tri : SV_InstanceID)
+v2f main(consts IN, uint tri : SV_InstanceID)
 {
 	v2f OUT = (v2f)0;
 
@@ -228,16 +228,10 @@ float4 main(v2f IN) : SV_Target0
     MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex, NULL, NULL,
                   &fltRT, NULL);
 
-    a2v triangle[] = {
-        {
-            Vec3f(-0.5f, 0.0f, 0.0f), 0.0f, 1.0f, -1.0f,
-        },
-        {
-            Vec3f(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, -1.0f,
-        },
-        {
-            Vec3f(0.5f, 0.0f, 0.0f), 0.0f, 1.0f, -1.0f,
-        },
+    ConstsA2V triangle[] = {
+        {Vec3f(-0.5f, 0.0f, 0.0f), 0.0f, 1.0f, -1.0f},
+        {Vec3f(0.0f, 1.0f, 0.0f), 0.0f, 1.0f, -1.0f},
+        {Vec3f(0.5f, 0.0f, 0.0f), 0.0f, 1.0f, -1.0f},
     };
 
     ID3D11BufferPtr vb;
@@ -266,11 +260,11 @@ float4 main(v2f IN) : SV_Target0
       ctx->ClearRenderTargetView(fltRT, col);
       ctx->ClearRenderTargetView(bbRTV, col);
 
-      UINT stride = sizeof(a2v);
+      UINT stride = sizeof(DefaultA2V);
       UINT offset = 0;
       ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      ctx->IASetInputLayout(layout);
+      ctx->IASetInputLayout(defaultLayout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);

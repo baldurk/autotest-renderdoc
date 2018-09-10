@@ -82,13 +82,6 @@ float4 main(v2f IN) : SV_Target0
 
 )EOSHADER";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   string common = R"EOSHADER(
 
 #version 420 core
@@ -180,24 +173,16 @@ void main()
     gladLoadWGL(dc);
     ReleaseDC(NULL, dc);
 
-    a2v triangle[] = {
-        {
-            Vec3f(-0.8f, -0.8f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(-0.8f, 0.8f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.8f, -0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.8f, 0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 1.0f),
-        },
+    DefaultA2V quad[] = {
+        {Vec3f(-0.8f, -0.8f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(-0.8f, 0.8f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.8f, -0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.8f, 0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 1.0f)},
     };
 
     ID3D11BufferPtr buf;
-    d3d.MakeBuffer(D3D11GraphicsTest::eCBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN,
-                   triangle, &buf, NULL, NULL, NULL);
+    d3d.MakeBuffer(D3D11GraphicsTest::eCBuffer, 0, sizeof(quad), 0, DXGI_FORMAT_UNKNOWN, quad, &buf,
+                   NULL, NULL, NULL);
 
     GLuint vao = MakeVAO();
     glBindVertexArray(vao);
@@ -212,9 +197,9 @@ void main()
 
     // glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), (void *)(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), (void *)(sizeof(Vec3f)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V),
                           (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
     glEnableVertexAttribArray(0);

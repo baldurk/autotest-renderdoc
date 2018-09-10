@@ -30,13 +30,6 @@ struct VK_Simple_Triangle : VulkanGraphicsTest
       "Just draws a simple triangle, using normal pipeline. Basic test that can be used "
       "for any dead-simple tests that don't require any particular API use";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   std::string common = R"EOSHADER(
 
 #version 420 core
@@ -125,13 +118,13 @@ void main()
     pipeCreate.renderPass = renderPass;
 
     pipeCreate.binds.push_back(
-        vk::VertexInputBindingDescription(0, sizeof(a2v), vk::VertexInputRate::eVertex));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(0, 0, formatof(a2v::pos), offsetof(a2v, pos)));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(1, 0, formatof(a2v::col), offsetof(a2v, col)));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(2, 0, formatof(a2v::uv), offsetof(a2v, uv)));
+        vk::VertexInputBindingDescription(0, sizeof(DefaultA2V), vk::VertexInputRate::eVertex));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(0, 0, formatof(DefaultA2V::pos),
+                                                                   offsetof(DefaultA2V, pos)));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(1, 0, formatof(DefaultA2V::col),
+                                                                   offsetof(DefaultA2V, col)));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(2, 0, formatof(DefaultA2V::uv),
+                                                                   offsetof(DefaultA2V, uv)));
 
     pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
     pipeCreate.addShader(frag, vk::ShaderStageFlagBits::eFragment);
@@ -142,26 +135,14 @@ void main()
     device.destroyShaderModule(vert);
     device.destroyShaderModule(frag);
 
-    a2v triangle[] = {
-        {
-            Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, 0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-    };
-
     AllocatedBuffer vb;
     vb.create(allocator,
-              vk::BufferCreateInfo({}, sizeof(triangle), vk::BufferUsageFlagBits::eVertexBuffer |
-                                                             vk::BufferUsageFlagBits::eTransferDst),
+              vk::BufferCreateInfo({}, sizeof(DefaultTri), vk::BufferUsageFlagBits::eVertexBuffer |
+                                                               vk::BufferUsageFlagBits::eTransferDst),
               VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
     void *ptr = vb.map();
-    memcpy(ptr, triangle, sizeof(triangle));
+    memcpy(ptr, DefaultTri, sizeof(DefaultTri));
     vb.unmap();
 
     while(Running())

@@ -29,16 +29,9 @@ struct D3D11_Draw_Zoo : D3D11GraphicsTest
   static constexpr char *Description =
       "Draws several variants using different vertex/index offsets.";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   string common = R"EOSHADER(
 
-struct a2v
+struct DefaultA2V
 {
 	float3 pos : POSITION;
 	float4 col : COLOR0;
@@ -59,7 +52,7 @@ struct v2f
 
   string vertex = R"EOSHADER(
 
-v2f main(a2v IN, uint vid : SV_VertexID, uint instid : SV_InstanceID)
+v2f main(DefaultA2V IN, uint vid : SV_VertexID, uint instid : SV_InstanceID)
 {
 	v2f OUT = (v2f)0;
 
@@ -100,23 +93,16 @@ float4 main(v2f IN) : SV_Target0
     ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
     D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
-        {
-            "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-        {
-            "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-        {
-            "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
 
-    ID3D11InputLayoutPtr layout;
+    ID3D11InputLayoutPtr vertLayout;
     CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(),
-                                    vsblob->GetBufferSize(), &layout));
+                                    vsblob->GetBufferSize(), &vertLayout));
 
+    layoutdesc[1].AlignedByteOffset = 0;
     layoutdesc[1].InputSlot = 1;
     layoutdesc[1].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
     layoutdesc[1].InstanceDataStepRate = 1;
@@ -130,103 +116,77 @@ float4 main(v2f IN) : SV_Target0
     ID3D11PixelShaderPtr ps;
     CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
 
-    a2v triangle[] = {
+    DefaultA2V triangle[] = {
         // 0
-        {
-            Vec3f(-1.0f, -1.0f, -1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec2f(-1.0f, -1.0f),
-        },
+        {Vec3f(-1.0f, -1.0f, -1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec2f(-1.0f, -1.0f)},
         // 1, 2, 3
-        {
-            Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.5f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
         // 4, 5, 6
-        {
-            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
         // 7, 8, 9
-        {
-            Vec3f(-0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(-0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
         // 10, 11, 12
-        {
-            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
     };
 
-    std::vector<a2v> vbData;
+    std::vector<DefaultA2V> vbData;
     vbData.resize(30);
 
     {
-      a2v *src = (a2v *)triangle;
-      a2v *dst = (a2v *)&vbData[0];
+      DefaultA2V *src = (DefaultA2V *)triangle;
+      DefaultA2V *dst = (DefaultA2V *)&vbData[0];
 
       // up-pointing triangle to offset 0
-      memcpy(dst + 0, triangle + 1, sizeof(a2v));
-      memcpy(dst + 1, triangle + 2, sizeof(a2v));
-      memcpy(dst + 2, triangle + 3, sizeof(a2v));
+      memcpy(dst + 0, triangle + 1, sizeof(DefaultA2V));
+      memcpy(dst + 1, triangle + 2, sizeof(DefaultA2V));
+      memcpy(dst + 2, triangle + 3, sizeof(DefaultA2V));
 
       // invalid vert for index 3 and 4
-      memcpy(dst + 3, triangle + 0, sizeof(a2v));
-      memcpy(dst + 4, triangle + 0, sizeof(a2v));
+      memcpy(dst + 3, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 4, triangle + 0, sizeof(DefaultA2V));
 
       // down-pointing triangle at offset 5
-      memcpy(dst + 5, triangle + 4, sizeof(a2v));
-      memcpy(dst + 6, triangle + 5, sizeof(a2v));
-      memcpy(dst + 7, triangle + 6, sizeof(a2v));
+      memcpy(dst + 5, triangle + 4, sizeof(DefaultA2V));
+      memcpy(dst + 6, triangle + 5, sizeof(DefaultA2V));
+      memcpy(dst + 7, triangle + 6, sizeof(DefaultA2V));
 
       // invalid vert for 8 - 12
-      memcpy(dst + 8, triangle + 0, sizeof(a2v));
-      memcpy(dst + 9, triangle + 0, sizeof(a2v));
-      memcpy(dst + 10, triangle + 0, sizeof(a2v));
-      memcpy(dst + 11, triangle + 0, sizeof(a2v));
-      memcpy(dst + 12, triangle + 0, sizeof(a2v));
+      memcpy(dst + 8, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 9, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 10, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 11, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 12, triangle + 0, sizeof(DefaultA2V));
 
       // left-pointing triangle data to offset 13
-      memcpy(dst + 13, triangle + 7, sizeof(a2v));
-      memcpy(dst + 14, triangle + 8, sizeof(a2v));
-      memcpy(dst + 15, triangle + 9, sizeof(a2v));
+      memcpy(dst + 13, triangle + 7, sizeof(DefaultA2V));
+      memcpy(dst + 14, triangle + 8, sizeof(DefaultA2V));
+      memcpy(dst + 15, triangle + 9, sizeof(DefaultA2V));
 
       // invalid vert for 16-22
-      memcpy(dst + 16, triangle + 0, sizeof(a2v));
-      memcpy(dst + 17, triangle + 0, sizeof(a2v));
-      memcpy(dst + 18, triangle + 0, sizeof(a2v));
-      memcpy(dst + 19, triangle + 0, sizeof(a2v));
-      memcpy(dst + 20, triangle + 0, sizeof(a2v));
-      memcpy(dst + 21, triangle + 0, sizeof(a2v));
-      memcpy(dst + 22, triangle + 0, sizeof(a2v));
+      memcpy(dst + 16, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 17, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 18, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 19, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 20, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 21, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 22, triangle + 0, sizeof(DefaultA2V));
 
       // right-pointing triangle data to offset 23
-      memcpy(dst + 23, triangle + 10, sizeof(a2v));
-      memcpy(dst + 24, triangle + 11, sizeof(a2v));
-      memcpy(dst + 25, triangle + 12, sizeof(a2v));
+      memcpy(dst + 23, triangle + 10, sizeof(DefaultA2V));
+      memcpy(dst + 24, triangle + 11, sizeof(DefaultA2V));
+      memcpy(dst + 25, triangle + 12, sizeof(DefaultA2V));
     }
 
     ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, UINT(vbData.size() * sizeof(a2v)), 0, DXGI_FORMAT_UNKNOWN,
+    if(MakeBuffer(eVBuffer, 0, UINT(vbData.size() * sizeof(DefaultA2V)), 0, DXGI_FORMAT_UNKNOWN,
                   vbData.data(), &vb, NULL, NULL, NULL))
     {
       TEST_ERROR("Failed to create triangle VB");
@@ -312,10 +272,10 @@ float4 main(v2f IN) : SV_Target0
       ctx->RSSetViewports(1, &view);
 
       ID3D11Buffer *vbs[2] = {vb, instvb};
-      UINT strides[2] = {sizeof(a2v), sizeof(Vec4f)};
+      UINT strides[2] = {sizeof(DefaultA2V), sizeof(Vec4f)};
       UINT offsets[2] = {0, 0};
 
-      ctx->IASetInputLayout(layout);
+      ctx->IASetInputLayout(vertLayout);
 
       ///////////////////////////////////////////////////
       // non-indexed, non-instanced
@@ -336,7 +296,7 @@ float4 main(v2f IN) : SV_Target0
 
       // test with vertex offset and vbuffer offset
       ctx->RSSetViewports(1, &view);
-      offsets[0] = 5 * sizeof(a2v);
+      offsets[0] = 5 * sizeof(DefaultA2V);
       ctx->IASetVertexBuffers(0, 2, vbs, strides, offsets);
       ctx->Draw(3, 8);
       view.TopLeftX += view.Width;
@@ -374,7 +334,7 @@ float4 main(v2f IN) : SV_Target0
 
       // test with first index and vertex offset and vbuffer offset
       ctx->RSSetViewports(1, &view);
-      offsets[0] = 10 * sizeof(a2v);
+      offsets[0] = 10 * sizeof(DefaultA2V);
       ctx->IASetVertexBuffers(0, 2, vbs, strides, offsets);
       ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
       ctx->DrawIndexed(3, 23, -100);
@@ -382,7 +342,7 @@ float4 main(v2f IN) : SV_Target0
 
       // test with first index and vertex offset and vbuffer offset and ibuffer offset
       ctx->RSSetViewports(1, &view);
-      offsets[0] = 19 * sizeof(a2v);
+      offsets[0] = 19 * sizeof(DefaultA2V);
       ctx->IASetVertexBuffers(0, 2, vbs, strides, offsets);
       ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 14 * sizeof(uint32_t));
       ctx->DrawIndexed(3, 23, -100);
@@ -407,7 +367,7 @@ float4 main(v2f IN) : SV_Target0
 
       // basic test with first instance
       ctx->RSSetViewports(1, &view);
-      offsets[0] = 5 * sizeof(a2v);
+      offsets[0] = 5 * sizeof(DefaultA2V);
       offsets[1] = 0;
       ctx->IASetVertexBuffers(0, 2, vbs, strides, offsets);
       ctx->DrawInstanced(3, 2, 0, 5);
@@ -415,7 +375,7 @@ float4 main(v2f IN) : SV_Target0
 
       // basic test with first instance and instance buffer offset
       ctx->RSSetViewports(1, &view);
-      offsets[0] = 13 * sizeof(a2v);
+      offsets[0] = 13 * sizeof(DefaultA2V);
       offsets[1] = 8 * sizeof(Vec4f);
       ctx->IASetVertexBuffers(0, 2, vbs, strides, offsets);
       ctx->DrawInstanced(3, 2, 0, 5);

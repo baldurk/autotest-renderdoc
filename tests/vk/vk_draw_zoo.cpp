@@ -29,13 +29,6 @@ struct VK_Draw_Zoo : VulkanGraphicsTest
   static constexpr char *Description =
       "Draws several variants using different vertex/index offsets.";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   std::string common = R"EOSHADER(
 
 #version 420 core
@@ -132,13 +125,13 @@ void main()
     pipeCreate.renderPass = renderPass;
 
     pipeCreate.binds.push_back(
-        vk::VertexInputBindingDescription(0, sizeof(a2v), vk::VertexInputRate::eVertex));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(0, 0, formatof(a2v::pos), offsetof(a2v, pos)));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(1, 0, formatof(a2v::col), offsetof(a2v, col)));
-    pipeCreate.attrs.push_back(
-        vk::VertexInputAttributeDescription(2, 0, formatof(a2v::uv), offsetof(a2v, uv)));
+        vk::VertexInputBindingDescription(0, sizeof(DefaultA2V), vk::VertexInputRate::eVertex));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(0, 0, formatof(DefaultA2V::pos),
+                                                                   offsetof(DefaultA2V, pos)));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(1, 0, formatof(DefaultA2V::col),
+                                                                   offsetof(DefaultA2V, col)));
+    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(2, 0, formatof(DefaultA2V::uv),
+                                                                   offsetof(DefaultA2V, uv)));
 
     pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
     pipeCreate.addShader(frag, vk::ShaderStageFlagBits::eFragment);
@@ -167,153 +160,103 @@ void main()
     device.destroyShaderModule(vert);
     device.destroyShaderModule(frag);
 
-    a2v triangle[] = {
+    DefaultA2V triangle[] = {
         // 0
-        {
-            Vec3f(-1.0f, -1.0f, -1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec2f(-1.0f, -1.0f),
-        },
+        {Vec3f(-1.0f, -1.0f, -1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec2f(-1.0f, -1.0f)},
         // 1, 2, 3
-        {
-            Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(-0.5f, 0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.5f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
         // 4, 5, 6
-        {
-            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
         // 7, 8, 9
-        {
-            Vec3f(-0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(-0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
         // 10, 11, 12
-        {
-            Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(0.0f, -0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
         // strips: 13, 14, 15, ...
-        {
-            Vec3f(-0.5f, 0.2f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(-0.5f, 0.0f, 0.0f), Vec4f(0.2f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(-0.3f, 0.2f, 0.0f), Vec4f(0.4f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(-0.3f, 0.0f, 0.0f), Vec4f(0.6f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(-0.1f, 0.2f, 0.0f), Vec4f(0.8f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(-0.1f, 0.0f, 0.0f), Vec4f(1.0f, 0.5f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.1f, 0.2f, 0.0f), Vec4f(0.0f, 0.8f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.1f, 0.0f, 0.0f), Vec4f(0.2f, 0.1f, 0.5f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.3f, 0.2f, 0.0f), Vec4f(0.4f, 0.3f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.3f, 0.0f, 0.0f), Vec4f(0.6f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.5f, 0.2f, 0.0f), Vec4f(0.8f, 0.3f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+        {Vec3f(-0.5f, 0.2f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(-0.5f, 0.0f, 0.0f), Vec4f(0.2f, 0.1f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(-0.3f, 0.2f, 0.0f), Vec4f(0.4f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(-0.3f, 0.0f, 0.0f), Vec4f(0.6f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(-0.1f, 0.2f, 0.0f), Vec4f(0.8f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(-0.1f, 0.0f, 0.0f), Vec4f(1.0f, 0.5f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.1f, 0.2f, 0.0f), Vec4f(0.0f, 0.8f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.1f, 0.0f, 0.0f), Vec4f(0.2f, 0.1f, 0.5f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.3f, 0.2f, 0.0f), Vec4f(0.4f, 0.3f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.3f, 0.0f, 0.0f), Vec4f(0.6f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.5f, 0.2f, 0.0f), Vec4f(0.8f, 0.3f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
     };
 
     AllocatedBuffer vb1;
-    vb1.create(allocator,
-               vk::BufferCreateInfo({}, sizeof(a2v) * 50, vk::BufferUsageFlagBits::eVertexBuffer |
-                                                              vk::BufferUsageFlagBits::eTransferDst),
+    vb1.create(allocator, vk::BufferCreateInfo({}, sizeof(DefaultA2V) * 50,
+                                               vk::BufferUsageFlagBits::eVertexBuffer |
+                                                   vk::BufferUsageFlagBits::eTransferDst),
                VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
     {
-      a2v *src = (a2v *)triangle;
-      a2v *dst = (a2v *)vb1.map();
+      DefaultA2V *src = (DefaultA2V *)triangle;
+      DefaultA2V *dst = (DefaultA2V *)vb1.map();
 
       // up-pointing triangle to offset 0
-      memcpy(dst + 0, triangle + 1, sizeof(a2v));
-      memcpy(dst + 1, triangle + 2, sizeof(a2v));
-      memcpy(dst + 2, triangle + 3, sizeof(a2v));
+      memcpy(dst + 0, triangle + 1, sizeof(DefaultA2V));
+      memcpy(dst + 1, triangle + 2, sizeof(DefaultA2V));
+      memcpy(dst + 2, triangle + 3, sizeof(DefaultA2V));
 
       // invalid vert for index 3 and 4
-      memcpy(dst + 3, triangle + 0, sizeof(a2v));
-      memcpy(dst + 4, triangle + 0, sizeof(a2v));
+      memcpy(dst + 3, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 4, triangle + 0, sizeof(DefaultA2V));
 
       // down-pointing triangle at offset 5
-      memcpy(dst + 5, triangle + 4, sizeof(a2v));
-      memcpy(dst + 6, triangle + 5, sizeof(a2v));
-      memcpy(dst + 7, triangle + 6, sizeof(a2v));
+      memcpy(dst + 5, triangle + 4, sizeof(DefaultA2V));
+      memcpy(dst + 6, triangle + 5, sizeof(DefaultA2V));
+      memcpy(dst + 7, triangle + 6, sizeof(DefaultA2V));
 
       // invalid vert for 8 - 12
-      memcpy(dst + 8, triangle + 0, sizeof(a2v));
-      memcpy(dst + 9, triangle + 0, sizeof(a2v));
-      memcpy(dst + 10, triangle + 0, sizeof(a2v));
-      memcpy(dst + 11, triangle + 0, sizeof(a2v));
-      memcpy(dst + 12, triangle + 0, sizeof(a2v));
+      memcpy(dst + 8, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 9, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 10, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 11, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 12, triangle + 0, sizeof(DefaultA2V));
 
       // left-pointing triangle data to offset 13
-      memcpy(dst + 13, triangle + 7, sizeof(a2v));
-      memcpy(dst + 14, triangle + 8, sizeof(a2v));
-      memcpy(dst + 15, triangle + 9, sizeof(a2v));
+      memcpy(dst + 13, triangle + 7, sizeof(DefaultA2V));
+      memcpy(dst + 14, triangle + 8, sizeof(DefaultA2V));
+      memcpy(dst + 15, triangle + 9, sizeof(DefaultA2V));
 
       // invalid vert for 16-22
-      memcpy(dst + 16, triangle + 0, sizeof(a2v));
-      memcpy(dst + 17, triangle + 0, sizeof(a2v));
-      memcpy(dst + 18, triangle + 0, sizeof(a2v));
-      memcpy(dst + 19, triangle + 0, sizeof(a2v));
-      memcpy(dst + 20, triangle + 0, sizeof(a2v));
-      memcpy(dst + 21, triangle + 0, sizeof(a2v));
-      memcpy(dst + 22, triangle + 0, sizeof(a2v));
+      memcpy(dst + 16, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 17, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 18, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 19, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 20, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 21, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 22, triangle + 0, sizeof(DefaultA2V));
 
       // right-pointing triangle data to offset 23
-      memcpy(dst + 23, triangle + 10, sizeof(a2v));
-      memcpy(dst + 24, triangle + 11, sizeof(a2v));
-      memcpy(dst + 25, triangle + 12, sizeof(a2v));
+      memcpy(dst + 23, triangle + 10, sizeof(DefaultA2V));
+      memcpy(dst + 24, triangle + 11, sizeof(DefaultA2V));
+      memcpy(dst + 25, triangle + 12, sizeof(DefaultA2V));
 
       // strip after 30
-      memcpy(dst + 30, triangle + 13, sizeof(a2v));
-      memcpy(dst + 31, triangle + 14, sizeof(a2v));
-      memcpy(dst + 32, triangle + 15, sizeof(a2v));
-      memcpy(dst + 33, triangle + 16, sizeof(a2v));
-      memcpy(dst + 34, triangle + 17, sizeof(a2v));
-      memcpy(dst + 35, triangle + 18, sizeof(a2v));
-      memcpy(dst + 36, triangle + 19, sizeof(a2v));
-      memcpy(dst + 37, triangle + 20, sizeof(a2v));
-      memcpy(dst + 38, triangle + 21, sizeof(a2v));
-      memcpy(dst + 39, triangle + 22, sizeof(a2v));
-      memcpy(dst + 40, triangle + 23, sizeof(a2v));
-      memcpy(dst + 41, triangle + 24, sizeof(a2v));
+      memcpy(dst + 30, triangle + 13, sizeof(DefaultA2V));
+      memcpy(dst + 31, triangle + 14, sizeof(DefaultA2V));
+      memcpy(dst + 32, triangle + 15, sizeof(DefaultA2V));
+      memcpy(dst + 33, triangle + 16, sizeof(DefaultA2V));
+      memcpy(dst + 34, triangle + 17, sizeof(DefaultA2V));
+      memcpy(dst + 35, triangle + 18, sizeof(DefaultA2V));
+      memcpy(dst + 36, triangle + 19, sizeof(DefaultA2V));
+      memcpy(dst + 37, triangle + 20, sizeof(DefaultA2V));
+      memcpy(dst + 38, triangle + 21, sizeof(DefaultA2V));
+      memcpy(dst + 39, triangle + 22, sizeof(DefaultA2V));
+      memcpy(dst + 40, triangle + 23, sizeof(DefaultA2V));
+      memcpy(dst + 41, triangle + 24, sizeof(DefaultA2V));
 
       vb1.unmap();
     }
@@ -429,7 +372,7 @@ void main()
 
       // test with vertex offset and vbuffer offset
       cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {5 * sizeof(a2v)});
+      cmd.bindVertexBuffers(0, {vb1.buffer}, {5 * sizeof(DefaultA2V)});
       cmd.draw(3, 1, 8, 0);
       vp.x += vp.width;
 
@@ -463,14 +406,14 @@ void main()
 
       // test with first index and vertex offset and vbuffer offset
       cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {10 * sizeof(a2v)});
+      cmd.bindVertexBuffers(0, {vb1.buffer}, {10 * sizeof(DefaultA2V)});
       cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
       cmd.drawIndexed(3, 1, 23, -100, 0);
       vp.x += vp.width;
 
       // test with first index and vertex offset and vbuffer offset and ibuffer offset
       cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {19 * sizeof(a2v)});
+      cmd.bindVertexBuffers(0, {vb1.buffer}, {19 * sizeof(DefaultA2V)});
       cmd.bindIndexBuffer(ib1.buffer, 14 * sizeof(uint32_t), vk::IndexType::eUint32);
       cmd.drawIndexed(3, 1, 23, -100, 0);
       vp.x += vp.width;
@@ -501,13 +444,14 @@ void main()
 
       // basic test with first instance
       cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {5 * sizeof(a2v), 0});
+      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {5 * sizeof(DefaultA2V), 0});
       cmd.draw(3, 2, 0, 5);
       vp.x += vp.width;
 
       // basic test with first instance and instance buffer offset
       cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {13 * sizeof(a2v), 8 * sizeof(Vec4f)});
+      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer},
+                            {13 * sizeof(DefaultA2V), 8 * sizeof(Vec4f)});
       cmd.draw(3, 2, 0, 5);
       vp.x += vp.width;
 

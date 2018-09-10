@@ -356,6 +356,19 @@ void D3D11GraphicsTest::SetBlobPath(string name, ID3D11DeviceChild *shader)
   shader->SetPrivateData(RENDERDOC_ShaderDebugMagicValue, (UINT)name.size() + 1, name.c_str());
 }
 
+void D3D11GraphicsTest::CreateDefaultInputLayout(ID3DBlobPtr vsblob)
+{
+  D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
+      {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+      {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0},
+  };
+
+  HRESULT hr;
+  CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(),
+                                  vsblob->GetBufferSize(), &defaultLayout));
+}
+
 vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t offset, uint32_t len)
 {
   D3D11_MAPPED_SUBRESOURCE mapped;

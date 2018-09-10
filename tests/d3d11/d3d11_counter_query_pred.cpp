@@ -30,13 +30,6 @@ struct Counter_Query_Pred : D3D11GraphicsTest
       "Tests use of D3D11 counters, queries and predication. "
       "for any dead-simple tests that don't require any particular API use";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   string common = R"EOSHADER(
 
 struct a2v
@@ -94,25 +87,16 @@ float4 main(v2f IN) : SV_Target0
 
     HRESULT hr = S_OK;
 
-    a2v vertData[] = {
-        {
-            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-        {
-            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
+    DefaultA2V vertData[] = {
+        // passing triangle
+        {Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
+        {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
+        {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+
+        // failing triangle
+        {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
+        {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
     };
 
     ID3D11BufferPtr vb;
@@ -248,23 +232,7 @@ float4 main(v2f IN) : SV_Target0
     ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
-    D3D11_INPUT_ELEMENT_DESC layoutdesc[] = {
-        {
-            "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-        {
-            "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-        {
-            "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-            D3D11_INPUT_PER_VERTEX_DATA, 0,
-        },
-    };
-
-    ID3D11InputLayoutPtr layout;
-    CHECK_HR(dev->CreateInputLayout(layoutdesc, ARRAY_COUNT(layoutdesc), vsblob->GetBufferPointer(),
-                                    vsblob->GetBufferSize(), &layout));
+    CreateDefaultInputLayout(vsblob);
 
     ID3D11VertexShaderPtr vs;
     CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
@@ -278,11 +246,11 @@ float4 main(v2f IN) : SV_Target0
       float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
       ctx->ClearRenderTargetView(bbRTV, col);
 
-      UINT stride = sizeof(a2v);
+      UINT stride = sizeof(DefaultA2V);
       UINT offset = 0;
       ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      ctx->IASetInputLayout(layout);
+      ctx->IASetInputLayout(defaultLayout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);

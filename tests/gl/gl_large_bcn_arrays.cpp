@@ -30,13 +30,6 @@ struct Large_BCn_Arrays : OpenGLGraphicsTest
   static constexpr char *Description =
       "Test creating large texture 2D arrays of BC4, BC5, BC6, BC7 textures";
 
-  struct a2v
-  {
-    Vec3f pos;
-    Vec4f col;
-    Vec2f uv;
-  };
-
   string common = R"EOSHADER(
 
 #version 420 core
@@ -87,28 +80,16 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    a2v triangle[] = {
-        {
-            Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f),
-        },
-        {
-            Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f),
-        },
-        {
-            Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f),
-        },
-    };
-
     GLuint vao = MakeVAO();
     glBindVertexArray(vao);
 
     GLuint vb = MakeBuffer();
     glBindBuffer(GL_ARRAY_BUFFER, vb);
-    glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
+    glBufferStorage(GL_ARRAY_BUFFER, sizeof(DefaultTri), DefaultTri, 0);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(0));
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(a2v), (void *)(sizeof(Vec3f)));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(a2v),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), (void *)(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), (void *)(sizeof(Vec3f)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V),
                           (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
     glEnableVertexAttribArray(0);
