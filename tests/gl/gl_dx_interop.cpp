@@ -25,7 +25,7 @@
 #include "../d3d11_common.h"
 #include "../gl_common.h"
 
-#include <glad/glad_wgl.h>
+#include "../glad/glad_wgl.h"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WGL
