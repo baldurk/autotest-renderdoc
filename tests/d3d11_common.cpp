@@ -369,6 +369,42 @@ void D3D11GraphicsTest::CreateDefaultInputLayout(ID3DBlobPtr vsblob)
                                   vsblob->GetBufferSize(), &defaultLayout));
 }
 
+ID3D11VertexShaderPtr D3D11GraphicsTest::CreateVS(ID3DBlobPtr blob)
+{
+  ID3D11VertexShaderPtr ret;
+  HRESULT hr;
+  CHECK_HR(dev->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &ret));
+  return ret;
+}
+
+ID3D11PixelShaderPtr D3D11GraphicsTest::CreatePS(ID3DBlobPtr blob)
+{
+  ID3D11PixelShaderPtr ret;
+  HRESULT hr;
+  CHECK_HR(dev->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &ret));
+  return ret;
+}
+
+ID3D11ComputeShaderPtr D3D11GraphicsTest::CreateCS(ID3DBlobPtr blob)
+{
+  ID3D11ComputeShaderPtr ret;
+  HRESULT hr;
+  CHECK_HR(dev->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &ret));
+  return ret;
+}
+
+ID3D11GeometryShaderPtr D3D11GraphicsTest::CreateGS(ID3DBlobPtr blob,
+                                                    const std::vector<D3D11_SO_DECLARATION_ENTRY> &sodecl,
+                                                    const std::vector<UINT> &strides)
+{
+  ID3D11GeometryShaderPtr ret;
+  HRESULT hr;
+  CHECK_HR(dev->CreateGeometryShaderWithStreamOutput(blob->GetBufferPointer(), blob->GetBufferSize(),
+                                                     &sodecl[0], (UINT)sodecl.size(), &strides[0],
+                                                     (UINT)strides.size(), 0, NULL, &ret));
+  return ret;
+}
+
 vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t offset, uint32_t len)
 {
   D3D11_MAPPED_SUBRESOURCE mapped;

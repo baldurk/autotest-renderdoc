@@ -88,10 +88,8 @@ float4 main(v2f IN) : SV_Target0
 
     CreateDefaultInputLayout(vsblob);
 
-    ID3D11VertexShaderPtr vs;
-    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-    ID3D11PixelShaderPtr ps;
-    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+    ID3D11VertexShaderPtr vs = CreateVS(vsblob);
+    ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
     DefaultA2V triangle[] = {
         {Vec3f(-1.0f, 0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},

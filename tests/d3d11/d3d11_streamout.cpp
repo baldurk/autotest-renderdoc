@@ -109,14 +109,9 @@ float4 main(v2f IN) : SV_Target0
     strides.push_back(4 * sizeof(float));
     strides.push_back(8 * sizeof(float));
 
-    ID3D11VertexShaderPtr vs;
-    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-    ID3D11GeometryShaderPtr gs;
-    CHECK_HR(dev->CreateGeometryShaderWithStreamOutput(
-        vsblob->GetBufferPointer(), vsblob->GetBufferSize(), &sodecl[0], (UINT)sodecl.size(),
-        &strides[0], (UINT)strides.size(), 0, NULL, &gs));
-    ID3D11PixelShaderPtr ps;
-    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+    ID3D11VertexShaderPtr vs = CreateVS(vsblob);
+    ID3D11PixelShaderPtr ps = CreatePS(psblob);
+    ID3D11GeometryShaderPtr gs = CreateGS(vsblob, sodecl, strides);
 
     ID3D11BufferPtr vb;
     if(MakeBuffer(eVBuffer, 0, sizeof(DefaultTri), 0, DXGI_FORMAT_UNKNOWN, DefaultTri, &vb, NULL,

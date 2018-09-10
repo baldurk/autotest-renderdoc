@@ -71,10 +71,8 @@ float4 main() : SV_Target0
     ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
-    ID3D11VertexShaderPtr vs;
-    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-    ID3D11PixelShaderPtr ps;
-    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+    ID3D11VertexShaderPtr vs = CreateVS(vsblob);
+    ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
     ID3D11Texture2DPtr tex_rt;
     MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_R8G8B8A8_UNORM, &tex_rt, NULL, NULL,

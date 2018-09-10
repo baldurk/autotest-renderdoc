@@ -83,10 +83,8 @@ float4 main(v2f IN, bool fface : SV_IsFrontFace) : SV_Target0
 
     CreateDefaultInputLayout(vsblob);
 
-    ID3D11VertexShaderPtr vs;
-    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-    ID3D11PixelShaderPtr ps;
-    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+    ID3D11VertexShaderPtr vs = CreateVS(vsblob);
+    ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
     ID3D11Texture2DPtr bbDepth;
     ID3D11DepthStencilViewPtr bbDSV;

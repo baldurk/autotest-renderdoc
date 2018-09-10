@@ -145,12 +145,8 @@ void main()
     ID3DBlobPtr vsblob = d3d.Compile(dxcommon + dxvertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = d3d.Compile(dxcommon + dxpixel, "main", "ps_5_0");
 
-    ID3D11VertexShaderPtr vs;
-    CHECK_HR(d3d.dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL,
-                                         &vs));
-    ID3D11PixelShaderPtr ps;
-    CHECK_HR(
-        d3d.dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+    ID3D11VertexShaderPtr vs = d3d.CreateVS(vsblob);
+    ID3D11PixelShaderPtr ps = d3d.CreatePS(psblob);
 
     ID3D11Texture2DPtr d3d_fromd3d;
     ID3D11RenderTargetViewPtr rtv;

@@ -83,10 +83,8 @@ void main(float4 pos : SV_Position, out float4 a : SV_Target0, out float4 b : SV
     ID3DBlobPtr vsblob = Compile(vertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
-    ID3D11VertexShaderPtr vs;
-    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-    ID3D11PixelShaderPtr ps;
-    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+    ID3D11VertexShaderPtr vs = CreateVS(vsblob);
+    ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
     ID3D11Texture2DPtr fltTex[2];
     ID3D11RenderTargetViewPtr fltRT[2];

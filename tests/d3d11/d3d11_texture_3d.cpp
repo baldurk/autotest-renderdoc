@@ -101,10 +101,8 @@ float4 main(v2f IN) : SV_Target0
 
     CreateDefaultInputLayout(vsblob);
 
-    ID3D11VertexShaderPtr vs;
-    CHECK_HR(dev->CreateVertexShader(vsblob->GetBufferPointer(), vsblob->GetBufferSize(), NULL, &vs));
-    ID3D11PixelShaderPtr ps;
-    CHECK_HR(dev->CreatePixelShader(psblob->GetBufferPointer(), psblob->GetBufferSize(), NULL, &ps));
+    ID3D11VertexShaderPtr vs = CreateVS(vsblob);
+    ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
     CD3D11_SAMPLER_DESC sampdesc = CD3D11_SAMPLER_DESC(CD3D11_DEFAULT());
     ID3D11SamplerStatePtr samp;
