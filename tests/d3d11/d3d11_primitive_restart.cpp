@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../d3d11_common.h"
+#include "d3d11_test.h"
 
 struct Primitive_Restart : D3D11GraphicsTest
 {

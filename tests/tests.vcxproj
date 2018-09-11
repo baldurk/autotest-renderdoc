@@ -87,6 +87,7 @@
     <ClCompile Include="d3d11\d3d11_empty_compute_dispatch.cpp" />
     <ClCompile Include="d3d11\d3d11_empty_drawcall.cpp" />
     <ClCompile Include="d3d11\d3d11_empty_viewports.cpp" />
+    <ClCompile Include="d3d11\d3d11_helpers.cpp" />
     <ClCompile Include="d3d11\d3d11_many_rtvs.cpp" />
     <ClCompile Include="d3d11\d3d11_map_overrun.cpp" />
     <ClCompile Include="d3d11\d3d11_midframe_create.cpp" />
@@ -102,8 +103,8 @@
     <ClCompile Include="d3d11\d3d11_streamout.cpp" />
     <ClCompile Include="d3d11\d3d11_stripped_shaders.cpp" />
     <ClCompile Include="d3d11\d3d11_structured_buffer_read.cpp" />
+    <ClCompile Include="d3d11\d3d11_test.cpp" />
     <ClCompile Include="d3d11\d3d11_texture_3d.cpp" />
-    <ClCompile Include="d3d11_common.cpp" />
     <ClCompile Include="glad\glad.c" />
     <ClCompile Include="glad\glad_wgl.c" />
     <ClCompile Include="gl\gl_buffer_updates.cpp" />
@@ -130,7 +131,8 @@
     <ClCompile Include="volk\volk.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="d3d11_common.h" />
+    <ClInclude Include="d3d11\d3d11_helpers.h" />
+    <ClInclude Include="d3d11\d3d11_test.h" />
     <ClInclude Include="gl_common.h" />
     <ClInclude Include="lz4.h" />
     <ClInclude Include="test_common.h" />

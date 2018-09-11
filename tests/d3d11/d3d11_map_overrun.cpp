@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../d3d11_common.h"
+#include "d3d11_test.h"
 
 struct D3D11_Map_Overrun : D3D11GraphicsTest
 {

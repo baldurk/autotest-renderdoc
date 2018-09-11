@@ -24,7 +24,7 @@
 
 #if defined(WIN32)
 
-#include "../d3d11_common.h"
+#include "../d3d11/d3d11_test.h"
 #include "../gl_common.h"
 
 #include "../glad/glad_wgl.h"
