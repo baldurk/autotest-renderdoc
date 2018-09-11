@@ -52,12 +52,7 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
-    ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-
-    ID3D11ComputeShaderPtr cs;
-    CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+    ID3D11ComputeShaderPtr cs = CreateCS(Compile(compute, "main", "cs_5_0"));
 
     uint32_t data[8 * 8] = {0};
     for(size_t i = 0; i < 8 * 8; i++)
@@ -65,19 +60,19 @@ void main()
       data[i] = 5 + rand() % 100;
     }
 
-    ID3D11Texture2DPtr tex[2];
-    ID3D11ShaderResourceViewPtr srv[2];
-    ID3D11UnorderedAccessViewPtr uav[2];
-    for(int i = 0; i < 2; i++)
-    {
-      if(MakeTexture2D(8, 8, 1, DXGI_FORMAT_R32_UINT, &tex[i], &srv[i], &uav[i], NULL, NULL))
-      {
-        TEST_ERROR("Failed to create compute tex");
-        return 1;
-      }
+    ID3D11Texture2DPtr tex[2] = {
+        MakeTexture(DXGI_FORMAT_R32_UINT, 8, 8).SRV().UAV(),
+        MakeTexture(DXGI_FORMAT_R32_UINT, 8, 8).SRV().UAV(),
+    };
+    ID3D11ShaderResourceViewPtr srv[2] = {
+        MakeSRV(tex[0]), MakeSRV(tex[1]),
+    };
+    ID3D11UnorderedAccessViewPtr uav[2] = {
+        MakeUAV(tex[0]), MakeUAV(tex[1]),
+    };
 
+    for(int i = 0; i < 2; i++)
       ctx->UpdateSubresource(tex[i], 0, NULL, data, sizeof(uint32_t) * 8, sizeof(uint32_t) * 8 * 8);
-    }
 
     while(Running())
     {

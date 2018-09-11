@@ -57,8 +57,6 @@ float4 main() : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
@@ -67,48 +65,23 @@ float4 main() : SV_Target0
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(DefaultTri), 0, DXGI_FORMAT_UNKNOWN, DefaultTri, &vb, NULL,
-                  NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(DefaultTri);
 
     uint32_t data[5 * 10];
 
     for(int i = 0; i < 5 * 10; i++)
       data[i] = uint32_t(i);
 
-    ID3D11BufferPtr structbuf;
-    ID3D11ShaderResourceViewPtr structbufSRV[2];
-    if(MakeBuffer(eBuffer, 0, sizeof(data), 5 * sizeof(uint32_t), DXGI_FORMAT_UNKNOWN, data,
-                  &structbuf, &structbufSRV[0], NULL, NULL))
-    {
-      TEST_ERROR("Failed to create data struct buffer");
-      return 1;
-    }
-
-    if(structbuf)
-    {
-      D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-
-      desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-      desc.Format = DXGI_FORMAT_UNKNOWN;
-      desc.Buffer.FirstElement = 5;
-      desc.Buffer.NumElements = 1;
-
-      CHECK_HR(dev->CreateShaderResourceView(structbuf, &desc, &structbufSRV[1]));
-    }
+    ID3D11BufferPtr structbuf = MakeBuffer().Structured(5 * sizeof(uint32_t)).Data(data).SRV();
+    ID3D11ShaderResourceViewPtr structbufSRV[2] = {
+        MakeSRV(structbuf), MakeSRV(structbuf).FirstElement(5).NumElements(1),
+    };
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
@@ -117,8 +90,7 @@ float4 main() : SV_Target0
 
       ctx->PSSetShaderResources(0, 2, (ID3D11ShaderResourceView **)structbufSRV);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 

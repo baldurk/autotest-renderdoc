@@ -49,28 +49,17 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
+    ID3D11ComputeShaderPtr cs = CreateCS(Compile(compute, "main", "cs_5_0"));
 
-    ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-
-    ID3D11ComputeShaderPtr cs;
-    CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
-
-    ID3D11BufferPtr buf;
-    ID3D11UnorderedAccessViewPtr uav;
-    if(MakeBuffer(eCompBuffer, 0, sizeof(uint32_t) * 4, sizeof(uint32_t) * 4,
-                  DXGI_FORMAT_R32G32B32A32_UINT, NULL, &buf, NULL, &uav, NULL))
-    {
-      TEST_ERROR("Failed to create UAV");
-      return 1;
-    }
+    ID3D11BufferPtr buf = MakeBuffer().Size(16).UAV();
+    ID3D11UnorderedAccessViewPtr uav = MakeUAV(buf).Format(DXGI_FORMAT_R32G32B32A32_UINT);
 
     for(int frame = 0; frame < 10 && Running(); frame++)
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      Vec4f col(0.4f, 0.5f, 0.6f, 1.0f);
+      ClearRenderTargetView(bbRTV, col);
 
-      ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)col);
+      ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)&col.x);
 
       ctx->CSSetUnorderedAccessViews(20, 1, &uav.GetInterfacePtr(), NULL);
       ctx->CSSetShader(cs, NULL, 0);

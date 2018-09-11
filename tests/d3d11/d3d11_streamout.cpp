@@ -34,8 +34,6 @@ struct StreamOut : D3D11GraphicsTest
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_5_0");
 
@@ -73,26 +71,11 @@ struct StreamOut : D3D11GraphicsTest
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
     ID3D11GeometryShaderPtr gs = CreateGS(vsblob, sodecl, strides);
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(DefaultTri), 0, DXGI_FORMAT_UNKNOWN, DefaultTri, &vb, NULL,
-                  NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(DefaultTri);
 
-    ID3D11BufferPtr so[2];
-    if(MakeBuffer(eSOBuffer, 0, 2048, 0, DXGI_FORMAT_UNKNOWN, NULL, &so[0], NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
-
-    if(MakeBuffer(eSOBuffer, 0, 2048, 0, DXGI_FORMAT_UNKNOWN, NULL, &so[1], NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr so[2] = {
+        MakeBuffer().StreamOut().Size(2048), MakeBuffer().StreamOut().Size(2048),
+    };
 
     while(Running())
     {
@@ -102,12 +85,9 @@ struct StreamOut : D3D11GraphicsTest
       ctx->UpdateSubresource(so[0], 0, NULL, empty, 2048, 2048);
       ctx->UpdateSubresource(so[1], 0, NULL, empty, 2048, 2048);
 
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
@@ -115,8 +95,7 @@ struct StreamOut : D3D11GraphicsTest
       ctx->GSSetShader(gs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 
@@ -129,14 +108,14 @@ struct StreamOut : D3D11GraphicsTest
       ctx->UpdateSubresource(so[0], 0, NULL, empty, 2048, 2048);
       ctx->UpdateSubresource(so[1], 0, NULL, empty, 2048, 2048);
 
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->Draw(3, 0);
 
       ctx->UpdateSubresource(so[0], 0, NULL, empty, 2048, 2048);
       ctx->UpdateSubresource(so[1], 0, NULL, empty, 2048, 2048);
 
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
       // test using offsets of NULL. Should be equivalent to passing -1
       bufs[0] = so[1];

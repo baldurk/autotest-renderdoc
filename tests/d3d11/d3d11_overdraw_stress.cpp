@@ -34,8 +34,6 @@ struct Overdraw_Stress : D3D11GraphicsTest
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_5_0");
 
@@ -44,10 +42,9 @@ struct Overdraw_Stress : D3D11GraphicsTest
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
-    ID3D11Texture2DPtr bbDepth;
-    ID3D11DepthStencilViewPtr bbDSV;
-    MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_D32_FLOAT_S8X24_UINT, &bbDepth, NULL,
-                  NULL, NULL, &bbDSV);
+    ID3D11Texture2DPtr bbDepth =
+        MakeTexture(DXGI_FORMAT_D32_FLOAT_S8X24_UINT, screenWidth, screenHeight).DSV();
+    ID3D11DepthStencilViewPtr bbDSV = MakeDSV(bbDepth);
 
     CD3D11_RASTERIZER_DESC rd = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());
     rd.CullMode = D3D11_CULL_NONE;
@@ -96,32 +93,22 @@ struct Overdraw_Stress : D3D11GraphicsTest
       triangle[i].col.z = float(rand()) / float(RAND_MAX);
     }
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL,
-                  NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(triangle);
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->ClearDepthStencilView(bbDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
       ctx->RSSetState(rs);
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);

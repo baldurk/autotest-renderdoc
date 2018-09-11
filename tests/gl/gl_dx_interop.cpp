@@ -148,15 +148,13 @@ void main()
     ID3D11VertexShaderPtr vs = d3d.CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = d3d.CreatePS(psblob);
 
-    ID3D11Texture2DPtr d3d_fromd3d;
-    ID3D11RenderTargetViewPtr rtv;
-    d3d.MakeTexture2D(1024, 1024, 1, DXGI_FORMAT_R8G8B8A8_UNORM, &d3d_fromd3d, NULL, NULL, &rtv,
-                      NULL);
+    ID3D11Texture2DPtr d3d_fromd3d = d3d.MakeTexture(DXGI_FORMAT_R8G8B8A8_UNORM, 1024, 1024).RTV();
+    ID3D11RenderTargetViewPtr rtv = d3d.MakeRTV(d3d_fromd3d);
 
-    ID3D11Texture2DPtr d3d_tod3d;
-    ID3D11ShaderResourceViewPtr srv;
-    ID3D11RenderTargetViewPtr rtv2;
-    d3d.MakeTexture2D(1024, 1024, 1, DXGI_FORMAT_R8G8B8A8_UNORM, &d3d_tod3d, &srv, NULL, &rtv2, NULL);
+    ID3D11Texture2DPtr d3d_tod3d =
+        d3d.MakeTexture(DXGI_FORMAT_R8G8B8A8_UNORM, 1024, 1024).RTV().SRV();
+    ID3D11ShaderResourceViewPtr srv = d3d.MakeSRV(d3d_tod3d);
+    ID3D11RenderTargetViewPtr rtv2 = d3d.MakeRTV(d3d_tod3d);
 
     float black[4] = {};
     d3d.ctx->ClearRenderTargetView(rtv2, black);
@@ -176,9 +174,7 @@ void main()
         {Vec3f(0.8f, 0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 1.0f)},
     };
 
-    ID3D11BufferPtr buf;
-    d3d.MakeBuffer(D3D11GraphicsTest::eCBuffer, 0, sizeof(quad), 0, DXGI_FORMAT_UNKNOWN, quad, &buf,
-                   NULL, NULL, NULL);
+    ID3D11BufferPtr buf = d3d.MakeBuffer().Constant().Data(quad);
 
     GLuint vao = MakeVAO();
     glBindVertexArray(vao);

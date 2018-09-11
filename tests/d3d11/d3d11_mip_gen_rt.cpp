@@ -78,8 +78,6 @@ float4 main(v2f IN) : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
@@ -88,12 +86,10 @@ float4 main(v2f IN) : SV_Target0
 
     static const int NumMips = 8;
 
-    ID3D11Texture2DPtr rt;
+    ID3D11Texture2DPtr rt =
+        MakeTexture(DXGI_FORMAT_R8G8B8A8_UNORM, 1024, 1024).RTV().SRV().Mips(NumMips);
     ID3D11RenderTargetViewPtr rtv[NumMips];
     ID3D11ShaderResourceViewPtr srv[NumMips];
-
-    MakeTexture2D(1024, 1024, NumMips, DXGI_FORMAT_R8G8B8A8_UNORM, &rt,
-                  (ID3D11ShaderResourceView **)0x1, NULL, &rtv[0], NULL);
 
     CD3D11_SAMPLER_DESC sampdesc = CD3D11_SAMPLER_DESC(CD3D11_DEFAULT());
     ID3D11SamplerStatePtr samp;
@@ -103,15 +99,10 @@ float4 main(v2f IN) : SV_Target0
 
     for(int i = 0; i < NumMips; i++)
     {
-      CD3D11_RENDER_TARGET_VIEW_DESC rdesc(D3D11_RTV_DIMENSION_TEXTURE2D,
-                                           DXGI_FORMAT_R8G8B8A8_UNORM, i);
-      CHECK_HR(dev->CreateRenderTargetView(rt, &rdesc, &rtv[i]));
+      rtv[i] = MakeRTV(rt).FirstMip(i);
+      srv[i] = MakeSRV(rt).FirstMip(i).NumMips(1);
 
-      CD3D11_SHADER_RESOURCE_VIEW_DESC sdesc(D3D11_SRV_DIMENSION_TEXTURE2D,
-                                             DXGI_FORMAT_R8G8B8A8_UNORM, i, 1);
-      CHECK_HR(dev->CreateShaderResourceView(rt, &sdesc, &srv[i]));
-
-      views[i] = CD3D11_VIEWPORT(0.0f, 0.0f, (float)(512 >> i), (float)(512 >> i));
+      views[i] = {0.0f, 0.0f, (float)(512 >> i), (float)(512 >> i), 0.0f, 1.0f};
     }
 
     // fill upper mip with colour ramp
@@ -126,10 +117,9 @@ float4 main(v2f IN) : SV_Target0
 
     while(Running())
     {
-      float clearcol[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, clearcol);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
       for(int i = 0; i < NumMips; i++)
-        ctx->ClearRenderTargetView(rtv[i], clearcol);
+        ClearRenderTargetView(rtv[i], {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->UpdateSubresource(rt, 0, NULL, ramp, 1024 * sizeof(uint32_t),
                              1024 * 1024 * sizeof(uint32_t));

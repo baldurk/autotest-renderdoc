@@ -305,7 +305,9 @@ VulkanGraphicsTest::~VulkanGraphicsTest()
     instance.destroyDebugReportCallbackEXT(callback);
   if(surface)
     vkDestroySurfaceKHR((VkInstance)instance, surface, NULL);
-  instance.destroy();
+
+  if(instance)
+    instance.destroy();
 
   if(win)
     glfwDestroyWindow(win);

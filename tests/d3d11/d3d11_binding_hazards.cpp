@@ -57,32 +57,20 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
+    ID3D11ComputeShaderPtr cs = CreateCS(Compile(compute, "main", "cs_5_0"));
 
-    ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
+    ID3D11Texture2DPtr tex0 = MakeTexture(DXGI_FORMAT_R32_UINT, 8, 8).UAV().RTV();
+    ID3D11UnorderedAccessViewPtr uav0 = MakeUAV(tex0);
+    ID3D11RenderTargetViewPtr rtv0 = MakeRTV(tex0);
 
-    ID3D11ComputeShaderPtr cs;
-    CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+    ID3D11Texture2DPtr tex1 = MakeTexture(DXGI_FORMAT_R32_UINT, 8, 8).UAV().RTV();
+    ID3D11UnorderedAccessViewPtr uav1 = MakeUAV(tex1);
+    ID3D11RenderTargetViewPtr rtv1 = MakeRTV(tex1);
 
-    ID3D11BufferPtr buf;
-    ID3D11BufferPtr buf2;
-    ID3D11Texture2DPtr tex[2];
-    ID3D11ShaderResourceViewPtr srv[3];
-    ID3D11UnorderedAccessViewPtr uav[3];
-    ID3D11RenderTargetViewPtr rtv[3];
-
-    for(int i = 0; i < 2; i++)
-    {
-      if(MakeTexture2D(8, 8, 1, DXGI_FORMAT_R32_UINT, &tex[i], &srv[i], &uav[i], &rtv[i], NULL))
-      {
-        TEST_ERROR("Failed to create compute tex");
-        return 1;
-      }
-    }
-
-    MakeBuffer(eCompBuffer, 0, 65536, 4, DXGI_FORMAT_R32_UINT, NULL, &buf, &srv[2], &uav[2], NULL);
-    MakeBuffer(eCompBuffer, 0, 65536, 4, DXGI_FORMAT_R32_UINT, NULL, &buf2,
-               (ID3D11ShaderResourceView **)0x1, NULL, NULL);
+    ID3D11BufferPtr buf1 = MakeBuffer().Size(65536).SRV().UAV();
+    ID3D11BufferPtr buf2 = MakeBuffer().Size(65536).SRV();
+    ID3D11ShaderResourceViewPtr buf1SRV = MakeSRV(buf1).Format(DXGI_FORMAT_R32_UINT);
+    ID3D11UnorderedAccessViewPtr buf1UAV = MakeUAV(buf1).Format(DXGI_FORMAT_R32_UINT);
 
     while(Running())
     {
@@ -90,12 +78,7 @@ void main()
 
       ctx->CSSetShader(cs, NULL, 0);
 
-      CD3D11_SHADER_RESOURCE_VIEW_DESC sdesc(D3D11_SRV_DIMENSION_BUFFER, DXGI_FORMAT_R32_UINT, 0,
-                                             128);
-
-      ID3D11ShaderResourceView *tempSRV = NULL;
-
-      dev->CreateShaderResourceView(buf2, &sdesc, &tempSRV);
+      ID3D11ShaderResourceView *tempSRV = MakeSRV(buf2).Format(DXGI_FORMAT_R32_UINT).NumElements(128);
 
       ctx->CSSetShaderResources(1, 1, &tempSRV);
 
@@ -113,12 +96,12 @@ void main()
       refcount = tempSRV->AddRef();
       refcount = tempSRV->Release();
 
-      ctx->CSSetUnorderedAccessViews(0, 1, &uav[0].GetInterfacePtr(), NULL);
-      ctx->CSSetUnorderedAccessViews(2, 1, &uav[1].GetInterfacePtr(), NULL);
+      ctx->CSSetUnorderedAccessViews(0, 1, &uav0.GetInterfacePtr(), NULL);
+      ctx->CSSetUnorderedAccessViews(2, 1, &uav1.GetInterfacePtr(), NULL);
 
       // try to bind the buffer to two slots, find it gets unbound
-      ctx->CSSetUnorderedAccessViews(1, 1, &uav[2].GetInterfacePtr(), NULL);
-      ctx->CSSetUnorderedAccessViews(3, 1, &uav[2].GetInterfacePtr(), NULL);
+      ctx->CSSetUnorderedAccessViews(1, 1, &buf1UAV.GetInterfacePtr(), NULL);
+      ctx->CSSetUnorderedAccessViews(3, 1, &buf1UAV.GetInterfacePtr(), NULL);
 
       ID3D11UnorderedAccessView *getCSUAVs[4] = {};
       ID3D11RenderTargetView *getOMRTV = NULL;
@@ -129,73 +112,72 @@ void main()
       ctx->Dispatch(1, 1, 1);
       ctx->CSGetUnorderedAccessViews(0, 4, getCSUAVs);
 
-      TEST_ASSERT(getCSUAVs[0] == uav[0], "Unexpected binding");
+      TEST_ASSERT(getCSUAVs[0] == uav0, "Unexpected binding");
       TEST_ASSERT(getCSUAVs[1] == NULL, "Unexpected binding");
-      TEST_ASSERT(getCSUAVs[2] == uav[1], "Unexpected binding");
-      TEST_ASSERT(getCSUAVs[3] == uav[2], "Unexpected binding");
+      TEST_ASSERT(getCSUAVs[2] == uav1, "Unexpected binding");
+      TEST_ASSERT(getCSUAVs[3] == buf1UAV, "Unexpected binding");
 
-      // this should unbind uav[0] because it's re-bound as rtv[0], then unbind uav[1] because it's
+      // this should unbind uav0 because it's re-bound as rtv0, then unbind uav1 because it's
       // rebound on another UAV slot
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
-                                                     &uav[1].GetInterfacePtr(), NULL);
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv0.GetInterfacePtr(), NULL, 1, 1,
+                                                     &uav1.GetInterfacePtr(), NULL);
 
       ctx->Dispatch(1, 1, 1);
       ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
       ctx->CSGetUnorderedAccessViews(0, 4, getCSUAVs);
 
-      TEST_ASSERT(getOMRTV == rtv[0], "Unexpected binding");
-      TEST_ASSERT(getOMUAV == uav[1], "Unexpected binding");
+      TEST_ASSERT(getOMRTV == rtv0, "Unexpected binding");
+      TEST_ASSERT(getOMUAV == uav1, "Unexpected binding");
       TEST_ASSERT(getCSUAVs[0] == NULL, "Unexpected binding");
       TEST_ASSERT(getCSUAVs[1] == NULL, "Unexpected binding");
       TEST_ASSERT(getCSUAVs[2] == NULL, "Unexpected binding");
-      TEST_ASSERT(getCSUAVs[3] == uav[2], "Unexpected binding");
+      TEST_ASSERT(getCSUAVs[3] == buf1UAV, "Unexpected binding");
 
       ctx->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,
                                                      NULL, NULL, 1, 0, NULL, NULL);
 
       ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
 
-      TEST_ASSERT(getOMRTV == rtv[0], "Unexpected binding");
+      TEST_ASSERT(getOMRTV == rtv0, "Unexpected binding");
       TEST_ASSERT(getOMUAV == NULL, "Unexpected binding");
 
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
-                                                     &uav[1].GetInterfacePtr(), NULL);
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv0.GetInterfacePtr(), NULL, 1, 1,
+                                                     &uav1.GetInterfacePtr(), NULL);
 
       ctx->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,
-                                                     &rtv[1].GetInterfacePtr(), NULL, 1, 0, NULL,
-                                                     NULL);
+                                                     &rtv1.GetInterfacePtr(), NULL, 1, 0, NULL, NULL);
 
       ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
 
-      TEST_ASSERT(getOMRTV == rtv[0], "Unexpected binding");
+      TEST_ASSERT(getOMRTV == rtv0, "Unexpected binding");
       TEST_ASSERT(getOMUAV == NULL, "Unexpected binding");
 
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
-                                                     &uav[1].GetInterfacePtr(), NULL);
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv0.GetInterfacePtr(), NULL, 1, 1,
+                                                     &uav1.GetInterfacePtr(), NULL);
 
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[2].GetInterfacePtr(), NULL, 1,
+      ID3D11RenderTargetView *empty = NULL;
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &empty, NULL, 1,
                                                      D3D11_KEEP_UNORDERED_ACCESS_VIEWS, NULL, NULL);
 
       ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
 
-      TEST_ASSERT(getOMRTV == rtv[2], "Unexpected binding");
-      TEST_ASSERT(getOMUAV == uav[1], "Unexpected binding");
+      TEST_ASSERT(getOMRTV == empty, "Unexpected binding");
+      TEST_ASSERT(getOMUAV == uav1, "Unexpected binding");
 
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[0].GetInterfacePtr(), NULL, 1, 1,
-                                                     &uav[1].GetInterfacePtr(), NULL);
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv0.GetInterfacePtr(), NULL, 1, 1,
+                                                     &uav1.GetInterfacePtr(), NULL);
 
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(1, &rtv[2].GetInterfacePtr(), NULL, 1,
-                                                     D3D11_KEEP_UNORDERED_ACCESS_VIEWS,
-                                                     &uav[0].GetInterfacePtr(), NULL);
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(
+          1, &empty, NULL, 1, D3D11_KEEP_UNORDERED_ACCESS_VIEWS, &uav0.GetInterfacePtr(), NULL);
 
       ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
 
-      TEST_ASSERT(getOMRTV == rtv[2], "Unexpected binding");
-      TEST_ASSERT(getOMUAV == uav[1], "Unexpected binding");
+      TEST_ASSERT(getOMRTV == empty, "Unexpected binding");
+      TEST_ASSERT(getOMUAV == uav1, "Unexpected binding");
 
       // finally this should unbind both OM views, and rebind back on the CS
-      ctx->CSSetUnorderedAccessViews(0, 1, &uav[0].GetInterfacePtr(), NULL);
-      ctx->CSSetUnorderedAccessViews(2, 1, &uav[1].GetInterfacePtr(), NULL);
+      ctx->CSSetUnorderedAccessViews(0, 1, &uav0.GetInterfacePtr(), NULL);
+      ctx->CSSetUnorderedAccessViews(2, 1, &uav1.GetInterfacePtr(), NULL);
 
       ctx->Dispatch(1, 1, 1);
       ctx->OMGetRenderTargetsAndUnorderedAccessViews(1, &getOMRTV, NULL, 1, 1, &getOMUAV);
@@ -203,17 +185,17 @@ void main()
 
       TEST_ASSERT(getOMRTV == NULL, "Unexpected binding");
       TEST_ASSERT(getOMUAV == NULL, "Unexpected binding");
-      TEST_ASSERT(getCSUAVs[0] == uav[0], "Unexpected binding");
+      TEST_ASSERT(getCSUAVs[0] == uav0, "Unexpected binding");
       TEST_ASSERT(getCSUAVs[1] == NULL, "Unexpected binding");
-      TEST_ASSERT(getCSUAVs[2] == uav[1], "Unexpected binding");
-      TEST_ASSERT(getCSUAVs[3] == uav[2], "Unexpected binding");
+      TEST_ASSERT(getCSUAVs[2] == uav1, "Unexpected binding");
+      TEST_ASSERT(getCSUAVs[3] == buf1UAV, "Unexpected binding");
 
       ctx->ClearState();
 
       ctx->CSSetShader(cs, NULL, 0);
 
       ID3D11RenderTargetView *RTVs[] = {
-          rtv[0], rtv[0],
+          rtv0, rtv0,
       };
 
       // can't bind the same RTV to two slots
@@ -225,31 +207,31 @@ void main()
       TEST_ASSERT(getOMRTVs[1] == NULL, "Unexpected binding");
       TEST_ASSERT(getOMUAV == NULL, "Unexpected binding");
 
-      RTVs[0] = rtv[1];
-      RTVs[1] = rtv[0];
+      RTVs[0] = rtv1;
+      RTVs[1] = rtv0;
 
       // this bind is fine, no overlapping state
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1, &uav[2].GetInterfacePtr(),
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1,
+                                                     &buf1UAV.GetInterfacePtr(), NULL);
+
+      ctx->Dispatch(1, 1, 1);
+      ctx->OMGetRenderTargetsAndUnorderedAccessViews(2, getOMRTVs, NULL, 2, 1, &getOMUAV);
+      TEST_ASSERT(getOMRTVs[0] == rtv1, "Unexpected binding");
+      TEST_ASSERT(getOMRTVs[1] == rtv0, "Unexpected binding");
+      TEST_ASSERT(getOMUAV == buf1UAV, "Unexpected binding");
+
+      RTVs[0] = rtv0;
+      RTVs[1] = rtv1;
+
+      // this bind is discarded, because rtv0 overlaps uav0.
+      ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1, &uav0.GetInterfacePtr(),
                                                      NULL);
 
       ctx->Dispatch(1, 1, 1);
       ctx->OMGetRenderTargetsAndUnorderedAccessViews(2, getOMRTVs, NULL, 2, 1, &getOMUAV);
-      TEST_ASSERT(getOMRTVs[0] == rtv[1], "Unexpected binding");
-      TEST_ASSERT(getOMRTVs[1] == rtv[0], "Unexpected binding");
-      TEST_ASSERT(getOMUAV == uav[2], "Unexpected binding");
-
-      RTVs[0] = rtv[0];
-      RTVs[1] = rtv[1];
-
-      // this bind is discarded, because RTV[0] overlaps UAV[0].
-      ctx->OMSetRenderTargetsAndUnorderedAccessViews(2, RTVs, NULL, 2, 1, &uav[0].GetInterfacePtr(),
-                                                     NULL);
-
-      ctx->Dispatch(1, 1, 1);
-      ctx->OMGetRenderTargetsAndUnorderedAccessViews(2, getOMRTVs, NULL, 2, 1, &getOMUAV);
-      TEST_ASSERT(getOMRTVs[0] == rtv[1], "Unexpected binding");
-      TEST_ASSERT(getOMRTVs[1] == rtv[0], "Unexpected binding");
-      TEST_ASSERT(getOMUAV == uav[2], "Unexpected binding");
+      TEST_ASSERT(getOMRTVs[0] == rtv1, "Unexpected binding");
+      TEST_ASSERT(getOMRTVs[1] == rtv0, "Unexpected binding");
+      TEST_ASSERT(getOMUAV == buf1UAV, "Unexpected binding");
 
       Present();
     }

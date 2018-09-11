@@ -32,6 +32,14 @@
 bool GraphicsTest::Init(int argc, char **argv)
 {
   // parse parameters
+  for(int i = 0; i < argc; i++)
+  {
+    if(!strcmp(argv[i], "--debug") || !strcmp(argv[i], "-debug") ||
+       !strcmp(argv[i], "--validate") || !strcmp(argv[i], "-validate"))
+    {
+      debugDevice = true;
+    }
+  }
 
   return true;
 }
@@ -68,35 +76,52 @@ void GraphicsTest::EndFrameCapture(void *device, void *wnd)
   }
 }
 
-std::vector<TestMetadata> *test_list = NULL;
+std::vector<TestMetadata> &test_list()
+{
+  static std::vector<TestMetadata> list;
+  return list;
+}
 
 void RegisterTest(TestMetadata test)
 {
-  if(test_list == NULL)
-    test_list = new std::vector<TestMetadata>();
-  test_list->push_back(test);
+  test_list().push_back(test);
 }
 
 int main(int argc, char **argv)
 {
-  if(test_list == NULL)
-    test_list = new std::vector<TestMetadata>();
+  std::vector<TestMetadata> &tests = test_list();
 
-  std::vector<TestMetadata> &tests = *test_list;
-
-  if(argc < 2 || !strcmp(argv[0], "--list"))
+  if(argc >= 2 && !strcmp(argv[1], "--list"))
   {
-    TEST_ERROR("Invalid usage: %s <api>::<test-name>, or --list to list the tests", argv[0]);
-
-    printf("\n");
-
     for(const TestMetadata &test : tests)
       printf("%s::%s -\n\t%s\n\n", test.APIName(), test.Name, test.Description);
 
     fflush(stdout);
-
-    delete test_list;
     return 1;
+  }
+
+  std::string testchoice;
+
+  if(argc < 2)
+  {
+    for(const TestMetadata &test : tests)
+      printf("%s::%s -\n\t%s\n\n", test.APIName(), test.Name, test.Description);
+
+    printf("Your choice?\n");
+
+    fflush(stdout);
+
+    char choice[256] = {};
+    fgets(choice, 255, stdin);
+
+    testchoice = choice;
+
+    while(isspace(testchoice.back()))
+      testchoice.pop_back();
+  }
+  else
+  {
+    testchoice = argv[1];
   }
 
   //////////////////////////////////////////////////////////////
@@ -109,17 +134,15 @@ int main(int argc, char **argv)
     fullname += "::";
     fullname += test.Name;
 
-    if(fullname == argv[1] || !strcmp(argv[1], test.Name))
+    if(testchoice == fullname || testchoice == test.Name)
     {
       TEST_LOG("\n\n======\nRunning %s\n\n", argv[1]);
       int ret = test.test->main(argc, argv);
-      delete test_list;
       return ret;
     }
   }
 
   TEST_ERROR("%s is not a known test", argv[1]);
-  delete test_list;
 
   return 2;
 }

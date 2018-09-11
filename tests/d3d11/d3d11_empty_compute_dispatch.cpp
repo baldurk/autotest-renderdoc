@@ -46,28 +46,16 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
-    ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-
-    ID3D11ComputeShaderPtr cs;
-    CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
+    ID3D11ComputeShaderPtr cs = CreateCS(Compile(compute, "main", "cs_5_0"));
 
     uint32_t data[16] = {0};
 
-    ID3D11BufferPtr buf;
-    ID3D11UnorderedAccessViewPtr uav;
-    if(MakeBuffer(eCompBuffer, 0, sizeof(data), sizeof(uint32_t) * 4, DXGI_FORMAT_R32G32B32A32_UINT,
-                  data, &buf, NULL, &uav, NULL))
-    {
-      TEST_ERROR("Failed to create compute UAV");
-      return 1;
-    }
+    ID3D11BufferPtr buf = MakeBuffer().UAV().Data(data);
+    ID3D11UnorderedAccessViewPtr uav = MakeUAV(buf).Format(DXGI_FORMAT_R32G32B32A32_UINT);
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->CSSetShader(cs, NULL, 0);
 

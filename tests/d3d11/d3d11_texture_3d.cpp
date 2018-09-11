@@ -62,13 +62,9 @@ float4 main(v2f IN) : SV_Target0
 
   int main(int argc, char **argv)
   {
-    debugDevice = true;
-
     // initialise, create window, create device, etc
     if(!Init(argc, argv))
       return 3;
-
-    HRESULT hr = S_OK;
 
     ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
@@ -82,9 +78,7 @@ float4 main(v2f IN) : SV_Target0
     ID3D11SamplerStatePtr samp;
     CHECK_HR(dev->CreateSamplerState(&sampdesc, &samp));
 
-    CD3D11_TEXTURE3D_DESC texdesc = CD3D11_TEXTURE3D_DESC(DXGI_FORMAT_R8_UNORM, 128, 128, 1024, 8);
-    ID3D11Texture3DPtr tex;
-    CHECK_HR(dev->CreateTexture3D(&texdesc, NULL, &tex));
+    ID3D11Texture3DPtr tex = MakeTexture(DXGI_FORMAT_R8_UNORM, 128, 128, 1024).Mips(8).SRV();
 
     uint8_t *data = new uint8_t[128 * 128 * 1024 * sizeof(uint8_t)];
 
@@ -241,29 +235,17 @@ float4 main(v2f IN) : SV_Target0
       ctx->UpdateSubresource(tex, mip, NULL, data, d * sizeof(uint8_t), d * d * sizeof(uint8_t));
     }
 
-    CD3D11_SHADER_RESOURCE_VIEW_DESC srvdesc =
-        CD3D11_SHADER_RESOURCE_VIEW_DESC(tex, DXGI_FORMAT_R8_UNORM);
-    ID3D11ShaderResourceViewPtr srv;
-    CHECK_HR(dev->CreateShaderResourceView(tex, &srvdesc, &srv));
+    ID3D11ShaderResourceViewPtr srv = MakeSRV(tex);
 
     delete[] data;
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(DefaultTri), 0, DXGI_FORMAT_UNKNOWN, DefaultTri, &vb, NULL,
-                  NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(DefaultTri);
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
@@ -273,8 +255,7 @@ float4 main(v2f IN) : SV_Target0
       ctx->PSSetSamplers(0, 1, &samp.GetInterfacePtr());
       ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 

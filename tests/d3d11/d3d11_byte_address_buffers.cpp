@@ -51,43 +51,24 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
+    ID3D11ComputeShaderPtr cs = CreateCS(Compile(compute, "main", "cs_5_0"));
 
-    ID3DBlobPtr csblob = Compile(compute, "main", "cs_5_0");
-
-    ID3D11ComputeShaderPtr cs;
-    CHECK_HR(dev->CreateComputeShader(csblob->GetBufferPointer(), csblob->GetBufferSize(), NULL, &cs));
-
-    ID3D11BufferPtr buf;
-    ID3D11UnorderedAccessViewPtr uav;
-    if(MakeBuffer(BufType(eCompBuffer | eRawBuffer), 0, sizeof(uint32_t) * 128, sizeof(uint32_t),
-                  DXGI_FORMAT_R32_TYPELESS, NULL, &buf, NULL, &uav, NULL))
-    {
-      TEST_ERROR("Failed to create UAV");
-      return 1;
-    }
-
-    ID3D11BufferPtr buf2;
-    ID3D11ShaderResourceViewPtr srv;
-    if(MakeBuffer(BufType(eCompBuffer | eRawBuffer), 0, sizeof(uint32_t) * 128, sizeof(uint32_t),
-                  DXGI_FORMAT_R32_TYPELESS, NULL, &buf2, &srv, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create UAV");
-      return 1;
-    }
+    ID3D11BufferPtr buf = MakeBuffer().ByteAddressed().UAV().Size(512);
+    ID3D11UnorderedAccessViewPtr uav = MakeUAV(buf).Format(DXGI_FORMAT_R32_TYPELESS);
 
     uint32_t data[128] = {};
     for(int i = 0; i < 128; i++)
       data[i] = (uint32_t)rand();
 
-    ctx->UpdateSubresource(buf2, 0, NULL, data, sizeof(uint32_t) * 128, sizeof(uint32_t) * 128);
+    ID3D11BufferPtr buf2 = MakeBuffer().ByteAddressed().SRV().Data(data);
+    ID3D11ShaderResourceViewPtr srv = MakeSRV(buf2).Format(DXGI_FORMAT_R32_TYPELESS);
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      Vec4f col(0.4f, 0.5f, 0.6f, 1.0f);
+      ClearRenderTargetView(bbRTV, col);
 
-      ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)col);
+      ctx->ClearUnorderedAccessViewUint(uav, (uint32_t *)&col.x);
 
       ctx->CSSetShaderResources(0, 1, &srv.GetInterfacePtr());
       ctx->CSSetUnorderedAccessViews(0, 1, &uav.GetInterfacePtr(), NULL);

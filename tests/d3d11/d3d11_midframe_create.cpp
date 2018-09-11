@@ -55,8 +55,6 @@ float4 main(v2f IN) : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
@@ -101,62 +99,39 @@ float4 main(v2f IN) : SV_Target0
         {Vec3f(0.1f, 0.0f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(2.0f, 0.0f)},
     };
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL,
-                  NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(triangle);
 
     // make a 'reference' texture to copy from
-    ID3D11Texture2DPtr copysrctex;
-    ID3D11RenderTargetViewPtr copysrcrtv;
-
-    if(MakeTexture2D(64, 64, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &copysrctex, NULL, NULL,
-                     &copysrcrtv, NULL))
-    {
-      TEST_ERROR("Failed to create texture");
-      return 1;
-    }
+    ID3D11Texture2DPtr copysrctex = MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 64, 64).RTV();
+    ID3D11RenderTargetViewPtr copysrcrtv = MakeRTV(copysrctex);
 
     float copycol[] = {0.1f, 0.5f, 0.1f, 1.0f};
     ctx->ClearRenderTargetView(copysrcrtv, copycol);
 
     copysrcrtv = NULL;
 
-    D3D11_BOX box = CD3D11_BOX(16, 16, 0, 48, 48, 1);
+    D3D11_BOX box = {16, 16, 0, 48, 48, 1};
     float *data = new float[64 * 64 * 4];
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 
       // create a texture in the middle of the frame
-      ID3D11Texture2DPtr tex;
-      ID3D11ShaderResourceViewPtr srv;
-      ID3D11RenderTargetViewPtr rtv;
-
-      if(MakeTexture2D(64, 64, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &tex, &srv, NULL, &rtv, NULL))
-      {
-        TEST_ERROR("Failed to create texture");
-        return 1;
-      }
+      ID3D11Texture2DPtr tex = MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 64, 64).RTV().SRV();
+      ID3D11ShaderResourceViewPtr srv = MakeSRV(tex);
+      ID3D11RenderTargetViewPtr rtv = MakeRTV(tex);
 
       ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
@@ -189,11 +164,9 @@ float4 main(v2f IN) : SV_Target0
       tex = NULL;
 
       // create another
-      if(MakeTexture2D(64, 64, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &tex, &srv, NULL, &rtv, NULL))
-      {
-        TEST_ERROR("Failed to create texture");
-        return 1;
-      }
+      tex = MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 64, 64).RTV().SRV();
+      srv = MakeSRV(tex);
+      rtv = MakeRTV(tex);
 
       ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
@@ -218,11 +191,12 @@ float4 main(v2f IN) : SV_Target0
       // fetch a deferred context and do the next draw on it.
       ID3D11DeviceContextPtr defctx;
       dev->CreateDeferredContext(0, &defctx);
-      defctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       defctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       defctx->IASetInputLayout(defaultLayout);
       defctx->VSSetShader(vs, NULL, 0);
       defctx->PSSetShader(ps, NULL, 0);
+      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
       defctx->RSSetViewports(1, &view);
       defctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
       defctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
@@ -242,11 +216,9 @@ float4 main(v2f IN) : SV_Target0
       tex = NULL;
 
       // create another
-      if(MakeTexture2D(64, 64, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &tex, &srv, NULL, &rtv, NULL))
-      {
-        TEST_ERROR("Failed to create texture");
-        return 1;
-      }
+      tex = MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 64, 64).RTV().SRV();
+      srv = MakeSRV(tex);
+      rtv = MakeRTV(tex);
 
       ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
@@ -270,11 +242,9 @@ float4 main(v2f IN) : SV_Target0
       tex = NULL;
 
       // create another
-      if(MakeTexture2D(64, 64, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &tex, &srv, NULL, &rtv, NULL))
-      {
-        TEST_ERROR("Failed to create texture");
-        return 1;
-      }
+      tex = MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 64, 64).RTV().SRV();
+      srv = MakeSRV(tex);
+      rtv = MakeRTV(tex);
 
       ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 

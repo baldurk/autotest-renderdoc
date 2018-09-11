@@ -48,36 +48,21 @@ float4 main() : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(FullscreenQuadVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
-    ID3D11Texture2DPtr rt;
-    ID3D11RenderTargetViewPtr rtv[4];
-    MakeTexture2D(1024, 1024, 8, DXGI_FORMAT_R8G8B8A8_UNORM, &rt, NULL, NULL, &rtv[0], NULL);
-
-    CD3D11_RENDER_TARGET_VIEW_DESC desc1(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM,
-                                         1);
-    CD3D11_RENDER_TARGET_VIEW_DESC desc2(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM,
-                                         2);
-    CD3D11_RENDER_TARGET_VIEW_DESC desc3(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM,
-                                         3);
-    CHECK_HR(dev->CreateRenderTargetView(rt, &desc1, &rtv[1]));
-    CHECK_HR(dev->CreateRenderTargetView(rt, &desc2, &rtv[2]));
-    CHECK_HR(dev->CreateRenderTargetView(rt, &desc3, &rtv[3]));
+    ID3D11Texture2DPtr rt = MakeTexture(DXGI_FORMAT_R8G8B8A8_UNORM, 1024, 1024);
+    ID3D11RenderTargetViewPtr rtv[4] = {
+        MakeRTV(rt).FirstMip(0), MakeRTV(rt).FirstMip(1), MakeRTV(rt).FirstMip(2),
+        MakeRTV(rt).FirstMip(3),
+    };
 
     Vec4f col;
 
-    ID3D11BufferPtr cb;
-    if(MakeBuffer(eCBuffer, 0, sizeof(Vec4f), 0, DXGI_FORMAT_UNKNOWN, &col, &cb, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create CB");
-      return 1;
-    }
+    ID3D11BufferPtr cb = MakeBuffer().Constant().Size(sizeof(Vec4f));
 
     D3D11_VIEWPORT view0 = {0.0f, 0.0f, (float)1024.0f, (float)1024.0f, 0.0f, 1.0f};
     D3D11_VIEWPORT view1 = {0.0f, 0.0f, (float)512.0f, (float)512.0f, 0.0f, 1.0f};
@@ -86,10 +71,9 @@ float4 main() : SV_Target0
 
     while(Running())
     {
-      float clearcol[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, clearcol);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
       for(int i = 0; i < 4; i++)
-        ctx->ClearRenderTargetView(rtv[i], clearcol);
+        ClearRenderTargetView(rtv[i], {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 

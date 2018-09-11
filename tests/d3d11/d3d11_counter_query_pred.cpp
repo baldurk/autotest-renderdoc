@@ -32,13 +32,9 @@ struct Counter_Query_Pred : D3D11GraphicsTest
 
   int main(int argc, char **argv)
   {
-    debugDevice = true;
-
     // initialise, create window, create device, etc
     if(!Init(argc, argv))
       return 3;
-
-    HRESULT hr = S_OK;
 
     DefaultA2V vertData[] = {
         // passing triangle
@@ -52,13 +48,7 @@ struct Counter_Query_Pred : D3D11GraphicsTest
         {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
     };
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(vertData), 0, DXGI_FORMAT_UNKNOWN, vertData, &vb, NULL, NULL,
-                  NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(vertData);
 
     int numCounters = 0;
     int countersizes[2] = {4, 4};
@@ -194,20 +184,16 @@ struct Counter_Query_Pred : D3D11GraphicsTest
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 

@@ -135,8 +135,6 @@ float4 main() : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
@@ -145,41 +143,23 @@ float4 main() : SV_Target0
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(DefaultTri), 0, DXGI_FORMAT_UNKNOWN, DefaultTri, &vb, NULL,
-                  NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
-
     Vec4f cbufferdata[256];
 
     for(int i = 0; i < 256; i++)
       cbufferdata[i] = Vec4f(float(i * 4 + 0), float(i * 4 + 1), float(i * 4 + 2), float(i * 4 + 3));
 
-    ID3D11BufferPtr cb;
-    if(MakeBuffer(eCBuffer, 0, sizeof(cbufferdata), 0, DXGI_FORMAT_UNKNOWN, cbufferdata, &cb, NULL,
-                  NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(DefaultTri);
+    ID3D11BufferPtr cb = MakeBuffer().Constant().Data(cbufferdata);
 
-    ID3D11Texture2DPtr fltTex;
-    ID3D11RenderTargetViewPtr fltRT;
-
-    MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex, NULL, NULL,
-                  &fltRT, NULL);
+    ID3D11Texture2DPtr fltTex =
+        MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, screenWidth, screenHeight).RTV();
+    ID3D11RenderTargetViewPtr fltRT = MakeRTV(fltTex);
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
@@ -188,8 +168,7 @@ float4 main() : SV_Target0
 
       ctx->PSSetConstantBuffers(0, 1, &cb.GetInterfacePtr());
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &fltRT.GetInterfacePtr(), NULL);
 

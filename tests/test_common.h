@@ -115,7 +115,7 @@ struct DefaultA2V
   Vec2f uv;
 };
 
-extern DefaultA2V DefaultTri[3];
+extern const DefaultA2V DefaultTri[3];
 
 struct GraphicsTest
 {

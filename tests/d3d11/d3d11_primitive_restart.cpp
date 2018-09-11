@@ -34,8 +34,6 @@ struct Primitive_Restart : D3D11GraphicsTest
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_5_0");
 
@@ -64,45 +62,34 @@ struct Primitive_Restart : D3D11GraphicsTest
         {Vec3f(0.4f, -0.2f, 0.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
     };
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(strip), 0, DXGI_FORMAT_UNKNOWN, strip, &vb, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(strip);
 
     uint16_t idx[] = {
-        0,      1, 2,  3,  4,  5,  6,  7,
+        // strip 0
+        0, 1, 2, 3, 4, 5, 6, 7,
 
+        // restart
         0xffff,
 
-        8,      9, 10, 11, 12, 13, 14, 15,
+        // strip 1
+        8, 9, 10, 11, 12, 13, 14, 15,
     };
 
-    ID3D11BufferPtr ib;
-    if(MakeBuffer(eIBuffer, 0, sizeof(idx), 0, DXGI_FORMAT_UNKNOWN, idx, &ib, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr ib = MakeBuffer().Index().Data(idx);
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetIndexBuffer(ib, DXGI_FORMAT_R16_UINT, 0);
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
       ctx->IASetInputLayout(defaultLayout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 

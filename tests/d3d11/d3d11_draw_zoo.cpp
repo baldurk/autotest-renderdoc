@@ -87,8 +87,6 @@ float4 main(v2f IN) : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
@@ -183,13 +181,7 @@ float4 main(v2f IN) : SV_Target0
       memcpy(dst + 25, triangle + 12, sizeof(DefaultA2V));
     }
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, UINT(vbData.size() * sizeof(DefaultA2V)), 0, DXGI_FORMAT_UNKNOWN,
-                  vbData.data(), &vb, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(vbData);
 
     Vec4f instData[16] = {};
 
@@ -204,13 +196,7 @@ float4 main(v2f IN) : SV_Target0
       instData[14] = Vec4f(0.8f, 0.1f, 0.1f, 1.0f);
     }
 
-    ID3D11BufferPtr instvb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(instData), 0, DXGI_FORMAT_UNKNOWN, instData, &instvb, NULL,
-                  NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle inst VB");
-      return 1;
-    }
+    ID3D11BufferPtr instvb = MakeBuffer().Vertex().Data(instData);
 
     std::vector<uint32_t> idxData;
     idxData.resize(50);
@@ -237,13 +223,7 @@ float4 main(v2f IN) : SV_Target0
       idxData[39] = 106;
     }
 
-    ID3D11BufferPtr ib;
-    if(MakeBuffer(eIBuffer, 0, UINT(idxData.size() * sizeof(uint32_t)), 0, DXGI_FORMAT_UNKNOWN,
-                  idxData.data(), &ib, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create triangle inst VB");
-      return 1;
-    }
+    ID3D11BufferPtr ib = MakeBuffer().Index().Data(idxData);
 
     CD3D11_RASTERIZER_DESC rd = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());
     rd.CullMode = D3D11_CULL_NONE;
@@ -253,8 +233,7 @@ float4 main(v2f IN) : SV_Target0
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

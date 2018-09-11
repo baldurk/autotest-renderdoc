@@ -63,35 +63,32 @@ void main(float4 pos : SV_Position, out float4 a : SV_Target0, out float4 b : SV
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(FullscreenQuadVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
-    ID3D11Texture2DPtr fltTex[2];
-    ID3D11RenderTargetViewPtr fltRT[2];
-    MakeTexture2D(400, 400, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex[0], NULL, NULL, &fltRT[0],
-                  NULL);
-    MakeTexture2D(400, 400, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex[1], NULL, NULL, &fltRT[1],
-                  NULL);
+    ID3D11Texture2DPtr fltTex[2] = {
+        MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 400, 400).RTV(),
+        MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 400, 400).RTV(),
+    };
+    ID3D11RenderTargetViewPtr fltRT[2] = {
+        MakeRTV(fltTex[0]), MakeRTV(fltTex[1]),
+    };
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(fltRT[0], col);
-      ctx->ClearRenderTargetView(fltRT[1], col);
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(fltRT[0], {0.4f, 0.5f, 0.6f, 1.0f});
+      ClearRenderTargetView(fltRT[1], {0.4f, 0.5f, 0.6f, 1.0f});
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, 400.0f, 400.0f, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ID3D11RenderTargetView *rts[] = {
           fltRT[0], fltRT[1],

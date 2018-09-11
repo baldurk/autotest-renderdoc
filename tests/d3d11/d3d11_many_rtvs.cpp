@@ -48,8 +48,6 @@ float4 main() : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(FullscreenQuadVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
@@ -57,16 +55,10 @@ float4 main() : SV_Target0
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
     ID3D11RenderTargetViewPtr rtv;
-    CD3D11_RENDER_TARGET_VIEW_DESC desc(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
     Vec4f col;
 
-    ID3D11BufferPtr cb;
-    if(MakeBuffer(eCBuffer, 0, sizeof(Vec4f), 0, DXGI_FORMAT_UNKNOWN, &col, &cb, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create CB");
-      return 1;
-    }
+    ID3D11BufferPtr cb = MakeBuffer().Constant().Size(sizeof(Vec4f));
 
     D3D11_VIEWPORT view[10];
     for(int i = 0; i < 10; i++)
@@ -81,8 +73,7 @@ float4 main() : SV_Target0
 
     while(Running())
     {
-      float clearcol[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, clearcol);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -95,8 +86,7 @@ float4 main() : SV_Target0
       {
         ctx->RSSetViewports(1, view + i);
 
-        rtv = NULL;
-        CHECK_HR(dev->CreateRenderTargetView(bbTex, &desc, &rtv));
+        rtv = MakeRTV(bbTex);
 
         ctx->OMSetRenderTargets(1, &rtv.GetInterfacePtr(), NULL);
 

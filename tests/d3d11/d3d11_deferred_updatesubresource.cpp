@@ -55,8 +55,6 @@ float4 main(v2f IN) : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3D11DeviceContextPtr defctx;
     dev->CreateDeferredContext(0, &defctx);
 
@@ -86,29 +84,13 @@ float4 main(v2f IN) : SV_Target0
         {Vec3f(0.5f, 0.0f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(2.0f, 0.0f)},
     };
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL,
-                  NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(triangle);
 
-    ID3D11Texture2DPtr tex;
-    ID3D11ShaderResourceViewPtr srv;
-    if(MakeTexture2D(64, 64, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &tex, &srv, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create texture");
-      return 1;
-    }
+    ID3D11Texture2DPtr tex = MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, 64, 64).SRV();
+    ID3D11ShaderResourceViewPtr srv = MakeSRV(tex);
 
-    ID3D11Texture2DPtr tex2;
-    ID3D11ShaderResourceViewPtr srv2;
-    if(MakeTexture2D(2048, 2048, 1, DXGI_FORMAT_R8_UNORM, &tex2, &srv2, NULL, NULL, NULL))
-    {
-      TEST_ERROR("Failed to create texture");
-      return 1;
-    }
+    ID3D11Texture2DPtr tex2 = MakeTexture(DXGI_FORMAT_R8_UNORM, 2048, 2048).SRV();
+    ID3D11ShaderResourceViewPtr srv2 = MakeSRV(tex2);
 
     float *buffers[3];
 
@@ -155,9 +137,9 @@ float4 main(v2f IN) : SV_Target0
       srcArea[2][i * 4 + 3] = 1.0f;
     }
 
-    D3D11_BOX leftBox = CD3D11_BOX(4, 4, 0, 20, 20, 1);
-    D3D11_BOX toprightBox = CD3D11_BOX(44, 44, 0, 60, 60, 1);
-    D3D11_BOX botrightBox = CD3D11_BOX(44, 4, 0, 60, 20, 1);
+    D3D11_BOX leftBox = {4, 4, 0, 20, 20, 1};
+    D3D11_BOX toprightBox = {44, 44, 0, 60, 60, 1};
+    D3D11_BOX botrightBox = {44, 4, 0, 60, 20, 1};
 
     // corrected deferred context version of srcArea[2]
     srcArea[3] = srcArea[2];
@@ -166,7 +148,8 @@ float4 main(v2f IN) : SV_Target0
 
     D3D11_FEATURE_DATA_THREADING threadingCaps = {FALSE, FALSE};
 
-    hr = dev->CheckFeatureSupport(D3D11_FEATURE_THREADING, &threadingCaps, sizeof(threadingCaps));
+    HRESULT hr =
+        dev->CheckFeatureSupport(D3D11_FEATURE_THREADING, &threadingCaps, sizeof(threadingCaps));
     if(SUCCEEDED(hr))
     {
       if(!threadingCaps.DriverCommandLists)
@@ -180,12 +163,9 @@ float4 main(v2f IN) : SV_Target0
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       ctx->IASetInputLayout(defaultLayout);
 
@@ -194,8 +174,7 @@ float4 main(v2f IN) : SV_Target0
 
       ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 
@@ -238,7 +217,7 @@ float4 main(v2f IN) : SV_Target0
       ID3D11DeviceContext *context = ctx;
 
       // test update with box to ensure we don't read too much data
-      D3D11_BOX smallbox = CD3D11_BOX(2000, 2000, 0, 2040, 2040, 1);
+      D3D11_BOX smallbox = {2000, 2000, 0, 2040, 2040, 1};
       byte *smalldata = new byte[2048 * 39 + 40];
       memset(smalldata, 0xfd, 2048 * 39 + 40);
       ctx->UpdateSubresource(tex2, 0, &smallbox, smalldata, 2048, 0);

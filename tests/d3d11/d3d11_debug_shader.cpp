@@ -191,8 +191,6 @@ float4 main(v2f IN) : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = Compile(common + vertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(common + pixel, "main", "ps_5_0");
 
@@ -221,10 +219,9 @@ float4 main(v2f IN) : SV_Target0
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
-    ID3D11Texture2DPtr fltTex;
-    ID3D11RenderTargetViewPtr fltRT;
-    MakeTexture2D(screenWidth, screenHeight, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, &fltTex, NULL, NULL,
-                  &fltRT, NULL);
+    ID3D11Texture2DPtr fltTex =
+        MakeTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, screenWidth, screenHeight).RTV();
+    ID3D11RenderTargetViewPtr fltRT = MakeRTV(fltTex);
 
     ConstsA2V triangle[] = {
         {Vec3f(-0.5f, 0.0f, 0.0f), 0.0f, 1.0f, -1.0f},
@@ -232,43 +229,31 @@ float4 main(v2f IN) : SV_Target0
         {Vec3f(0.5f, 0.0f, 0.0f), 0.0f, 1.0f, -1.0f},
     };
 
-    ID3D11BufferPtr vb;
-    if(MakeBuffer(eVBuffer, 0, sizeof(triangle), 0, DXGI_FORMAT_UNKNOWN, triangle, &vb, NULL, NULL,
-                  NULL))
-    {
-      TEST_ERROR("Failed to create triangle VB");
-      return 1;
-    }
+    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(triangle);
 
     float testdata[] = {
         1.0f,  2.0f,  3.0f,  4.0f,  5.0f,  6.0f,  7.0f,  8.0f,  9.0f,  10.0f,
         11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f, 120.0f,
     };
 
-    ID3D11BufferPtr srvBuf;
-    ID3D11ShaderResourceViewPtr srv;
-    MakeBuffer(eCompBuffer, 0, sizeof(testdata), 4, DXGI_FORMAT_R32_FLOAT, testdata, &srvBuf, &srv,
-               NULL, NULL);
+    ID3D11BufferPtr srvBuf = MakeBuffer().SRV().Data(testdata);
+    ID3D11ShaderResourceViewPtr srv = MakeSRV(srvBuf).Format(DXGI_FORMAT_R32_FLOAT);
 
     ctx->PSSetShaderResources(0, 1, &srv.GetInterfacePtr());
 
     while(Running())
     {
-      float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
-      ctx->ClearRenderTargetView(fltRT, col);
-      ctx->ClearRenderTargetView(bbRTV, col);
+      ClearRenderTargetView(fltRT, {0.4f, 0.5f, 0.6f, 1.0f});
+      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
 
-      UINT stride = sizeof(DefaultA2V);
-      UINT offset = 0;
-      ctx->IASetVertexBuffers(0, 1, &vb.GetInterfacePtr(), &stride, &offset);
+      IASetVertexBuffer(vb, sizeof(ConstsA2V), 0);
       ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      ctx->IASetInputLayout(defaultLayout);
+      ctx->IASetInputLayout(layout);
 
       ctx->VSSetShader(vs, NULL, 0);
       ctx->PSSetShader(ps, NULL, 0);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f};
-      ctx->RSSetViewports(1, &view);
+      RSSetViewport({0.0f, 0.0f, (float)screenWidth, (float)screenHeight, 0.0f, 1.0f});
 
       ctx->OMSetRenderTargets(1, &fltRT.GetInterfacePtr(), NULL);
 

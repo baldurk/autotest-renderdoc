@@ -107,7 +107,7 @@ extern std::string DefaultPixel;
 
 #define CHECK_HR(expr)                                                                    \
   {                                                                                       \
-    hr = (expr);                                                                          \
+    HRESULT hr = (expr);                                                                  \
     if(FAILED(hr))                                                                        \
     {                                                                                     \
       TEST_ERROR("Failed HRESULT at %s:%d (%x): %s", __FILE__, (int)__LINE__, hr, #expr); \
@@ -122,6 +122,235 @@ inline void SetDebugName(T pObj, const char *name)
   if(pObj)
     pObj->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)strlen(name), name);
 }
+
+struct D3D11GraphicsTest;
+
+class BufferCreator
+{
+public:
+  BufferCreator(D3D11GraphicsTest *test);
+
+  BufferCreator &Vertex();
+  BufferCreator &Index();
+  BufferCreator &Constant();
+  BufferCreator &StreamOut();
+  BufferCreator &SRV();
+  BufferCreator &UAV();
+
+  BufferCreator &Structured(UINT structStride);
+  BufferCreator &ByteAddressed();
+  BufferCreator &Mappable();
+  BufferCreator &Staging();
+
+  BufferCreator &Data(const void *data);
+  BufferCreator &Size(UINT size);
+
+  template <typename T, size_t N>
+  BufferCreator &Data(const T (&data)[N])
+  {
+    return Data(&data[0]).Size(UINT(N * sizeof(T)));
+  }
+
+  template <typename T>
+  BufferCreator &Data(const std::vector<T> &data)
+  {
+    return Data(data.data()).Size(UINT(data.size() * sizeof(T)));
+  }
+
+  operator ID3D11Buffer *() const;
+  operator ID3D11BufferPtr() const { return ID3D11BufferPtr((ID3D11Buffer *)*this); }
+private:
+  D3D11GraphicsTest *m_Test;
+
+  D3D11_BUFFER_DESC m_BufDesc;
+  D3D11_SUBRESOURCE_DATA m_Initdata = {};
+};
+
+class TextureCreator
+{
+public:
+  TextureCreator(D3D11GraphicsTest *test, DXGI_FORMAT format, UINT width, UINT height, UINT depth);
+
+  TextureCreator &Mips(UINT mips);
+  TextureCreator &Array(UINT size);
+  TextureCreator &Multisampled(UINT count, UINT quality = 0);
+
+  TextureCreator &SRV();
+  TextureCreator &UAV();
+  TextureCreator &RTV();
+  TextureCreator &DSV();
+
+  TextureCreator &Mappable();
+  TextureCreator &Staging();
+
+  operator ID3D11Texture1D *() const;
+  operator ID3D11Texture1DPtr() const { return ID3D11Texture1DPtr((ID3D11Texture1D *)*this); }
+  operator ID3D11Texture2D *() const;
+  operator ID3D11Texture2DPtr() const { return ID3D11Texture2DPtr((ID3D11Texture2D *)*this); }
+  operator ID3D11Texture3D *() const;
+  operator ID3D11Texture3DPtr() const { return ID3D11Texture3DPtr((ID3D11Texture3D *)*this); }
+protected:
+  D3D11GraphicsTest *m_Test;
+
+  UINT Width = 1;
+  UINT Height = 1;
+  UINT Depth = 1;
+  UINT MipLevels = 1;
+  UINT ArraySize = 1;
+  DXGI_FORMAT Format = DXGI_FORMAT_UNKNOWN;
+  DXGI_SAMPLE_DESC SampleDesc = {1, 0};
+  D3D11_USAGE Usage = D3D11_USAGE_DEFAULT;
+  UINT BindFlags = 0;
+  UINT CPUAccessFlags = 0;
+  UINT MiscFlags = 0;
+};
+
+enum class ResourceType
+{
+  Buffer,
+  Texture1D,
+  Texture1DArray,
+  Texture2D,
+  Texture2DArray,
+  Texture2DMS,
+  Texture2DMSArray,
+  Texture3D,
+};
+
+enum class ViewType
+{
+  SRV,
+  RTV,
+  DSV,
+  UAV,
+};
+
+class ViewCreator
+{
+public:
+  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Buffer *buf);
+  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture1D *tex);
+  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture2D *tex);
+  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture3D *tex);
+
+  // common params
+  ViewCreator &Format(DXGI_FORMAT format);
+
+  // buffer params
+  ViewCreator &FirstElement(UINT el);
+  ViewCreator &NumElements(UINT num);
+
+  // texture params
+  ViewCreator &FirstMip(UINT mip);
+  ViewCreator &NumMips(UINT num);
+  ViewCreator &FirstSlice(UINT mip);
+  ViewCreator &NumSlices(UINT num);
+
+  // depth stencil only
+  ViewCreator &ReadOnlyDepth();
+  ViewCreator &ReadOnlyStencil();
+
+  operator ID3D11ShaderResourceView *();
+  operator ID3D11ShaderResourceViewPtr()
+  {
+    return ID3D11ShaderResourceViewPtr((ID3D11ShaderResourceView *)*this);
+  }
+  operator ID3D11RenderTargetView *();
+  operator ID3D11RenderTargetViewPtr()
+  {
+    return ID3D11RenderTargetViewPtr((ID3D11RenderTargetView *)*this);
+  }
+  operator ID3D11DepthStencilView *();
+  operator ID3D11DepthStencilViewPtr()
+  {
+    return ID3D11DepthStencilViewPtr((ID3D11DepthStencilView *)*this);
+  }
+
+  operator ID3D11UnorderedAccessView *();
+  operator ID3D11UnorderedAccessViewPtr()
+  {
+    return ID3D11UnorderedAccessViewPtr((ID3D11UnorderedAccessView *)*this);
+  }
+
+private:
+  void SetupDescriptors(ViewType viewType, ResourceType resType);
+
+  D3D11GraphicsTest *m_Test;
+  ID3D11Resource *m_Res;
+  ViewType m_Type;
+
+  // instead of a huge mess trying to auto populate the actual descriptors from saved values, as
+  // they aren't very nicely compatible (e.g. RTVs have mipslice selection on 3D textures, SRVs
+  // don't, SRVs support 1D texturse but DSVs don't, UAVs don't support MSAA textures, etc etc).
+  // Instead we just set save pointers that might be NULL in the constructor based on view and
+  // resource type
+  union
+  {
+    D3D11_SHADER_RESOURCE_VIEW_DESC srv;
+    D3D11_RENDER_TARGET_VIEW_DESC rtv;
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsv;
+    D3D11_UNORDERED_ACCESS_VIEW_DESC uav;
+  } desc;
+
+  UINT *firstElement = NULL, *numElements = NULL;
+  UINT *firstMip = NULL, *numMips = NULL;
+  UINT *firstSlice = NULL, *numSlices = NULL;
+};
+
+class UAVCreator
+{
+public:
+  UAVCreator(D3D11GraphicsTest *test, ID3D11Buffer *buf);
+  UAVCreator(D3D11GraphicsTest *test, ID3D11Texture1D *tex);
+  UAVCreator(D3D11GraphicsTest *test, ID3D11Texture2D *tex);
+  UAVCreator(D3D11GraphicsTest *test, ID3D11Texture3D *tex);
+
+  // common params
+  UAVCreator &Format(DXGI_FORMAT format);
+
+  // buffer params
+  UAVCreator &FirstElement(UINT el);
+  UAVCreator &NumElements(UINT num);
+
+private:
+  D3D11GraphicsTest *m_Test;
+
+  ID3D11Resource *m_Res;
+  D3D11_UNORDERED_ACCESS_VIEW_DESC m_Desc = {};
+};
+
+class RTVCreator
+{
+public:
+  RTVCreator(D3D11GraphicsTest *test, ID3D11Texture1D *tex);
+  RTVCreator(D3D11GraphicsTest *test, ID3D11Texture2D *tex);
+  RTVCreator(D3D11GraphicsTest *test, ID3D11Texture3D *tex);
+
+  // common params
+  RTVCreator &Format(DXGI_FORMAT format);
+
+private:
+  D3D11GraphicsTest *m_Test;
+
+  ID3D11Resource *m_Res;
+  D3D11_RENDER_TARGET_VIEW_DESC m_Desc = {};
+};
+
+class DSVCreator
+{
+public:
+  DSVCreator(D3D11GraphicsTest *test, ID3D11Texture1D *tex);
+  DSVCreator(D3D11GraphicsTest *test, ID3D11Texture2D *tex);
+
+  // common params
+  DSVCreator &Format(DXGI_FORMAT format);
+
+private:
+  D3D11GraphicsTest *m_Test;
+
+  ID3D11Resource *m_Res;
+  D3D11_DEPTH_STENCIL_VIEW_DESC m_Desc = {};
+};
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
@@ -174,17 +403,40 @@ struct D3D11GraphicsTest : public GraphicsTest
 
   void CreateDefaultInputLayout(ID3DBlobPtr vsblob);
 
-  int MakeBuffer(BufType type, UINT flags, UINT byteSize, UINT structSize, DXGI_FORMAT fmt,
-                 void *data, ID3D11Buffer **buf, ID3D11ShaderResourceView **srv,
-                 ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv);
+  BufferCreator MakeBuffer() { return BufferCreator(this); }
+  TextureCreator MakeTexture(DXGI_FORMAT format, UINT width)
+  {
+    return TextureCreator(this, format, width, 1, 1);
+  }
+  TextureCreator MakeTexture(DXGI_FORMAT format, UINT width, UINT height)
+  {
+    return TextureCreator(this, format, width, height, 1);
+  }
+  TextureCreator MakeTexture(DXGI_FORMAT format, UINT width, UINT height, UINT depth)
+  {
+    return TextureCreator(this, format, width, height, depth);
+  }
 
-  int MakeTexture2D(UINT w, UINT h, UINT mips, DXGI_FORMAT fmt, ID3D11Texture2D **tex,
-                    ID3D11ShaderResourceView **srv, ID3D11UnorderedAccessView **uav,
-                    ID3D11RenderTargetView **rtv, ID3D11DepthStencilView **dsv);
-  int MakeTexture2DMS(UINT w, UINT h, UINT mips, UINT sampleCount, DXGI_FORMAT fmt,
-                      ID3D11Texture2D **tex, ID3D11ShaderResourceView **srv,
-                      ID3D11UnorderedAccessView **uav, ID3D11RenderTargetView **rtv,
-                      ID3D11DepthStencilView **dsv);
+  template <typename T>
+  ViewCreator MakeSRV(T res)
+  {
+    return ViewCreator(this, ViewType::SRV, res);
+  }
+  template <typename T>
+  ViewCreator MakeRTV(T res)
+  {
+    return ViewCreator(this, ViewType::RTV, res);
+  }
+  template <typename T>
+  ViewCreator MakeDSV(T res)
+  {
+    return ViewCreator(this, ViewType::DSV, res);
+  }
+  template <typename T>
+  ViewCreator MakeUAV(T res)
+  {
+    return ViewCreator(this, ViewType::UAV, res);
+  }
 
   vector<byte> GetBufferData(ID3D11Buffer *buf, uint32_t offset = 0, uint32_t len = 0);
 
@@ -194,6 +446,19 @@ struct D3D11GraphicsTest : public GraphicsTest
     ctx->Map(res, sub, type, 0, &mapped);
     return mapped;
   }
+
+  struct VBBind
+  {
+    ID3D11Buffer *buf;
+    UINT stride;
+    UINT offset;
+  };
+
+  void IASetVertexBuffer(ID3D11Buffer *vb, UINT stride, UINT offset);
+
+  void ClearRenderTargetView(ID3D11RenderTargetView *rt, Vec4f col);
+
+  void RSSetViewport(D3D11_VIEWPORT view);
 
   bool Running();
   void Present();
