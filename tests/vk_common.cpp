@@ -26,8 +26,7 @@
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 
 #include "vk_common.h"
-
-#include <vulkan/vk_mem_alloc.h>
+#include "../win32_window.h"
 
 static VkBool32 VKAPI_PTR vulkanCallback(VkDebugReportFlagsEXT flags,
                                          VkDebugReportObjectTypeEXT objectType, uint64_t object,
@@ -39,26 +38,6 @@ static VkBool32 VKAPI_PTR vulkanCallback(VkDebugReportFlagsEXT flags,
             pLayerPrefix, pMessage);
 
   return false;
-}
-
-static void glfwCallback(int err, const char *str)
-{
-  TEST_ERROR("GLFW Error %i: %s", err, str);
-}
-
-static void glfwKeypress(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-  if(key == GLFW_KEY_ESCAPE)
-    glfwSetWindowShouldClose(window, 1);
-}
-
-static void glfwResize(GLFWwindow *window, int width, int height)
-{
-  if(width == 0 || height == 0)
-    return;
-
-  VulkanGraphicsTest *test = (VulkanGraphicsTest *)glfwGetWindowUserPointer(window);
-  test->resize();
 }
 
 VulkanGraphicsTest::VulkanGraphicsTest()
@@ -83,60 +62,58 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     return false;
   }
 
-  if(!glfwInit())
-  {
-    TEST_ERROR("Failed to init GLFW");
-    return false;
-  }
-
-  inited = true;
-
-  if(!glfwVulkanSupported())
-  {
-    TEST_ERROR("Vulkan is not supported");
-    return false;
-  }
-
-  glfwSetErrorCallback(&glfwCallback);
-
-  glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
-  glfwWindowHint(GLFW_RESIZABLE, 0);
-
-  uint32_t count = 0;
-  const char *const *extensions = glfwGetRequiredInstanceExtensions(&count);
-
-  if(!extensions)
-  {
-    TEST_ERROR("GLFW cannot support vulkan rendering");
-    return false;
-  }
-
   vk::Result vkr = vk::Result::eSuccess;
 
   vk::ApplicationInfo app("RenderDoc autotesting", VK_MAKE_VERSION(1, 0, 0),
                           "RenderDoc autotesting", VK_MAKE_VERSION(1, 0, 0), VK_API_VERSION_1_0);
 
-  for(uint32_t i = 0; i < count; i++)
-    instExts.push_back(extensions[i]);
+  instExts.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 
-  instExts.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+#if defined(WIN32)
+  instExts.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#endif
+
+  if(debugDevice)
+    instExts.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
   std::vector<const char *> layers;
 
   std::vector<vk::LayerProperties> supportedLayers;
   ResultChecker(supportedLayers) = vk::enumerateInstanceLayerProperties();
 
-  for(const vk::LayerProperties &layer : supportedLayers)
+  if(debugDevice)
   {
-    if(!strcmp(layer.layerName, "VK_LAYER_LUNARG_standard_validation"))
+    for(const vk::LayerProperties &layer : supportedLayers)
     {
-      layers.push_back(layer.layerName);
-      break;
+      if(!strcmp(layer.layerName, "VK_LAYER_LUNARG_standard_validation"))
+      {
+        layers.push_back(layer.layerName);
+        break;
+      }
     }
   }
 
   std::vector<vk::ExtensionProperties> supportedExts;
   ResultChecker(supportedExts) = vk::enumerateInstanceExtensionProperties();
+
+  for(const char *search : instExts)
+  {
+    bool found = false;
+    for(vk::ExtensionProperties &ext : supportedExts)
+    {
+      if(!strcmp(ext.extensionName, search))
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if(!found)
+    {
+      TEST_ERROR("Required instance extension '%s' missing", search);
+      return false;
+    }
+  }
 
   std::tie(vkr, instance) = vk::createInstance(vk::InstanceCreateInfo(
       {}, &app, (uint32_t)layers.size(), layers.data(), (uint32_t)instExts.size(), instExts.data()));
@@ -178,32 +155,13 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     }
   }
 
-  if(glfwGetPhysicalDevicePresentationSupport((VkInstance)instance, (VkPhysicalDevice)phys,
-                                              queueFamilyIdx))
-  {
-    // Queue family supports image presentation
-  }
+  win = new Win32Window(screenWidth, screenHeight, "Autotesting");
 
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-  win = glfwCreateWindow(screenWidth, screenHeight, "Autotesting", NULL, NULL);
-
-  glfwSetKeyCallback(win, &glfwKeypress);
-
-  glfwSetWindowUserPointer(win, this);
-  glfwSetWindowSizeCallback(win, &glfwResize);
-
-  if(!win)
-  {
-    TEST_ERROR("Error creating glfw window");
-    return false;
-  }
-
-  vkr = (vk::Result)glfwCreateWindowSurface((VkInstance)instance, win, NULL, &surface);
+  vkr = (vk::Result)CreateSurface(win, &surface);
 
   if(vkr != vk::Result::eSuccess)
   {
-    TEST_ERROR("Error creating glfw surface: %s", vk::to_string(vkr).c_str());
+    TEST_ERROR("Error creating surface: %s", vk::to_string(vkr).c_str());
     return false;
   };
 
@@ -225,6 +183,27 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     if(*enabledBegin && !*supportedBegin)
     {
       TEST_ERROR("Feature enabled that isn't supported");
+      return false;
+    }
+  }
+
+  ResultChecker(supportedExts) = phys.enumerateDeviceExtensionProperties();
+
+  for(const char *search : devExts)
+  {
+    bool found = false;
+    for(vk::ExtensionProperties &ext : supportedExts)
+    {
+      if(!strcmp(ext.extensionName, search))
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if(!found)
+    {
+      TEST_ERROR("Required device extension '%s' missing", search);
       return false;
     }
   }
@@ -281,6 +260,11 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   return true;
 }
 
+Window *VulkanGraphicsTest::MakeWindow(int width, int height, const char *title)
+{
+  return new Win32Window(width, height, title);
+}
+
 VulkanGraphicsTest::~VulkanGraphicsTest()
 {
   vmaDestroyAllocator(allocator);
@@ -309,19 +293,12 @@ VulkanGraphicsTest::~VulkanGraphicsTest()
   if(instance)
     instance.destroy();
 
-  if(win)
-    glfwDestroyWindow(win);
-
-  if(inited)
-    glfwTerminate();
+  delete win;
 }
 
 bool VulkanGraphicsTest::Running()
 {
-  if(glfwWindowShouldClose(win))
-    return false;
-
-  return true;
+  return win->Update();
 }
 
 vk::Image VulkanGraphicsTest::StartUsingBackbuffer(vk::CommandBuffer cmd, vk::AccessFlags nextUse,
@@ -377,7 +354,6 @@ void VulkanGraphicsTest::Present()
     resize();
 
   queue.waitIdle();
-  glfwPollEvents();
 
   std::set<vk::Fence> doneFences;
 
@@ -488,14 +464,17 @@ bool VulkanGraphicsTest::createSwap()
   if(std::find(modes.begin(), modes.end(), mode) == modes.end())
     mode = vk::PresentModeKHR::eFifo;
 
-  uint32_t width, height;
-  glfwGetWindowSize(win, (int *)&width, (int *)&height);
+  uint32_t width = 1, height = 1;
 
   vk::SurfaceCapabilitiesKHR capabilities;
   std::tie(vkr, capabilities) = phys.getSurfaceCapabilitiesKHR(vk::SurfaceKHR(surface));
 
+  width = capabilities.currentExtent.width;
+
   width = std::min(width, capabilities.maxImageExtent.width);
   width = std::max(width, capabilities.minImageExtent.width);
+
+  height = capabilities.currentExtent.height;
 
   height = std::min(height, capabilities.maxImageExtent.height);
   height = std::max(height, capabilities.minImageExtent.height);
@@ -563,8 +542,27 @@ void VulkanGraphicsTest::acquireImage()
   if(vkr == vk::Result::eSuboptimalKHR || vkr == vk::Result::eErrorOutOfDateKHR)
   {
     resize();
+
+    std::tie(vkr, swapIndex) =
+        device.acquireNextImageKHR(swap, UINT64_MAX, renderStartSemaphore, vk::Fence());
     return;
   }
+}
+
+VkResult VulkanGraphicsTest::CreateSurface(Window *win, VkSurfaceKHR *surface)
+{
+#if defined(WIN32)
+  VkWin32SurfaceCreateInfoKHR createInfo;
+
+  createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+  createInfo.pNext = NULL;
+  createInfo.flags = 0;
+  createInfo.hwnd = ((Win32Window *)win)->wnd;
+  createInfo.hinstance = GetModuleHandleA(NULL);
+
+  return vkCreateWin32SurfaceKHR(instance, &createInfo, NULL, surface);
+#else
+#endif
 }
 
 PipelineCreator::PipelineCreator()

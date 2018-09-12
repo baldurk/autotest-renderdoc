@@ -38,9 +38,6 @@
 
 #include <vulkan/vulkan.hpp>
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #include <vulkan/vk_mem_alloc.h>
 
 #include <list>
@@ -205,6 +202,8 @@ struct VulkanGraphicsTest : public GraphicsTest
   ~VulkanGraphicsTest();
 
   bool Init(int argc, char **argv);
+  Window *MakeWindow(int width, int height, const char *title);
+  VkResult CreateSurface(Window *win, VkSurfaceKHR *surface);
 
   bool Running();
   vk::Image StartUsingBackbuffer(vk::CommandBuffer cmd, vk::AccessFlags nextUse,
@@ -252,9 +251,7 @@ struct VulkanGraphicsTest : public GraphicsTest
   vk::Viewport viewport;
   vk::Rect2D scissor;
 
-  // glfw
-  GLFWwindow *win = NULL;
-  bool inited = false;
+  Window *win = NULL;
 
   // internal bookkeeping
   std::set<vk::Fence> fences;
