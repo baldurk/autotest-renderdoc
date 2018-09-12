@@ -23,7 +23,7 @@
  ******************************************************************************/
 
 #include <time.h>
-#include "../gl_common.h"
+#include "../gl_test.h"
 
 struct Large_BCn_Arrays : OpenGLGraphicsTest
 {

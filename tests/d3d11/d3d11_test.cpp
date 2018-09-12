@@ -102,7 +102,7 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
     return true;
   }
 
-  Win32Window *win = new Win32Window(screenWidth, screenHeight, "RenderDoc test program");
+  Win32Window *win = new Win32Window(screenWidth, screenHeight, screenTitle);
 
   window = win;
 

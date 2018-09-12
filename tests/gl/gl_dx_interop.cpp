@@ -25,14 +25,9 @@
 #if defined(WIN32)
 
 #include "../d3d11/d3d11_test.h"
-#include "../gl_common.h"
+#include "../gl_test.h"
 
 #include "../glad/glad_wgl.h"
-
-#define GLFW_EXPOSE_NATIVE_WIN32
-#define GLFW_EXPOSE_NATIVE_WGL
-
-#include <GLFW/glfw3native.h>
 
 struct DX_Interop : OpenGLGraphicsTest
 {
@@ -162,10 +157,6 @@ void main()
     // initialise, create window, create context, etc
     if(!Init(argc, argv))
       return 3;
-
-    HDC dc = GetDC(glfwGetWin32Window(win));
-    gladLoadWGL(dc);
-    ReleaseDC(NULL, dc);
 
     DefaultA2V quad[] = {
         {Vec3f(-0.8f, -0.8f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},

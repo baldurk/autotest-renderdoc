@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../gl_common.h"
+#include "../gl_test.h"
 
 struct Runtime_Bind_Prog_To_Pipe : OpenGLGraphicsTest
 {

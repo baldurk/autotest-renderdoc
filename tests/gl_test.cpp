@@ -22,8 +22,7 @@
 * THE SOFTWARE.
 ******************************************************************************/
 
-#include "gl_common.h"
-
+#include "gl_test.h"
 #include <stdio.h>
 
 static void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -36,67 +35,13 @@ static void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum
   }
 }
 
-static void glfwCallback(int err, const char *str)
+void OpenGLGraphicsTest::PostInit()
 {
-  TEST_ERROR("GLFW Error %i: %s", err, str);
-}
-
-static void glfwKeypress(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-  if(key == GLFW_KEY_ESCAPE)
-    glfwSetWindowShouldClose(window, 1);
-}
-
-bool OpenGLGraphicsTest::Init(int argc, char **argv)
-{
-  // parse parameters here to override parameters
-  GraphicsTest::Init(argc, argv);
-
-  if(!glfwInit())
-  {
-    TEST_ERROR("Failed to init GLFW");
-    return false;
-  }
-
-  inited = true;
-
-  glfwSetErrorCallback(&glfwCallback);
-
-  glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
-  glfwWindowHint(GLFW_CLIENT_API, gles ? GLFW_OPENGL_ES_API : GLFW_OPENGL_API);
-  glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinor);
-  glfwWindowHint(GLFW_OPENGL_PROFILE,
-                 coreProfile ? GLFW_OPENGL_CORE_PROFILE : GLFW_OPENGL_COMPAT_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-  glfwWindowHint(GLFW_RESIZABLE, 0);
-
-  win = glfwCreateWindow(screenWidth, screenHeight, "Autotesting", NULL, NULL);
-
-  if(!win)
-  {
-    TEST_ERROR("Error creating glfw window");
-    return false;
-  }
-
-  glfwSetKeyCallback(win, &glfwKeypress);
-
-  glfwMakeContextCurrent(win);
-
-  if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-  {
-    TEST_ERROR("Error initialising glad");
-    return false;
-  }
-
   if(GLAD_GL_ARB_debug_output)
   {
     glDebugMessageCallback(&debugCallback, NULL);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   }
-
-  return true;
 }
 
 OpenGLGraphicsTest::~OpenGLGraphicsTest()
@@ -115,10 +60,8 @@ OpenGLGraphicsTest::~OpenGLGraphicsTest()
   for(GLuint p : progs)
     glDeleteProgram(p);
 
-  if(win)
-    glfwDestroyWindow(win);
-  if(inited)
-    glfwTerminate();
+  delete win;
+  DestroyContext(ctx);
 }
 
 GLuint OpenGLGraphicsTest::MakeProgram(std::string vertSrc, std::string fragSrc, bool sep)
@@ -258,14 +201,5 @@ GLuint OpenGLGraphicsTest::MakeFBO()
 
 bool OpenGLGraphicsTest::Running()
 {
-  if(glfwWindowShouldClose(win))
-    return false;
-
-  return true;
-}
-
-void OpenGLGraphicsTest::Present()
-{
-  glfwSwapBuffers(win);
-  glfwPollEvents();
+  return win->Update();
 }

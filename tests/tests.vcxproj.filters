@@ -8,9 +8,6 @@
     <ClCompile Include="gl\gl_simple_triangle.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
-    <ClCompile Include="gl_common.cpp">
-      <Filter>OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
@@ -88,12 +85,6 @@
     <ClCompile Include="gl\gl_buffer_updates.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
-    <ClCompile Include="glad\glad.c">
-      <Filter>OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="glad\glad_wgl.c">
-      <Filter>OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="gl\gl_dx_interop.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
@@ -151,9 +142,6 @@
     <ClCompile Include="gl\gl_multi_window.cpp">
       <Filter>OpenGL\tests</Filter>
     </ClCompile>
-    <ClCompile Include="volk\volk.c">
-      <Filter>Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="d3d11\d3d11_helpers.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
@@ -167,6 +155,30 @@
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="win32_window.cpp" />
+    <ClCompile Include="gl_test.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="volk\volk.c">
+      <Filter>Vulkan\volk</Filter>
+    </ClCompile>
+    <ClCompile Include="glad\glad.c">
+      <Filter>OpenGL\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="glad\glad_wgl.c">
+      <Filter>OpenGL\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="glad\glad_egl.c">
+      <Filter>OpenGL\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="glad\glad_glx.c">
+      <Filter>OpenGL\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_test_linux.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_test_win32.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -193,12 +205,15 @@
     <Filter Include="Linux">
       <UniqueIdentifier>{9c5ec0e8-32a9-45b7-8cbc-e6507dfff362}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan\volk">
+      <UniqueIdentifier>{51d3318c-fe26-422a-bec9-cd9af74e34a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL\glad">
+      <UniqueIdentifier>{d1888d63-46c9-4ff3-a81f-d470bfa0465d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test_common.h" />
-    <ClInclude Include="gl_common.h">
-      <Filter>OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="lz4.h" />
     <ClInclude Include="vk_common.h">
       <Filter>Vulkan</Filter>
@@ -217,6 +232,27 @@
     </ClInclude>
     <ClInclude Include="win32_window.h">
       <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_test.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="volk\volk.h">
+      <Filter>Vulkan\volk</Filter>
+    </ClInclude>
+    <ClInclude Include="glad\glad.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="glad\glad_egl.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="glad\glad_glx.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="glad\glad_wgl.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="glad\khrplatform.h">
+      <Filter>OpenGL\glad</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

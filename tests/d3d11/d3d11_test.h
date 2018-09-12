@@ -44,16 +44,6 @@ struct D3D11GraphicsTest : public GraphicsTest
 {
   static const TestAPI API = TestAPI::D3D11;
 
-  D3D11GraphicsTest()
-      : backbufferFmt(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB),
-        backbufferCount(2),
-        backbufferMSAA(1),
-        d3d11_1(false),
-        d3d11_2(false),
-        wnd(NULL)
-  {
-  }
-
   ~D3D11GraphicsTest();
 
   bool Init(int argc, char **argv);
@@ -153,11 +143,11 @@ struct D3D11GraphicsTest : public GraphicsTest
   bool Running();
   void Present();
 
-  DXGI_FORMAT backbufferFmt;
-  int backbufferCount;
-  int backbufferMSAA;
-  bool d3d11_1;
-  bool d3d11_2;
+  DXGI_FORMAT backbufferFmt = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+  int backbufferCount = 2;
+  int backbufferMSAA = 1;
+  bool d3d11_1 = false;
+  bool d3d11_2 = false;
 
   pD3DCompile dyn_D3DCompile = NULL;
   pD3DStripShader dyn_D3DStripShader = NULL;
@@ -166,9 +156,7 @@ struct D3D11GraphicsTest : public GraphicsTest
   PFN_D3D11_CREATE_DEVICE dyn_D3D11CreateDevice = NULL;
   PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN dyn_D3D11CreateDeviceAndSwapChain = NULL;
 
-  HWND wnd;
-
-  Window *window;
+  Window *window = NULL;
 
   IDXGISwapChainPtr swap;
 

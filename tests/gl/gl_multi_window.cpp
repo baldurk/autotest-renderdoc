@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../gl_common.h"
+#include "../gl_test.h"
 
 struct Multi_Window : OpenGLGraphicsTest
 {
@@ -100,12 +100,10 @@ void main()
     GLuint program = MakeProgram(common + vertex, common + pixel);
     glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
-    glfwWindowHint(GLFW_DEPTH_BITS, 0);
-    glfwWindowHint(GLFW_STENCIL_BITS, 0);
+    Window *win2 = MakeWindow(400, 300, "Autotesting 2");
+    void *ctx2 = MakeContext(win2, ctx);
 
-    GLFWwindow *win2 = glfwCreateWindow(400, 300, "Autotesting 2", NULL, win);
-
-    glfwMakeContextCurrent(win2);
+    ActivateContext(win2, ctx2);
 
     GLuint vao2 = 0;
     glGenVertexArrays(1, &vao2);
@@ -124,7 +122,7 @@ void main()
 
     while(Running())
     {
-      glfwMakeContextCurrent(win);
+      ActivateContext(win, ctx);
 
       float col[] = {0.4f, 0.5f, 0.6f, 1.0f};
       glClearBufferfv(GL_COLOR, 0, col);
@@ -139,7 +137,7 @@ void main()
 
       Present();
 
-      glfwMakeContextCurrent(win2);
+      ActivateContext(win2, ctx2);
 
       float col2[] = {0.6f, 0.5f, 0.4f, 1.0f};
       glClearBufferfv(GL_COLOR, 0, col2);
@@ -153,12 +151,14 @@ void main()
       glDrawArrays(GL_TRIANGLES, 0, 3);
       glDrawArrays(GL_TRIANGLES, 0, 3);
 
-      glfwSwapBuffers(win2);
-      glfwPollEvents();
+      win2->Update();
+      Present(win2);
     }
 
-    glfwDestroyWindow(win2);
     glDeleteVertexArrays(1, &vao2);
+
+    DestroyContext(ctx2);
+    delete win2;
 
     return 0;
   }

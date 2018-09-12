@@ -121,11 +121,6 @@ struct Window
 
 struct GraphicsTest
 {
-  GraphicsTest()
-      : screenWidth(1280), screenHeight(720), fullscreen(false), debugDevice(false), headless(false)
-  {
-  }
-
   virtual ~GraphicsTest() {}
   virtual Window *MakeWindow(int width, int height, const char *title) { return NULL; }
   virtual int main(int argc, char **argv) { return 9; }
@@ -134,11 +129,12 @@ struct GraphicsTest
   void StartFrameCapture(void *device = NULL, void *wnd = NULL);
   void EndFrameCapture(void *device = NULL, void *wnd = NULL);
 
-  int screenWidth;
-  int screenHeight;
-  bool fullscreen;
-  bool debugDevice;
-  bool headless;
+  int screenWidth = 1280;
+  int screenHeight = 720;
+  const char *screenTitle = "RenderDoc test program";
+  bool fullscreen = false;
+  bool debugDevice = false;
+  bool headless = false;
 };
 
 enum class TestAPI

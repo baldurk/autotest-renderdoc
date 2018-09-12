@@ -28,8 +28,6 @@
 
 #include "glad/glad.h"
 
-#include <GLFW/glfw3.h>
-
 #include <vector>
 
 struct OpenGLGraphicsTest : public GraphicsTest
@@ -39,6 +37,12 @@ struct OpenGLGraphicsTest : public GraphicsTest
   ~OpenGLGraphicsTest();
 
   bool Init(int argc, char **argv);
+  Window *MakeWindow(int width, int height, const char *title);
+  void *MakeContext(Window *win, void *share);
+  void DestroyContext(void *ctx);
+  void ActivateContext(Window *win, void *ctx);
+
+  void PostInit();
 
   GLuint MakeProgram(std::string vertSrc, std::string fragSrc, bool sep = false);
   GLuint MakeProgram();
@@ -49,14 +53,15 @@ struct OpenGLGraphicsTest : public GraphicsTest
   GLuint MakeFBO();
 
   bool Running();
-  void Present();
-
+  void Present(Window *window);
+  void Present() { Present(win); }
   int glMajor = 4;
   int glMinor = 3;
   bool coreProfile = true;
   bool gles = false;
 
-  GLFWwindow *win = NULL;
+  Window *win = NULL;
+  void *ctx = NULL;
   bool inited = false;
 
   std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
