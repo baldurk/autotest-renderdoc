@@ -40,7 +40,7 @@ struct DX_Interop : OpenGLGraphicsTest
       "Test interop between GL and DX (Create and render to a DX surface and include into "
       "GL rendering)";
 
-  string dxcommon = R"EOSHADER(
+  std::string dxcommon = R"EOSHADER(
 
 struct v2f
 {
@@ -50,7 +50,7 @@ struct v2f
 
 )EOSHADER";
 
-  string dxvertex = R"EOSHADER(
+  std::string dxvertex = R"EOSHADER(
 
 v2f main(uint vid : SV_VertexID)
 {
@@ -71,7 +71,7 @@ v2f main(uint vid : SV_VertexID)
 
 )EOSHADER";
 
-  string dxpixel = R"EOSHADER(
+  std::string dxpixel = R"EOSHADER(
 
 Texture2D<float4> tex : register(t0);
 
@@ -82,7 +82,7 @@ float4 main(v2f IN) : SV_Target0
 
 )EOSHADER";
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 #version 420 core
 
@@ -95,7 +95,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -116,7 +116,7 @@ void main()
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 

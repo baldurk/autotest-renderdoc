@@ -30,7 +30,7 @@ struct Deferred_UpdateSubresource : D3D11GraphicsTest
       "Test that does UpdateSubresource on a deferred context which might need some "
       "workaround code.";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 struct v2f
 {

@@ -28,7 +28,7 @@ struct Empty_Compute_Dispatch : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test dispatching with one threadgroup count set to 0";
 
-  string compute = R"EOSHADER(
+  std::string compute = R"EOSHADER(
 
 RWBuffer<uint4> buffer : register(u0);
 
@@ -64,7 +64,7 @@ void main()
 
       ctx->Dispatch(1, 1, 0);
 
-      vector<byte> contents = GetBufferData(buf, 0, 0);
+      std::vector<byte> contents = GetBufferData(buf, 0, 0);
 
       uint32_t *u32 = (uint32_t *)&contents[0];
 

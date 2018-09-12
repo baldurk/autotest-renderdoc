@@ -30,7 +30,7 @@ struct D3D11_Midframe_Create : D3D11GraphicsTest
       "Tests creating resources mid-frame to make sure that they and their contents are "
       "correctly tracked.";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 struct v2f
 {

@@ -1,7 +1,7 @@
 /******************************************************************************
 * The MIT License (MIT)
 *
-* Copyright (c) 2015 Baldur Karlsson
+* Copyright (c) 2018 Baldur Karlsson
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,21 @@
 * THE SOFTWARE.
 ******************************************************************************/
 
-#pragma once
-
 #include "test_common.h"
 
-#include "glad/glad.h"
-
-#include <GLFW/glfw3.h>
-
-#include <vector>
-
-struct OpenGLGraphicsTest : public GraphicsTest
+std::string GetCWD()
 {
-  static const TestAPI API = TestAPI::OpenGL;
+  char cwd[MAX_PATH + 1] = {0};
+  GetCurrentDirectoryA(MAX_PATH, cwd);
 
-  ~OpenGLGraphicsTest();
+  std::string cwdstr = cwd;
 
-  bool Init(int argc, char **argv);
+  for(size_t i = 0; i < cwdstr.size(); i++)
+    if(cwdstr[i] == '\\')
+      cwdstr[i] = '/';
 
-  GLuint MakeProgram(std::string vertSrc, std::string fragSrc, bool sep = false);
-  GLuint MakeProgram();
-  GLuint MakePipeline();
-  GLuint MakeBuffer();
-  GLuint MakeTexture();
-  GLuint MakeVAO();
-  GLuint MakeFBO();
+  while(cwdstr.back() == '/' || cwdstr.back() == '\\')
+    cwdstr.pop_back();
 
-  bool Running();
-  void Present();
-
-  int glMajor = 4;
-  int glMinor = 3;
-  bool coreProfile = true;
-  bool gles = false;
-
-  GLFWwindow *win = NULL;
-  bool inited = false;
-
-  std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
-};
+  return cwdstr;
+}

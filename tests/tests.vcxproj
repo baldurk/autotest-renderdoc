@@ -120,6 +120,9 @@
     <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp" />
     <ClCompile Include="gl\gl_vao_0.cpp" />
     <ClCompile Include="gl_common.cpp" />
+    <ClCompile Include="linux_platform.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="lz4.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_common.cpp" />
@@ -129,14 +132,19 @@
     <ClCompile Include="vk\vk_simple_triangle.cpp" />
     <ClCompile Include="vk_common.cpp" />
     <ClCompile Include="volk\volk.c" />
+    <ClCompile Include="win32_platform.cpp" />
+    <ClCompile Include="win32_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d11\d3d11_helpers.h" />
     <ClInclude Include="d3d11\d3d11_test.h" />
     <ClInclude Include="gl_common.h" />
+    <ClInclude Include="linux_platform.h" />
     <ClInclude Include="lz4.h" />
     <ClInclude Include="test_common.h" />
     <ClInclude Include="vk_common.h" />
+    <ClInclude Include="win32_platform.h" />
+    <ClInclude Include="win32_window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

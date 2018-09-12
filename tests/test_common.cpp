@@ -23,30 +23,13 @@
 ******************************************************************************/
 
 #include "test_common.h"
-#include <windows.h>
+#include <stdarg.h>
 
 const DefaultA2V DefaultTri[3] = {
     {Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
     {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
     {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
 };
-
-std::string GetCWD()
-{
-  char cwd[MAX_PATH + 1] = {0};
-  GetCurrentDirectoryA(MAX_PATH, cwd);
-
-  string cwdstr = cwd;
-
-  for(size_t i = 0; i < cwdstr.size(); i++)
-    if(cwdstr[i] == '\\')
-      cwdstr[i] = '/';
-
-  while(cwdstr.back() == '/' || cwdstr.back() == '\\')
-    cwdstr.pop_back();
-
-  return cwdstr;
-}
 
 static char printBuf[4096] = {};
 
@@ -69,12 +52,12 @@ void DebugPrint(const char *fmt, ...)
 
 bool SpvCompilationSupported()
 {
-  FILE *pipe = _popen("glslc --help", "r");
+  FILE *pipe = popen("glslc --help", "r");
 
   if(!pipe)
     return false;
 
-  int code = _pclose(pipe);
+  int code = pclose(pipe);
 
   return code == 0;
 }
@@ -106,23 +89,22 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
 
   char infile[MAX_PATH] = {};
   char outfile[MAX_PATH] = {};
-  tmpnam_s(infile);
-  tmpnam_s(outfile);
+  tmpnam(infile);
+  tmpnam(outfile);
 
   command_line += " -o ";
   command_line += outfile;
   command_line += " ";
   command_line += infile;
 
-  FILE *f = NULL;
-  fopen_s(&f, infile, "wb");
+  FILE *f = fopen(infile, "wb");
   if(f)
   {
     fwrite(source_text.c_str(), 1, source_text.size(), f);
     fclose(f);
   }
 
-  FILE *pipe = _popen(command_line.c_str(), "r");
+  FILE *pipe = popen(command_line.c_str(), "r");
 
   if(!pipe)
   {
@@ -130,7 +112,7 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
     return ret;
   }
 
-  int code = _pclose(pipe);
+  int code = pclose(pipe);
 
   if(code != 0)
   {
@@ -138,8 +120,7 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
     return ret;
   }
 
-  f = NULL;
-  fopen_s(&f, outfile, "rb");
+  f = fopen(outfile, "rb");
   if(f)
   {
     fseek(f, 0, SEEK_END);
@@ -149,8 +130,8 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
     fclose(f);
   }
 
-  _unlink(infile);
-  _unlink(outfile);
+  unlink(infile);
+  unlink(outfile);
 
   return ret;
 }

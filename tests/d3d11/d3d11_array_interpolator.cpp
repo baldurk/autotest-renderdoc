@@ -30,7 +30,7 @@ struct Array_Interpolator : D3D11GraphicsTest
       "Test passing an array of float2 to make sure the interpolator packing is handled by "
       "shader debugging";
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 struct v2f
 {
@@ -41,7 +41,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 struct vertin
 {
@@ -66,7 +66,7 @@ v2f main(vertin IN, uint vid : SV_VertexID)
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 float4 main(v2f IN) : SV_Target0
 {

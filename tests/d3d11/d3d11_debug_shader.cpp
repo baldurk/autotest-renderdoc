@@ -38,7 +38,7 @@ struct Debug_Shader : D3D11GraphicsTest
     float negone;
   };
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 struct consts
 {
@@ -59,7 +59,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 v2f main(consts IN, uint tri : SV_InstanceID)
 {
@@ -83,7 +83,7 @@ v2f main(consts IN, uint tri : SV_InstanceID)
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 Buffer<float> test : register(t0);
 

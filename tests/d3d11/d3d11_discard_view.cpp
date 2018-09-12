@@ -28,7 +28,7 @@ struct Discard_View : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test that discards an RTV";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 cbuffer consts : register(b0)
 {

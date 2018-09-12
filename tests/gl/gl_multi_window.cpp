@@ -29,7 +29,7 @@ struct Multi_Window : OpenGLGraphicsTest
   static constexpr char *Description =
       "Render to two different windows to test out different contexts and window resolutions.";
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 #version 420 core
 
@@ -42,7 +42,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -60,7 +60,7 @@ void main()
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 

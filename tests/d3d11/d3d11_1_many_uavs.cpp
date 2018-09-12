@@ -29,7 +29,7 @@ struct Many_UAVs : D3D11GraphicsTest
   static constexpr char *Description =
       "Test using more than 8 compute shader UAVs (D3D11.1 feature)";
 
-  string compute = R"EOSHADER(
+  std::string compute = R"EOSHADER(
 
 RWBuffer<uint4> uav : register(u20);
 
@@ -66,7 +66,7 @@ void main()
 
       ctx->Dispatch(1, 1, 1);
 
-      vector<byte> contents = GetBufferData(buf);
+      std::vector<byte> contents = GetBufferData(buf);
 
       uint32_t *u32 = (uint32_t *)&contents[0];
 

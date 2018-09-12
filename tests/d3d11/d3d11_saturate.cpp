@@ -28,7 +28,7 @@ struct Saturate : D3D11GraphicsTest
 {
   static constexpr char *Description = "Tests using saturate, originally for a bug report";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 void main(float4 pos : SV_Position, out float4 a : SV_Target0, out float4 b : SV_Target1)
 {

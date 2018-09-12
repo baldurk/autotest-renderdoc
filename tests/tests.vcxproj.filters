@@ -160,6 +160,13 @@
     <ClCompile Include="d3d11\d3d11_test.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
+    <ClCompile Include="linux_platform.cpp">
+      <Filter>Linux</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_platform.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -180,6 +187,12 @@
     <Filter Include="Vulkan\tests">
       <UniqueIdentifier>{e5a064fd-f7f5-41f7-af8f-27d766122f53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{970b67b1-1dfa-4c31-89d5-87333c1cf866}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Linux">
+      <UniqueIdentifier>{9c5ec0e8-32a9-45b7-8cbc-e6507dfff362}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test_common.h" />
@@ -195,6 +208,15 @@
     </ClInclude>
     <ClInclude Include="d3d11\d3d11_test.h">
       <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_platform.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="linux_platform.h">
+      <Filter>Linux</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_window.h">
+      <Filter>Windows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

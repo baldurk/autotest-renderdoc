@@ -29,7 +29,7 @@ struct Mip_Gen_RT : D3D11GraphicsTest
   static constexpr char *Description =
       "Tests rendering from one mip to another to do a downsample chain";
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 struct v2f
 {
@@ -39,7 +39,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 v2f main(uint vid : SV_VertexID)
 {
@@ -60,7 +60,7 @@ v2f main(uint vid : SV_VertexID)
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 Texture2D<float4> intex : register(t0);
 SamplerState s : register(s0);

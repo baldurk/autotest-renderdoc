@@ -24,25 +24,20 @@
 
 #pragma once
 
+#if defined(WIN32)
+#include "win32_platform.h"
+#else
+#include "linux_platform.h"
+#endif
+
+#include <math.h>
+#include <stdint.h>
+#include <string.h>
 #include <algorithm>
 #include <string>
 #include <vector>
-using std::string;
-using std::vector;
-
-#ifdef max
-#undef max
-#endif
-
-#ifdef min
-#undef min
-#endif
-
-#include <stdint.h>
 
 typedef uint8_t byte;
-
-#include <math.h>
 
 enum class ShaderLang
 {
@@ -117,6 +112,13 @@ struct DefaultA2V
 
 extern const DefaultA2V DefaultTri[3];
 
+struct Window
+{
+  virtual ~Window() {}
+  virtual void Resize(int width, int height) = 0;
+  virtual bool Update() = 0;
+};
+
 struct GraphicsTest
 {
   GraphicsTest()
@@ -125,6 +127,7 @@ struct GraphicsTest
   }
 
   virtual ~GraphicsTest() {}
+  virtual Window *MakeWindow(int width, int height, const char *title) { return NULL; }
   virtual int main(int argc, char **argv) { return 9; }
   virtual bool Init(int argc, char **argv);
 
@@ -206,57 +209,42 @@ std::string GetCWD();
 
 #define RANDF(mn, mx) ((float(rand()) / float(RAND_MAX)) * ((mx) - (mn)) + (mn))
 
-#if defined(WIN32)
-#define NOMINMAX
-#include <windows.h>
-#define DEBUG_BREAK()       \
-  do                        \
-  {                         \
-    if(IsDebuggerPresent()) \
-      __debugbreak();       \
-  } while(0)
-#elif defined(__linux__)
-#define DEBUG_BREAK() raise(SIGTRAP)
-#else
-#error "unknown OS"
-#endif
-
 void DebugPrint(const char *fmt, ...);
 
-#define TEST_ASSERT(cond, fmt, ...)                                                             \
-  if(!(cond))                                                                                   \
-  {                                                                                             \
-    DebugPrint("%s:%d Assert Failure '%s': " fmt "\n", __FILE__, __LINE__, #cond, __VA_ARGS__); \
-    DEBUG_BREAK();                                                                              \
+#define TEST_ASSERT(cond, fmt, ...)                                                               \
+  if(!(cond))                                                                                     \
+  {                                                                                               \
+    DebugPrint("%s:%d Assert Failure '%s': " fmt "\n", __FILE__, __LINE__, #cond, ##__VA_ARGS__); \
+    DEBUG_BREAK();                                                                                \
   }
 
-#define TEST_LOG(fmt, ...)                                               \
-  do                                                                     \
-  {                                                                      \
-    DebugPrint("%s:%d Log: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); \
-  } while(0)
-#define TEST_WARN(fmt, ...)                                                  \
-  do                                                                         \
-  {                                                                          \
-    DebugPrint("%s:%d Warning: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); \
-  } while(0)
-#define TEST_ERROR(fmt, ...)                                               \
+#define TEST_LOG(fmt, ...)                                                 \
   do                                                                       \
   {                                                                        \
-    DebugPrint("%s:%d Error: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); \
-    DEBUG_BREAK();                                                         \
+    DebugPrint("%s:%d Log: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
   } while(0)
-#define TEST_FATAL(fmt, ...)                                                     \
-  do                                                                             \
-  {                                                                              \
-    DebugPrint("%s:%d Fatal Error: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); \
-    DEBUG_BREAK();                                                               \
-    exit(0);                                                                     \
+#define TEST_WARN(fmt, ...)                                                    \
+  do                                                                           \
+  {                                                                            \
+    DebugPrint("%s:%d Warning: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
   } while(0)
-#define TEST_UNIMPLEMENTED(fmt, ...)                                               \
+#define TEST_ERROR(fmt, ...)                                                 \
+  do                                                                         \
+  {                                                                          \
+    DebugPrint("%s:%d Error: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    DEBUG_BREAK();                                                           \
+  } while(0)
+#define TEST_FATAL(fmt, ...)                                                       \
   do                                                                               \
   {                                                                                \
-    DebugPrint("%s:%d Unimplemented: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); \
+    DebugPrint("%s:%d Fatal Error: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
     DEBUG_BREAK();                                                                 \
     exit(0);                                                                       \
+  } while(0)
+#define TEST_UNIMPLEMENTED(fmt, ...)                                                 \
+  do                                                                                 \
+  {                                                                                  \
+    DebugPrint("%s:%d Unimplemented: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    DEBUG_BREAK();                                                                   \
+    exit(0);                                                                         \
   } while(0)

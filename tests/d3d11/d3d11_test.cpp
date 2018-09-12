@@ -22,25 +22,13 @@
 * THE SOFTWARE.
 ******************************************************************************/
 
+#define INITGUID
+
 #include "d3d11_test.h"
 #include <stdio.h>
 #include "../lz4.h"
 #include "../renderdoc_app.h"
-
-static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-  if(msg == WM_CLOSE)
-  {
-    DestroyWindow(hwnd);
-    return 0;
-  }
-  if(msg == WM_DESTROY)
-  {
-    PostQuitMessage(0);
-    return 0;
-  }
-  return DefWindowProc(hwnd, msg, wParam, lParam);
-}
+#include "../win32_window.h"
 
 bool D3D11GraphicsTest::Init(int argc, char **argv)
 {
@@ -114,36 +102,9 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
     return true;
   }
 
-  string classname = "renderdoc_d3d11_test";
-  static int idx = 0;
-  idx++;
-  classname += '0' + idx;
+  Win32Window *win = new Win32Window(screenWidth, screenHeight, "RenderDoc test program");
 
-  WNDCLASSEXA wc;
-  wc.cbSize = sizeof(WNDCLASSEXA);
-  wc.style = 0;
-  wc.lpfnWndProc = WndProc;
-  wc.cbClsExtra = 0;
-  wc.cbWndExtra = 0;
-  wc.hInstance = GetModuleHandle(NULL);
-  wc.hIcon = NULL;
-  wc.hCursor = NULL;
-  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-  wc.lpszMenuName = NULL;
-  wc.lpszClassName = classname.c_str();
-  wc.hIconSm = NULL;
-
-  if(!RegisterClassEx(&wc))
-  {
-    return false;
-  }
-
-  RECT rect = {0, 0, screenWidth, screenHeight};
-  AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_CLIENTEDGE);
-
-  wnd = CreateWindowExA(WS_EX_CLIENTEDGE, classname.c_str(), "RenderDoc test program",
-                        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left,
-                        rect.bottom - rect.top, NULL, NULL, NULL, NULL);
+  window = win;
 
   DXGI_SWAP_CHAIN_DESC swapDesc;
   ZeroMemory(&swapDesc, sizeof(swapDesc));
@@ -155,7 +116,7 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
   swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
   swapDesc.SampleDesc.Count = backbufferMSAA;
   swapDesc.SampleDesc.Quality = 0;
-  swapDesc.OutputWindow = wnd;
+  swapDesc.OutputWindow = win->wnd;
   swapDesc.Windowed = fullscreen ? FALSE : TRUE;
   swapDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
   swapDesc.Flags = 0;
@@ -207,12 +168,14 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
     return false;
   }
 
-  ShowWindow(wnd, SW_SHOW);
-  UpdateWindow(wnd);
-
   PostDeviceCreate();
 
   return true;
+}
+
+Window *D3D11GraphicsTest::MakeWindow(int width, int height, const char *title)
+{
+  return new Win32Window(width, height, title);
 }
 
 void D3D11GraphicsTest::PostDeviceCreate()
@@ -234,33 +197,12 @@ void D3D11GraphicsTest::PostDeviceCreate()
 
 D3D11GraphicsTest::~D3D11GraphicsTest()
 {
-  if(wnd)
-    DestroyWindow(wnd);
+  delete window;
 }
 
 bool D3D11GraphicsTest::Running()
 {
-  MSG msg;
-  ZeroMemory(&msg, sizeof(msg));
-
-  // Check to see if any messages are waiting in the queue
-  while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-  {
-    // Translate the message and dispatch it to WindowProc()
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
-
-  // If the message is WM_QUIT, exit the program
-  if(msg.message == WM_QUIT)
-    return false;
-
-  if(msg.message == WM_CHAR && msg.wParam == VK_ESCAPE)
-    return false;
-
-  Sleep(20);
-
-  return true;
+  return window->Update();
 }
 
 void D3D11GraphicsTest::Present()
@@ -268,7 +210,7 @@ void D3D11GraphicsTest::Present()
   swap->Present(0, 0);
 }
 
-vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t offset, uint32_t len)
+std::vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t offset, uint32_t len)
 {
   D3D11_MAPPED_SUBRESOURCE mapped;
 
@@ -298,7 +240,7 @@ vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t off
 
   CHECK_HR(dev->CreateBuffer(&desc, NULL, &stage));
 
-  vector<byte> ret;
+  std::vector<byte> ret;
   ret.resize(len);
 
   if(len > 0)
@@ -330,7 +272,8 @@ void D3D11GraphicsTest::RSSetViewport(D3D11_VIEWPORT view)
   ctx->RSSetViewports(1, &view);
 }
 
-ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile, ID3DBlob **unstripped)
+ID3DBlobPtr D3D11GraphicsTest::Compile(std::string src, std::string entry, std::string profile,
+                                       ID3DBlob **unstripped)
 {
   ID3DBlobPtr blob = NULL;
   ID3DBlobPtr error = NULL;
@@ -369,7 +312,7 @@ ID3DBlobPtr D3D11GraphicsTest::Compile(string src, string entry, string profile,
   return blob;
 }
 
-void D3D11GraphicsTest::WriteBlob(string name, ID3DBlob *blob, bool compress)
+void D3D11GraphicsTest::WriteBlob(std::string name, ID3DBlob *blob, bool compress)
 {
   FILE *f = NULL;
   fopen_s(&f, name.c_str(), "wb");
@@ -400,13 +343,13 @@ void D3D11GraphicsTest::WriteBlob(string name, ID3DBlob *blob, bool compress)
   fclose(f);
 }
 
-ID3DBlobPtr D3D11GraphicsTest::SetBlobPath(string name, ID3DBlob *blob)
+ID3DBlobPtr D3D11GraphicsTest::SetBlobPath(std::string name, ID3DBlob *blob)
 {
   ID3DBlobPtr newBlob = NULL;
 
   const GUID RENDERDOC_ShaderDebugMagicValue = RENDERDOC_ShaderDebugMagicValue_struct;
 
-  string pathData;
+  std::string pathData;
   for(size_t i = 0; i < sizeof(RENDERDOC_ShaderDebugMagicValue); i++)
     pathData.push_back(' ');
 
@@ -420,7 +363,7 @@ ID3DBlobPtr D3D11GraphicsTest::SetBlobPath(string name, ID3DBlob *blob)
   return newBlob;
 }
 
-void D3D11GraphicsTest::SetBlobPath(string name, ID3D11DeviceChild *shader)
+void D3D11GraphicsTest::SetBlobPath(std::string name, ID3D11DeviceChild *shader)
 {
   const GUID RENDERDOC_ShaderDebugMagicValue = RENDERDOC_ShaderDebugMagicValue_struct;
 

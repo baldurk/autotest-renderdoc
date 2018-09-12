@@ -28,7 +28,7 @@ struct Mip_RTV : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test rendering into RTV mip levels";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 cbuffer consts : register(b0)
 {

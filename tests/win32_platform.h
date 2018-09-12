@@ -1,7 +1,7 @@
 /******************************************************************************
 * The MIT License (MIT)
 *
-* Copyright (c) 2015 Baldur Karlsson
+* Copyright (c) 2018 Baldur Karlsson
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -24,40 +24,17 @@
 
 #pragma once
 
-#include "test_common.h"
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_DEPRECATE
+#define NOMINMAX
+#include <windows.h>
 
-#include "glad/glad.h"
+#define DEBUG_BREAK()       \
+  do                        \
+  {                         \
+    if(IsDebuggerPresent()) \
+      __debugbreak();       \
+  } while(0)
 
-#include <GLFW/glfw3.h>
-
-#include <vector>
-
-struct OpenGLGraphicsTest : public GraphicsTest
-{
-  static const TestAPI API = TestAPI::OpenGL;
-
-  ~OpenGLGraphicsTest();
-
-  bool Init(int argc, char **argv);
-
-  GLuint MakeProgram(std::string vertSrc, std::string fragSrc, bool sep = false);
-  GLuint MakeProgram();
-  GLuint MakePipeline();
-  GLuint MakeBuffer();
-  GLuint MakeTexture();
-  GLuint MakeVAO();
-  GLuint MakeFBO();
-
-  bool Running();
-  void Present();
-
-  int glMajor = 4;
-  int glMinor = 3;
-  bool coreProfile = true;
-  bool gles = false;
-
-  GLFWwindow *win = NULL;
-  bool inited = false;
-
-  std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
-};
+#define popen _popen
+#define pclose _pclose

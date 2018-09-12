@@ -28,7 +28,7 @@ struct D3D11_Map_Overrun : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test overrunning the bounds of a Map() call";
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 struct a2v
 {
@@ -46,7 +46,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 v2f main(a2v IN, uint vid : SV_VertexID)
 {
@@ -61,7 +61,7 @@ v2f main(a2v IN, uint vid : SV_VertexID)
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 float4 main(v2f IN) : SV_Target0
 {

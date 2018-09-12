@@ -28,7 +28,7 @@ struct SPIRV_Shader : OpenGLGraphicsTest
 {
   static constexpr char *Description = "Draws using a SPIR-V shader pipeline.";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 #version 420 core
 
 layout(location = 0) in vec3 Position;
@@ -56,7 +56,7 @@ void main()
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 #version 420 core
 
 layout(location = 0) in vec4 iPos;

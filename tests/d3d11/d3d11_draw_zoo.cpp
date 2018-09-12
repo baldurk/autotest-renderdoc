@@ -29,7 +29,7 @@ struct D3D11_Draw_Zoo : D3D11GraphicsTest
   static constexpr char *Description =
       "Draws several variants using different vertex/index offsets.";
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 struct v2f
 {
@@ -43,7 +43,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 struct DefaultA2V
 {
@@ -69,7 +69,7 @@ v2f main(DefaultA2V IN, uint vid : SV_VertexID, uint instid : SV_InstanceID)
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 float4 main(v2f IN) : SV_Target0
 {

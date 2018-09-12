@@ -29,7 +29,7 @@ struct Simple_Dispatch : D3D11GraphicsTest
   static constexpr char *Description =
       "Test that just does a dispatch and some copies, for checking basic compute stuff";
 
-  string compute = R"EOSHADER(
+  std::string compute = R"EOSHADER(
 
 Texture2D<uint> texin : register(t0);
 RWTexture2D<uint> texout : register(u0);

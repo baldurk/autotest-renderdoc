@@ -24,25 +24,11 @@
 
 #pragma once
 
-#define INITGUID
-
 #include "../test_common.h"
 
-#include <comdef.h>
-#include <windows.h>
-
-#include <dxgi.h>
-
 #include <d3dcompiler.h>
+#include <dxgi.h>
 #include "d3d11_helpers.h"
-
-#ifdef max
-#undef max
-#endif
-
-#ifdef min
-#undef min
-#endif
 
 typedef HRESULT(WINAPI *pD3DStripShader)(_In_reads_bytes_(BytecodeLength) LPCVOID pShaderBytecode,
                                          _In_ SIZE_T BytecodeLength, _In_ UINT uStripFlags,
@@ -51,6 +37,8 @@ typedef HRESULT(WINAPI *pD3DSetBlobPart)(_In_reads_bytes_(SrcDataSize) LPCVOID p
                                          _In_ SIZE_T SrcDataSize, _In_ D3D_BLOB_PART Part,
                                          _In_ UINT Flags, _In_reads_bytes_(PartSize) LPCVOID pPart,
                                          _In_ SIZE_T PartSize, _Out_ ID3DBlob **ppNewShader);
+
+struct Win32Window;
 
 struct D3D11GraphicsTest : public GraphicsTest
 {
@@ -69,6 +57,7 @@ struct D3D11GraphicsTest : public GraphicsTest
   ~D3D11GraphicsTest();
 
   bool Init(int argc, char **argv);
+  Window *MakeWindow(int width, int height, const char *title);
 
   void PostDeviceCreate();
 
@@ -88,8 +77,9 @@ struct D3D11GraphicsTest : public GraphicsTest
     BufUAVType = 0xf00,
   };
 
-  ID3DBlobPtr Compile(string src, string entry, string profile, ID3DBlob **unstripped = NULL);
-  void WriteBlob(string name, ID3DBlob *blob, bool compress);
+  ID3DBlobPtr Compile(std::string src, std::string entry, std::string profile,
+                      ID3DBlob **unstripped = NULL);
+  void WriteBlob(std::string name, ID3DBlob *blob, bool compress);
 
   ID3D11VertexShaderPtr CreateVS(ID3DBlobPtr blob);
   ID3D11PixelShaderPtr CreatePS(ID3DBlobPtr blob);
@@ -98,8 +88,8 @@ struct D3D11GraphicsTest : public GraphicsTest
                                    const std::vector<D3D11_SO_DECLARATION_ENTRY> &sodecl,
                                    const std::vector<UINT> &strides);
 
-  ID3DBlobPtr SetBlobPath(string name, ID3DBlob *blob);
-  void SetBlobPath(string name, ID3D11DeviceChild *shader);
+  ID3DBlobPtr SetBlobPath(std::string name, ID3DBlob *blob);
+  void SetBlobPath(std::string name, ID3D11DeviceChild *shader);
 
   void CreateDefaultInputLayout(ID3DBlobPtr vsblob);
 
@@ -138,7 +128,7 @@ struct D3D11GraphicsTest : public GraphicsTest
     return ViewCreator(this, ViewType::UAV, res);
   }
 
-  vector<byte> GetBufferData(ID3D11Buffer *buf, uint32_t offset = 0, uint32_t len = 0);
+  std::vector<byte> GetBufferData(ID3D11Buffer *buf, uint32_t offset = 0, uint32_t len = 0);
 
   D3D11_MAPPED_SUBRESOURCE Map(ID3D11Resource *res, UINT sub, D3D11_MAP type)
   {
@@ -177,6 +167,8 @@ struct D3D11GraphicsTest : public GraphicsTest
   PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN dyn_D3D11CreateDeviceAndSwapChain = NULL;
 
   HWND wnd;
+
+  Window *window;
 
   IDXGISwapChainPtr swap;
 

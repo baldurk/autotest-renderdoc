@@ -30,7 +30,7 @@ struct Divergent_Shader : D3D11GraphicsTest
       "Test running a shader that diverges across a quad and then expects derivatives to "
       "still be valid after converging.";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 struct v2f
 {

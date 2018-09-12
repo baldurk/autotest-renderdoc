@@ -121,7 +121,7 @@ OpenGLGraphicsTest::~OpenGLGraphicsTest()
     glfwTerminate();
 }
 
-GLuint OpenGLGraphicsTest::MakeProgram(string vertSrc, string fragSrc, bool sep)
+GLuint OpenGLGraphicsTest::MakeProgram(std::string vertSrc, std::string fragSrc, bool sep)
 {
   GLuint vs = vertSrc.empty() ? 0 : glCreateShader(GL_VERTEX_SHADER);
   GLuint fs = fragSrc.empty() ? 0 : glCreateShader(GL_FRAGMENT_SHADER);

@@ -28,7 +28,7 @@ struct Byte_Address_Buffers : D3D11GraphicsTest
 {
   static constexpr char *Description = "Tests reading and writing from byte address buffers";
 
-  string compute = R"EOSHADER(
+  std::string compute = R"EOSHADER(
 
 ByteAddressBuffer inbuf : register(t0);
 RWByteAddressBuffer outbuf : register(u0);

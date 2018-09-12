@@ -28,7 +28,7 @@ struct Binding_Hazards : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test of D3D11 hazard tracking write/read bindings";
 
-  string compute = R"EOSHADER(
+  std::string compute = R"EOSHADER(
 
 Texture2D<uint> texin : register(t0);
 Buffer<uint> bufin : register(t1);

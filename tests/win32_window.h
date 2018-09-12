@@ -1,7 +1,7 @@
 /******************************************************************************
 * The MIT License (MIT)
 *
-* Copyright (c) 2015 Baldur Karlsson
+* Copyright (c) 2018 Baldur Karlsson
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -26,38 +26,12 @@
 
 #include "test_common.h"
 
-#include "glad/glad.h"
-
-#include <GLFW/glfw3.h>
-
-#include <vector>
-
-struct OpenGLGraphicsTest : public GraphicsTest
+struct Win32Window : public Window
 {
-  static const TestAPI API = TestAPI::OpenGL;
+  Win32Window(int width, int height, const char *title);
+  ~Win32Window();
+  void Resize(int width, int height);
+  bool Update();
 
-  ~OpenGLGraphicsTest();
-
-  bool Init(int argc, char **argv);
-
-  GLuint MakeProgram(std::string vertSrc, std::string fragSrc, bool sep = false);
-  GLuint MakeProgram();
-  GLuint MakePipeline();
-  GLuint MakeBuffer();
-  GLuint MakeTexture();
-  GLuint MakeVAO();
-  GLuint MakeFBO();
-
-  bool Running();
-  void Present();
-
-  int glMajor = 4;
-  int glMinor = 3;
-  bool coreProfile = true;
-  bool gles = false;
-
-  GLFWwindow *win = NULL;
-  bool inited = false;
-
-  std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
+  HWND wnd;
 };

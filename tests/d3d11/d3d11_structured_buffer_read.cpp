@@ -29,7 +29,7 @@ struct Structured_Buffer_Read : D3D11GraphicsTest
   static constexpr char *Description =
       "Test reading from structured buffers, with and without offsets";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 struct mystruct
 {

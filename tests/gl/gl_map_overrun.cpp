@@ -28,7 +28,7 @@ struct GL_Map_Overrun : OpenGLGraphicsTest
 {
   static constexpr char *Description = "Test overrunning the bounds of a Map() call";
 
-  string common = R"EOSHADER(
+  std::string common = R"EOSHADER(
 
 #version 420 core
 
@@ -41,7 +41,7 @@ struct v2f
 
 )EOSHADER";
 
-  string vertex = R"EOSHADER(
+  std::string vertex = R"EOSHADER(
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
@@ -59,7 +59,7 @@ void main()
 
 )EOSHADER";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 layout(location = 0) in v2f vertIn;
 

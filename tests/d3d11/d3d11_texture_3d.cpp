@@ -28,7 +28,7 @@ struct Texture_3D : D3D11GraphicsTest
 {
   static constexpr char *Description = "Test that creates and samples a 3D texture";
 
-  string pixel = R"EOSHADER(
+  std::string pixel = R"EOSHADER(
 
 struct v2f
 {
