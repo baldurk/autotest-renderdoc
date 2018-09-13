@@ -231,6 +231,9 @@ void *OpenGLGraphicsTest::MakeContext(Window *win, void *share)
 
 void OpenGLGraphicsTest::DestroyContext(void *ctx)
 {
+  if(ctx == NULL)
+    return;
+
   PFN_wglDeleteContext deleteContext =
       (PFN_wglDeleteContext)GetProcAddress(GetModuleHandleA("opengl32.dll"), "wglDeleteContext");
 

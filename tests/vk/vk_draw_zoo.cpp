@@ -87,80 +87,42 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    vk::ShaderModule vert =
-        CompileShaderModule(common + vertex, ShaderLang::glsl, ShaderStage::vert, "main");
-    vk::ShaderModule frag =
-        CompileShaderModule(common + pixel, ShaderLang::glsl, ShaderStage::frag, "main");
+    VkPipelineLayout layout = createPipelineLayout(vkh::PipelineLayoutCreateInfo());
 
-    if(!vert || !frag)
-      return 4;
+    vkh::GraphicsPipelineCreateInfo pipeCreateInfo;
 
-    vk::PipelineLayout layout;
-    ResultChecker(layout) = device.createPipelineLayout({});
+    pipeCreateInfo.layout = layout;
+    pipeCreateInfo.renderPass = swapRenderPass;
 
-    RenderPassCreator rpCreate;
+    pipeCreateInfo.vertexInputState.vertexBindingDescriptions = {vkh::vertexBind(0, DefaultA2V)};
+    pipeCreateInfo.vertexInputState.vertexAttributeDescriptions = {
+        vkh::vertexAttr(0, 0, DefaultA2V, pos), vkh::vertexAttr(1, 0, DefaultA2V, col),
+        vkh::vertexAttr(2, 0, DefaultA2V, uv),
+    };
 
-    rpCreate.atts.push_back(vk::AttachmentDescription()
-                                .setFormat(swapFormat)
-                                .setInitialLayout(vk::ImageLayout::eGeneral)
-                                .setFinalLayout(vk::ImageLayout::eGeneral));
+    pipeCreateInfo.stages = {
+        CompileShaderModule(common + vertex, ShaderLang::glsl, ShaderStage::vert, "main"),
+        CompileShaderModule(common + pixel, ShaderLang::glsl, ShaderStage::frag, "main"),
+    };
 
-    rpCreate.addSub({vk::AttachmentReference(0, vk::ImageLayout::eGeneral)});
+    VkPipeline noInstPipe = createGraphicsPipeline(pipeCreateInfo);
 
-    vk::RenderPass renderPass;
-    ResultChecker(renderPass) = device.createRenderPass(rpCreate.bake());
+    pipeCreateInfo.inputAssemblyState.primitiveRestartEnable = true;
+    pipeCreateInfo.inputAssemblyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 
-    std::vector<vk::Framebuffer> framebuffer;
-    for(size_t i = 0; i < swapImageViews.size(); i++)
-    {
-      vk::Framebuffer fb;
-      ResultChecker(fb) = device.createFramebuffer(vk::FramebufferCreateInfo(
-          {}, renderPass, 1, &swapImageViews[i], scissor.extent.width, scissor.extent.height, 1));
-      framebuffer.push_back(fb);
-    }
+    VkPipeline stripPipe = createGraphicsPipeline(pipeCreateInfo);
 
-    PipelineCreator pipeCreate;
-
-    pipeCreate.layout = layout;
-    pipeCreate.renderPass = renderPass;
-
-    pipeCreate.binds.push_back(
-        vk::VertexInputBindingDescription(0, sizeof(DefaultA2V), vk::VertexInputRate::eVertex));
-    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(0, 0, formatof(DefaultA2V::pos),
-                                                                   offsetof(DefaultA2V, pos)));
-    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(1, 0, formatof(DefaultA2V::col),
-                                                                   offsetof(DefaultA2V, col)));
-    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(2, 0, formatof(DefaultA2V::uv),
-                                                                   offsetof(DefaultA2V, uv)));
-
-    pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
-    pipeCreate.addShader(frag, vk::ShaderStageFlagBits::eFragment);
-
-    vk::Pipeline noInstPipe;
-    ResultChecker(noInstPipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
-
-    pipeCreate.ia.primitiveRestartEnable = true;
-    pipeCreate.ia.topology = vk::PrimitiveTopology::eTriangleStrip;
-
-    vk::Pipeline stripPipe;
-    ResultChecker(stripPipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
-
-    pipeCreate.ia.primitiveRestartEnable = false;
-    pipeCreate.ia.topology = vk::PrimitiveTopology::eTriangleList;
+    pipeCreateInfo.inputAssemblyState.primitiveRestartEnable = false;
+    pipeCreateInfo.inputAssemblyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
     // add an instance vertex buffer for colours
-    pipeCreate.binds.push_back(
-        vk::VertexInputBindingDescription(1, sizeof(Vec4f), vk::VertexInputRate::eInstance));
-    pipeCreate.attrs[1].binding = 1;
-    pipeCreate.attrs[1].offset = 0;
+    pipeCreateInfo.vertexInputState.vertexBindingDescriptions.push_back(vkh::instanceBind(1, Vec4f));
+    pipeCreateInfo.vertexInputState.vertexAttributeDescriptions[1].binding = 1;
+    pipeCreateInfo.vertexInputState.vertexAttributeDescriptions[1].offset = 0;
 
-    vk::Pipeline instPipe;
-    ResultChecker(instPipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
+    VkPipeline instPipe = createGraphicsPipeline(pipeCreateInfo);
 
-    device.destroyShaderModule(vert);
-    device.destroyShaderModule(frag);
-
-    DefaultA2V triangle[] = {
+    DefaultA2V vertData[] = {
         // 0
         {Vec3f(-1.0f, -1.0f, -1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec2f(-1.0f, -1.0f)},
         // 1, 2, 3
@@ -194,78 +156,76 @@ void main()
         {Vec3f(0.5f, 0.0f, 0.0f), Vec4f(1.0f, 0.1f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
     };
 
-    AllocatedBuffer vb1;
-    vb1.create(allocator, vk::BufferCreateInfo({}, sizeof(DefaultA2V) * 50,
-                                               vk::BufferUsageFlagBits::eVertexBuffer |
-                                                   vk::BufferUsageFlagBits::eTransferDst),
-               VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
+    AllocatedBuffer vb1(allocator, vkh::BufferCreateInfo(sizeof(DefaultA2V) * 50,
+                                                         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                                                             VK_BUFFER_USAGE_TRANSFER_DST_BIT),
+                        VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
     {
-      DefaultA2V *src = (DefaultA2V *)triangle;
+      DefaultA2V *src = (DefaultA2V *)vertData;
       DefaultA2V *dst = (DefaultA2V *)vb1.map();
 
       // up-pointing triangle to offset 0
-      memcpy(dst + 0, triangle + 1, sizeof(DefaultA2V));
-      memcpy(dst + 1, triangle + 2, sizeof(DefaultA2V));
-      memcpy(dst + 2, triangle + 3, sizeof(DefaultA2V));
+      memcpy(dst + 0, vertData + 1, sizeof(DefaultA2V));
+      memcpy(dst + 1, vertData + 2, sizeof(DefaultA2V));
+      memcpy(dst + 2, vertData + 3, sizeof(DefaultA2V));
 
       // invalid vert for index 3 and 4
-      memcpy(dst + 3, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 4, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 3, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 4, vertData + 0, sizeof(DefaultA2V));
 
       // down-pointing triangle at offset 5
-      memcpy(dst + 5, triangle + 4, sizeof(DefaultA2V));
-      memcpy(dst + 6, triangle + 5, sizeof(DefaultA2V));
-      memcpy(dst + 7, triangle + 6, sizeof(DefaultA2V));
+      memcpy(dst + 5, vertData + 4, sizeof(DefaultA2V));
+      memcpy(dst + 6, vertData + 5, sizeof(DefaultA2V));
+      memcpy(dst + 7, vertData + 6, sizeof(DefaultA2V));
 
       // invalid vert for 8 - 12
-      memcpy(dst + 8, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 9, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 10, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 11, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 12, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 8, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 9, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 10, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 11, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 12, vertData + 0, sizeof(DefaultA2V));
 
       // left-pointing triangle data to offset 13
-      memcpy(dst + 13, triangle + 7, sizeof(DefaultA2V));
-      memcpy(dst + 14, triangle + 8, sizeof(DefaultA2V));
-      memcpy(dst + 15, triangle + 9, sizeof(DefaultA2V));
+      memcpy(dst + 13, vertData + 7, sizeof(DefaultA2V));
+      memcpy(dst + 14, vertData + 8, sizeof(DefaultA2V));
+      memcpy(dst + 15, vertData + 9, sizeof(DefaultA2V));
 
       // invalid vert for 16-22
-      memcpy(dst + 16, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 17, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 18, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 19, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 20, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 21, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 22, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 16, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 17, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 18, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 19, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 20, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 21, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 22, vertData + 0, sizeof(DefaultA2V));
 
       // right-pointing triangle data to offset 23
-      memcpy(dst + 23, triangle + 10, sizeof(DefaultA2V));
-      memcpy(dst + 24, triangle + 11, sizeof(DefaultA2V));
-      memcpy(dst + 25, triangle + 12, sizeof(DefaultA2V));
+      memcpy(dst + 23, vertData + 10, sizeof(DefaultA2V));
+      memcpy(dst + 24, vertData + 11, sizeof(DefaultA2V));
+      memcpy(dst + 25, vertData + 12, sizeof(DefaultA2V));
 
       // strip after 30
-      memcpy(dst + 30, triangle + 13, sizeof(DefaultA2V));
-      memcpy(dst + 31, triangle + 14, sizeof(DefaultA2V));
-      memcpy(dst + 32, triangle + 15, sizeof(DefaultA2V));
-      memcpy(dst + 33, triangle + 16, sizeof(DefaultA2V));
-      memcpy(dst + 34, triangle + 17, sizeof(DefaultA2V));
-      memcpy(dst + 35, triangle + 18, sizeof(DefaultA2V));
-      memcpy(dst + 36, triangle + 19, sizeof(DefaultA2V));
-      memcpy(dst + 37, triangle + 20, sizeof(DefaultA2V));
-      memcpy(dst + 38, triangle + 21, sizeof(DefaultA2V));
-      memcpy(dst + 39, triangle + 22, sizeof(DefaultA2V));
-      memcpy(dst + 40, triangle + 23, sizeof(DefaultA2V));
-      memcpy(dst + 41, triangle + 24, sizeof(DefaultA2V));
+      memcpy(dst + 30, vertData + 13, sizeof(DefaultA2V));
+      memcpy(dst + 31, vertData + 14, sizeof(DefaultA2V));
+      memcpy(dst + 32, vertData + 15, sizeof(DefaultA2V));
+      memcpy(dst + 33, vertData + 16, sizeof(DefaultA2V));
+      memcpy(dst + 34, vertData + 17, sizeof(DefaultA2V));
+      memcpy(dst + 35, vertData + 18, sizeof(DefaultA2V));
+      memcpy(dst + 36, vertData + 19, sizeof(DefaultA2V));
+      memcpy(dst + 37, vertData + 20, sizeof(DefaultA2V));
+      memcpy(dst + 38, vertData + 21, sizeof(DefaultA2V));
+      memcpy(dst + 39, vertData + 22, sizeof(DefaultA2V));
+      memcpy(dst + 40, vertData + 23, sizeof(DefaultA2V));
+      memcpy(dst + 41, vertData + 24, sizeof(DefaultA2V));
 
       vb1.unmap();
     }
 
-    AllocatedBuffer vb2;
-    vb2.create(allocator, vk::BufferCreateInfo({}, sizeof(Vec4f) * 16,
-                                               vk::BufferUsageFlagBits::eVertexBuffer |
-                                                   vk::BufferUsageFlagBits::eTransferDst),
-               VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
+    AllocatedBuffer vb2(
+        allocator, vkh::BufferCreateInfo(sizeof(Vec4f) * 16, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                                                                 VK_BUFFER_USAGE_TRANSFER_DST_BIT),
+        VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
     {
       Vec4f *dst = (Vec4f *)vb2.map();
@@ -284,11 +244,10 @@ void main()
       vb2.unmap();
     }
 
-    AllocatedBuffer ib1;
-    ib1.create(allocator, vk::BufferCreateInfo({}, sizeof(uint32_t) * 100,
-                                               vk::BufferUsageFlagBits::eIndexBuffer |
-                                                   vk::BufferUsageFlagBits::eTransferDst),
-               VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
+    AllocatedBuffer ib1(allocator, vkh::BufferCreateInfo(sizeof(uint32_t) * 100,
+                                                         VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+                                                             VK_BUFFER_USAGE_TRANSFER_DST_BIT),
+                        VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
     {
       uint32_t *dst = (uint32_t *)ib1.map();
@@ -333,47 +292,48 @@ void main()
 
     while(Running())
     {
-      vk::CommandBuffer cmd = GetCommandBuffer();
+      VkCommandBuffer cmd = GetCommandBuffer();
 
-      cmd.begin(vk::CommandBufferBeginInfo());
+      vkBeginCommandBuffer(cmd, vkh::CommandBufferBeginInfo());
 
-      vk::Image img =
-          StartUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
+      VkImage swapimg =
+          StartUsingBackbuffer(cmd, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 
-      cmd.clearColorImage(img, vk::ImageLayout::eGeneral,
-                          std::array<float, 4>({0.4f, 0.5f, 0.6f, 1.0f}),
-                          {vk::ImageSubresourceRange()});
+      vkCmdClearColorImage(cmd, swapimg, VK_IMAGE_LAYOUT_GENERAL,
+                           vkh::ClearColorValue(0.4f, 0.5f, 0.6f, 1.0f), 1,
+                           vkh::ImageSubresourceRange());
 
-      cmd.beginRenderPass(vk::RenderPassBeginInfo(renderPass, framebuffer[swapIndex], scissor),
-                          vk::SubpassContents::eInline);
+      vkCmdBeginRenderPass(
+          cmd, vkh::RenderPassBeginInfo(swapRenderPass, swapFramebuffers[swapIndex], scissor),
+          VK_SUBPASS_CONTENTS_INLINE);
 
-      cmd.setScissor(0, {scissor});
+      vkCmdSetScissor(cmd, 0, 1, &scissor);
 
-      vk::Viewport vp = viewport;
+      VkViewport vp = viewport;
       vp.width = 128.0f;
       vp.height = 128.0f;
 
-      cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, noInstPipe);
+      vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, noInstPipe);
 
       ///////////////////////////////////////////////////
       // non-indexed, non-instanced
 
       // basic test
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {0});
-      cmd.draw(3, 1, 0, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {0});
+      vkCmdDraw(cmd, 3, 1, 0, 0);
       vp.x += vp.width;
 
       // test with vertex offset
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {0});
-      cmd.draw(3, 1, 5, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {0});
+      vkCmdDraw(cmd, 3, 1, 5, 0);
       vp.x += vp.width;
 
       // test with vertex offset and vbuffer offset
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {5 * sizeof(DefaultA2V)});
-      cmd.draw(3, 1, 8, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {5 * sizeof(DefaultA2V)});
+      vkCmdDraw(cmd, 3, 1, 8, 0);
       vp.x += vp.width;
 
       // adjust to next row
@@ -384,47 +344,47 @@ void main()
       // indexed, non-instanced
 
       // basic test
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {0});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 1, 0, 0, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {0});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 1, 0, 0, 0);
       vp.x += vp.width;
 
       // test with first index
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {0});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 1, 5, 0, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {0});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 1, 5, 0, 0);
       vp.x += vp.width;
 
       // test with first index and vertex offset
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {0});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 1, 13, -50, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {0});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 1, 13, -50, 0);
       vp.x += vp.width;
 
       // test with first index and vertex offset and vbuffer offset
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {10 * sizeof(DefaultA2V)});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 1, 23, -100, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {10 * sizeof(DefaultA2V)});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 1, 23, -100, 0);
       vp.x += vp.width;
 
       // test with first index and vertex offset and vbuffer offset and ibuffer offset
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {19 * sizeof(DefaultA2V)});
-      cmd.bindIndexBuffer(ib1.buffer, 14 * sizeof(uint32_t), vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 1, 23, -100, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {19 * sizeof(DefaultA2V)});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 14 * sizeof(uint32_t), VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 1, 23, -100, 0);
       vp.x += vp.width;
 
-      cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, stripPipe);
+      vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, stripPipe);
 
       // indexed strip with primitive restart
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer}, {0});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(12, 1, 42, 0, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer}, {0});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 12, 1, 42, 0, 0);
       vp.x += vp.width;
 
       // adjust to next row
@@ -434,25 +394,25 @@ void main()
       ///////////////////////////////////////////////////
       // non-indexed, instanced
 
-      cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, instPipe);
+      vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, instPipe);
 
       // basic test
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {0, 0});
-      cmd.draw(3, 2, 0, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer, vb2.buffer}, {0, 0});
+      vkCmdDraw(cmd, 3, 2, 0, 0);
       vp.x += vp.width;
 
       // basic test with first instance
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {5 * sizeof(DefaultA2V), 0});
-      cmd.draw(3, 2, 0, 5);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer, vb2.buffer}, {5 * sizeof(DefaultA2V), 0});
+      vkCmdDraw(cmd, 3, 2, 0, 5);
       vp.x += vp.width;
 
       // basic test with first instance and instance buffer offset
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer},
-                            {13 * sizeof(DefaultA2V), 8 * sizeof(Vec4f)});
-      cmd.draw(3, 2, 0, 5);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer, vb2.buffer},
+                                {13 * sizeof(DefaultA2V), 8 * sizeof(Vec4f)});
+      vkCmdDraw(cmd, 3, 2, 0, 5);
       vp.x += vp.width;
 
       // adjust to next row
@@ -463,48 +423,36 @@ void main()
       // indexed, instanced
 
       // basic test
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {0, 0});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 2, 5, 0, 0);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer, vb2.buffer}, {0, 0});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 2, 5, 0, 0);
       vp.x += vp.width;
 
       // basic test with first instance
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {0, 0});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 2, 13, -50, 5);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer, vb2.buffer}, {0, 0});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 2, 13, -50, 5);
       vp.x += vp.width;
 
       // basic test with first instance and instance buffer offset
-      cmd.setViewport(0, {vp});
-      cmd.bindVertexBuffers(0, {vb1.buffer, vb2.buffer}, {0, 8 * sizeof(Vec4f)});
-      cmd.bindIndexBuffer(ib1.buffer, 0, vk::IndexType::eUint32);
-      cmd.drawIndexed(3, 2, 23, -80, 5);
+      vkCmdSetViewport(cmd, 0, 1, &vp);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb1.buffer, vb2.buffer}, {0, 8 * sizeof(Vec4f)});
+      vkCmdBindIndexBuffer(cmd, ib1.buffer, 0, VK_INDEX_TYPE_UINT32);
+      vkCmdDrawIndexed(cmd, 3, 2, 23, -80, 5);
       vp.x += vp.width;
 
-      cmd.endRenderPass();
+      vkCmdEndRenderPass(cmd);
 
-      FinishUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
+      FinishUsingBackbuffer(cmd, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 
-      cmd.end();
+      vkEndCommandBuffer(cmd);
 
       Submit(0, 1, {cmd});
 
       Present();
     }
-
-    device.destroyPipelineLayout(layout);
-    device.destroyRenderPass(renderPass);
-    for(vk::Framebuffer fb : framebuffer)
-      device.destroyFramebuffer(fb);
-    device.destroyPipeline(noInstPipe);
-    device.destroyPipeline(instPipe);
-    device.destroyPipeline(stripPipe);
-
-    vb1.destroy();
-    ib1.destroy();
-    vb2.destroy();
 
     return 0;
   }

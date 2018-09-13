@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 
     if(testchoice == fullname || testchoice == test.Name)
     {
-      TEST_LOG("\n\n======\nRunning %s\n\n", argv[1]);
+      TEST_LOG("\n\n======\nRunning %s\n\n", test.Name);
       int ret = test.test->main(argc, argv);
       return ret;
     }

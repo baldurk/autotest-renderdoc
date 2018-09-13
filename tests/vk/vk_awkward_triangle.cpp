@@ -89,61 +89,27 @@ void main()
     if(!Init(argc, argv))
       return 3;
 
-    vk::ShaderModule vert =
-        CompileShaderModule(common + vertex, ShaderLang::glsl, ShaderStage::vert, "main");
-    vk::ShaderModule frag =
-        CompileShaderModule(common + pixel, ShaderLang::glsl, ShaderStage::frag, "main");
+    VkPipelineLayout layout = createPipelineLayout(vkh::PipelineLayoutCreateInfo());
 
-    if(!vert || !frag)
-      return 4;
+    vkh::GraphicsPipelineCreateInfo pipeCreateInfo;
 
-    vk::PipelineLayout layout;
-    ResultChecker(layout) = device.createPipelineLayout({});
+    pipeCreateInfo.layout = layout;
+    pipeCreateInfo.renderPass = swapRenderPass;
 
-    RenderPassCreator rpCreate;
+    pipeCreateInfo.vertexInputState.vertexBindingDescriptions = {vkh::vertexBind(0, vertin)};
 
-    rpCreate.atts.push_back(vk::AttachmentDescription()
-                                .setFormat(swapFormat)
-                                .setInitialLayout(vk::ImageLayout::eGeneral)
-                                .setFinalLayout(vk::ImageLayout::eGeneral));
+    pipeCreateInfo.vertexInputState.vertexAttributeDescriptions = {
+        vkh::vertexAttrFormatted(0, 0, vertin, pos, VK_FORMAT_R16G16B16_SNORM),
+        vkh::vertexAttrFormatted(1, 0, vertin, col, VK_FORMAT_R16G16B16A16_USCALED),
+        vkh::vertexAttrFormatted(2, 0, vertin, uv, VK_FORMAT_R64G64B64_SFLOAT),
+    };
 
-    rpCreate.addSub({vk::AttachmentReference(0, vk::ImageLayout::eGeneral)});
+    pipeCreateInfo.stages = {
+        CompileShaderModule(common + vertex, ShaderLang::glsl, ShaderStage::vert, "main"),
+        CompileShaderModule(common + pixel, ShaderLang::glsl, ShaderStage::frag, "main"),
+    };
 
-    vk::RenderPass renderPass;
-    ResultChecker(renderPass) = device.createRenderPass(rpCreate.bake());
-
-    std::vector<vk::Framebuffer> framebuffer;
-    for(size_t i = 0; i < swapImageViews.size(); i++)
-    {
-      vk::Framebuffer fb;
-      ResultChecker(fb) = device.createFramebuffer(vk::FramebufferCreateInfo(
-          {}, renderPass, 1, &swapImageViews[i], scissor.extent.width, scissor.extent.height, 1));
-      framebuffer.push_back(fb);
-    }
-
-    PipelineCreator pipeCreate;
-
-    pipeCreate.layout = layout;
-    pipeCreate.renderPass = renderPass;
-
-    pipeCreate.binds.push_back(
-        vk::VertexInputBindingDescription(0, sizeof(vertin), vk::VertexInputRate::eVertex));
-
-    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(
-        0, 0, vk::Format::eR16G16B16Snorm, offsetof(vertin, pos)));
-    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(
-        1, 0, vk::Format::eR16G16B16A16Uscaled, offsetof(vertin, col)));
-    pipeCreate.attrs.push_back(vk::VertexInputAttributeDescription(
-        2, 0, vk::Format::eR64G64B64Sfloat, offsetof(vertin, uv)));
-
-    pipeCreate.addShader(vert, vk::ShaderStageFlagBits::eVertex);
-    pipeCreate.addShader(frag, vk::ShaderStageFlagBits::eFragment);
-
-    vk::Pipeline pipe;
-    ResultChecker(pipe) = device.createGraphicsPipeline(vk::PipelineCache(), pipeCreate.bake());
-
-    device.destroyShaderModule(vert);
-    device.destroyShaderModule(frag);
+    VkPipeline pipe = createGraphicsPipeline(pipeCreateInfo);
 
     vertin triangle[] = {
         {
@@ -159,56 +125,46 @@ void main()
         },
     };
 
-    AllocatedBuffer vb;
-    vb.create(allocator,
-              vk::BufferCreateInfo({}, sizeof(triangle), vk::BufferUsageFlagBits::eVertexBuffer |
-                                                             vk::BufferUsageFlagBits::eTransferDst),
-              VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
+    AllocatedBuffer vb(allocator,
+                       vkh::BufferCreateInfo(sizeof(triangle), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                                                                   VK_BUFFER_USAGE_TRANSFER_DST_BIT),
+                       VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
-    void *ptr = vb.map();
-    memcpy(ptr, triangle, sizeof(triangle));
-    vb.unmap();
+    vb.upload(triangle);
 
     while(Running())
     {
-      vk::CommandBuffer cmd = GetCommandBuffer();
+      VkCommandBuffer cmd = GetCommandBuffer();
 
-      cmd.begin(vk::CommandBufferBeginInfo());
+      vkBeginCommandBuffer(cmd, vkh::CommandBufferBeginInfo());
 
-      vk::Image img =
-          StartUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
+      VkImage swapimg =
+          StartUsingBackbuffer(cmd, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 
-      cmd.clearColorImage(img, vk::ImageLayout::eGeneral,
-                          std::array<float, 4>({0.4f, 0.5f, 0.6f, 1.0f}),
-                          {vk::ImageSubresourceRange()});
+      vkCmdClearColorImage(cmd, swapimg, VK_IMAGE_LAYOUT_GENERAL,
+                           vkh::ClearColorValue(0.4f, 0.5f, 0.6f, 1.0f), 1,
+                           vkh::ImageSubresourceRange());
 
-      cmd.beginRenderPass(vk::RenderPassBeginInfo(renderPass, framebuffer[swapIndex], scissor),
-                          vk::SubpassContents::eInline);
+      vkCmdBeginRenderPass(
+          cmd, vkh::RenderPassBeginInfo(swapRenderPass, swapFramebuffers[swapIndex], scissor),
+          VK_SUBPASS_CONTENTS_INLINE);
 
-      cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
-      cmd.setViewport(0, {viewport});
-      cmd.setScissor(0, {scissor});
-      cmd.bindVertexBuffers(0, {vb.buffer}, {0});
-      cmd.draw(3, 1, 0, 0);
+      vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipe);
+      vkCmdSetViewport(cmd, 0, 1, &viewport);
+      vkCmdSetScissor(cmd, 0, 1, &scissor);
+      vkh::cmdBindVertexBuffers(cmd, 0, {vb.buffer}, {0});
+      vkCmdDraw(cmd, 3, 1, 0, 0);
 
-      cmd.endRenderPass();
+      vkCmdEndRenderPass(cmd);
 
-      FinishUsingBackbuffer(cmd, vk::AccessFlagBits::eTransferWrite, vk::ImageLayout::eGeneral);
+      FinishUsingBackbuffer(cmd, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 
-      cmd.end();
+      vkEndCommandBuffer(cmd);
 
       Submit(0, 1, {cmd});
 
       Present();
     }
-
-    device.destroyPipelineLayout(layout);
-    device.destroyRenderPass(renderPass);
-    for(vk::Framebuffer fb : framebuffer)
-      device.destroyFramebuffer(fb);
-    device.destroyPipeline(pipe);
-
-    vb.destroy();
 
     return 0;
   }

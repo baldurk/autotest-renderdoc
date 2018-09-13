@@ -141,6 +141,7 @@
     <ClCompile Include="vk\vk_draw_zoo.cpp" />
     <ClCompile Include="vk\vk_simple_triangle.cpp" />
     <ClCompile Include="vk_common.cpp" />
+    <ClCompile Include="vk_helpers.cpp" />
     <ClCompile Include="volk\volk.c" />
     <ClCompile Include="win32_platform.cpp" />
     <ClCompile Include="win32_window.cpp" />
@@ -158,7 +159,11 @@
     <ClInclude Include="lz4.h" />
     <ClInclude Include="test_common.h" />
     <ClInclude Include="vk_common.h" />
+    <ClInclude Include="vk_helpers.h" />
     <ClInclude Include="volk\volk.h" />
+    <ClInclude Include="vulkan\vulkan\vk_mem_alloc.h" />
+    <ClInclude Include="vulkan\vulkan\vk_platform.h" />
+    <ClInclude Include="vulkan\vulkan\vulkan.h" />
     <ClInclude Include="win32_platform.h" />
     <ClInclude Include="win32_window.h" />
   </ItemGroup>

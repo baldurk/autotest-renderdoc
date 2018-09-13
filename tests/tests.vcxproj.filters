@@ -179,6 +179,7 @@
     <ClCompile Include="gl_test_win32.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="vk_helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -210,6 +211,12 @@
     </Filter>
     <Filter Include="OpenGL\glad">
       <UniqueIdentifier>{d1888d63-46c9-4ff3-a81f-d470bfa0465d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan\vma">
+      <UniqueIdentifier>{a0e9e5c5-1b65-4a09-a442-76f741c15426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan\vulkan">
+      <UniqueIdentifier>{c46e8d15-ce7e-42d4-ae59-1a960527567c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -253,6 +260,18 @@
     </ClInclude>
     <ClInclude Include="glad\khrplatform.h">
       <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkan\vulkan\vk_mem_alloc.h">
+      <Filter>Vulkan\vma</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkan\vulkan\vulkan.h">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkan\vulkan\vk_platform.h">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_helpers.h">
+      <Filter>Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

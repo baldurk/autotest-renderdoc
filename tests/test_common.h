@@ -47,10 +47,10 @@ enum class ShaderLang
 enum class ShaderStage
 {
   vert,
-  frag,
   tesscontrol,
   tesseval,
   geom,
+  frag,
   comp
 };
 
