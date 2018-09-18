@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../vk_common.h"
+#include "../vk_test.h"
 
 struct VK_Simple_Triangle : VulkanGraphicsTest
 {

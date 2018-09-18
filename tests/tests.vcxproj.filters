@@ -109,9 +109,6 @@
     <ClCompile Include="d3d11\d3d11_counter_query_pred.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
-    <ClCompile Include="vk_common.cpp">
-      <Filter>Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="vk\vk_simple_triangle.cpp">
       <Filter>Vulkan\tests</Filter>
     </ClCompile>
@@ -183,6 +180,9 @@
     <ClCompile Include="d3d11\d3d11_structured_buffer_misaligned_dirty.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
+    <ClCompile Include="vk_test.cpp">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -225,9 +225,6 @@
   <ItemGroup>
     <ClInclude Include="test_common.h" />
     <ClInclude Include="lz4.h" />
-    <ClInclude Include="vk_common.h">
-      <Filter>Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="d3d11\d3d11_helpers.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -274,6 +271,9 @@
       <Filter>Vulkan\vulkan</Filter>
     </ClInclude>
     <ClInclude Include="vk_helpers.h">
+      <Filter>Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_test.h">
       <Filter>Vulkan</Filter>
     </ClInclude>
   </ItemGroup>

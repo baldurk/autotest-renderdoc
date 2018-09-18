@@ -25,7 +25,7 @@
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 
-#include "vk_common.h"
+#include "vk_test.h"
 #include "../win32_window.h"
 
 static VkBool32 VKAPI_PTR vulkanCallback(VkDebugReportFlagsEXT flags,
