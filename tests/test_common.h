@@ -126,6 +126,7 @@ struct GraphicsTest
   virtual ~GraphicsTest() {}
   virtual Window *MakeWindow(int width, int height, const char *title) { return NULL; }
   virtual int main(int argc, char **argv) { return 9; }
+  virtual bool IsSupported() { return false; }
   virtual bool Init(int argc, char **argv);
 
   bool FrameLimit();
@@ -148,6 +149,7 @@ enum class TestAPI
   D3D11,
   Vulkan,
   OpenGL,
+  Count,
 };
 
 struct TestMetadata
@@ -156,6 +158,14 @@ struct TestMetadata
   const char *Name;
   const char *Description;
   GraphicsTest *test;
+
+  std::string QualifiedName() const
+  {
+    std::string ret = APIName();
+    ret += "::";
+    ret += Name;
+    return ret;
+  }
 
   const char *APIName() const
   {
@@ -197,7 +207,8 @@ void RegisterTest(TestMetadata test);
       test.Name = #TestName;                    \
       test.Description = TestName::Description; \
       test.test = &m_impl;                      \
-      RegisterTest(test);                       \
+      if(m_impl.IsSupported())                  \
+        RegisterTest(test);                     \
     }                                           \
   };                                            \
   };                                            \

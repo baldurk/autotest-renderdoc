@@ -48,6 +48,7 @@ struct D3D11GraphicsTest : public GraphicsTest
 
   bool Init(int argc, char **argv);
   Window *MakeWindow(int width, int height, const char *title);
+  bool IsSupported();
 
   void PostDeviceCreate();
 

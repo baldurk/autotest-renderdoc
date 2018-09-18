@@ -116,6 +116,7 @@ struct VulkanGraphicsTest : public GraphicsTest
   ~VulkanGraphicsTest();
 
   bool Init(int argc, char **argv);
+  bool IsSupported();
   Window *MakeWindow(int width, int height, const char *title);
   VkResult CreateSurface(Window *win, VkSurfaceKHR *surface);
 

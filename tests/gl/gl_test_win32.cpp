@@ -110,6 +110,18 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
   return true;
 }
 
+bool OpenGLGraphicsTest::IsSupported()
+{
+  HMODULE opengl = LoadLibraryA("opengl32.dll");
+
+  if(!opengl)
+    return false;
+
+  FreeLibrary(opengl);
+
+  return true;
+}
+
 Window *OpenGLGraphicsTest::MakeWindow(int width, int height, const char *title)
 {
   if(!GLAD_WGL_ARB_pixel_format)

@@ -219,6 +219,9 @@
     <Filter Include="Vulkan\vulkan">
       <UniqueIdentifier>{c46e8d15-ce7e-42d4-ae59-1a960527567c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="nuklear">
+      <UniqueIdentifier>{6d28f38e-2a5c-442b-88d0-87ef4c8f77e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test_common.h" />
@@ -273,6 +276,15 @@
     </ClInclude>
     <ClInclude Include="gl\glad\khrplatform.h">
       <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="nuklear\nuklear.h">
+      <Filter>nuklear</Filter>
+    </ClInclude>
+    <ClInclude Include="nuklear\nuklear_gdi.h">
+      <Filter>nuklear</Filter>
+    </ClInclude>
+    <ClInclude Include="nuklear\nuklear_xlib.h">
+      <Filter>nuklear</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

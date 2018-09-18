@@ -98,8 +98,7 @@ bool Win32Window::Update()
 {
   UpdateWindow(wnd);
 
-  MSG msg;
-  ZeroMemory(&msg, sizeof(msg));
+  MSG msg = {};
 
   // Check to see if any messages are waiting in the queue
   while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

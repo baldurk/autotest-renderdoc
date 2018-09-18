@@ -178,6 +178,30 @@ Window *D3D11GraphicsTest::MakeWindow(int width, int height, const char *title)
   return new Win32Window(width, height, title);
 }
 
+bool D3D11GraphicsTest::IsSupported()
+{
+  HMODULE d3d11 = LoadLibraryA("d3d11.dll");
+  HMODULE d3dcompiler = LoadLibraryA("d3dcompiler_47.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_46.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_45.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_44.dll");
+  if(!d3dcompiler)
+    d3dcompiler = LoadLibraryA("d3dcompiler_43.dll");
+
+  if(d3d11)
+    FreeLibrary(d3d11);
+  if(d3dcompiler)
+    FreeLibrary(d3dcompiler);
+
+  if(!d3d11 || !d3dcompiler)
+    return false;
+
+  return true;
+}
+
 void D3D11GraphicsTest::PostDeviceCreate()
 {
   // if(d3d11_1)

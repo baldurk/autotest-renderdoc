@@ -260,6 +260,14 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   return true;
 }
 
+bool VulkanGraphicsTest::IsSupported()
+{
+  if(volkGetInstanceVersion() > 0)
+    return true;
+
+  return volkInitialize() == VK_SUCCESS;
+}
+
 Window *VulkanGraphicsTest::MakeWindow(int width, int height, const char *title)
 {
   return new Win32Window(width, height, title);

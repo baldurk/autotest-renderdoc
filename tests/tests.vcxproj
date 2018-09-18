@@ -57,6 +57,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -71,6 +72,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -160,6 +162,9 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="lz4.h" />
+    <ClInclude Include="nuklear\nuklear.h" />
+    <ClInclude Include="nuklear\nuklear_gdi.h" />
+    <ClInclude Include="nuklear\nuklear_xlib.h" />
     <ClInclude Include="test_common.h" />
     <ClInclude Include="vk\vk_helpers.h" />
     <ClInclude Include="vk\vk_test.h" />

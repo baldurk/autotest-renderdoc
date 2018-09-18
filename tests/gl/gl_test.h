@@ -37,6 +37,7 @@ struct OpenGLGraphicsTest : public GraphicsTest
   ~OpenGLGraphicsTest();
 
   bool Init(int argc, char **argv);
+  bool IsSupported();
   Window *MakeWindow(int width, int height, const char *title);
   void *MakeContext(Window *win, void *share);
   void DestroyContext(void *ctx);
