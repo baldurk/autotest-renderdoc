@@ -81,6 +81,7 @@ Win32Window::Win32Window(int width, int height, const char *title)
   wnd = CreateWindowExA(WS_EX_CLIENTEDGE, classname, title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                         CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top, NULL, NULL,
                         NULL, NULL);
+  ShowWindow(wnd, SW_SHOW);
 }
 
 Win32Window::~Win32Window()
@@ -95,7 +96,6 @@ void Win32Window::Resize(int width, int height)
 
 bool Win32Window::Update()
 {
-  ShowWindow(wnd, SW_SHOW);
   UpdateWindow(wnd);
 
   MSG msg;
@@ -108,6 +108,9 @@ bool Win32Window::Update()
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }
+
+  if(!IsWindowVisible(wnd))
+    return false;
 
   // If the message is WM_QUIT, exit the program
   if(msg.message == WM_QUIT)
