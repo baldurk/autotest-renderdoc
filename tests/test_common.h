@@ -128,8 +128,10 @@ struct GraphicsTest
   virtual int main(int argc, char **argv) { return 9; }
   virtual bool Init(int argc, char **argv);
 
-  void StartFrameCapture(void *device = NULL, void *wnd = NULL);
-  void EndFrameCapture(void *device = NULL, void *wnd = NULL);
+  bool FrameLimit();
+
+  int frame = 0;
+  int maxFrameCount = -1;
 
   int screenWidth = 1280;
   int screenHeight = 720;

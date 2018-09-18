@@ -325,6 +325,9 @@ VulkanGraphicsTest::~VulkanGraphicsTest()
 
 bool VulkanGraphicsTest::Running()
 {
+  if(!FrameLimit())
+    return false;
+
   return win->Update();
 }
 

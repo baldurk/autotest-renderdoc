@@ -28,38 +28,6 @@
 
 #include "test_common.h"
 
-void GraphicsTest::StartFrameCapture(void *device, void *wnd)
-{
-  HMODULE mod = GetModuleHandleA("renderdoc.dll");
-  if(mod)
-  {
-    pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-
-    RENDERDOC_API_1_0_0 *rdoc_api = NULL;
-
-    int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_0_0, (void **)&rdoc_api);
-
-    if(ret == 1)
-      rdoc_api->StartFrameCapture(device, wnd);
-  }
-}
-
-void GraphicsTest::EndFrameCapture(void *device, void *wnd)
-{
-  HMODULE mod = GetModuleHandleA("renderdoc.dll");
-  if(mod)
-  {
-    pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-
-    RENDERDOC_API_1_0_0 *rdoc_api = NULL;
-
-    int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_0_0, (void **)&rdoc_api);
-
-    if(ret == 1)
-      rdoc_api->EndFrameCapture(device, wnd);
-  }
-}
-
 std::vector<TestMetadata> &test_list()
 {
   static std::vector<TestMetadata> list;

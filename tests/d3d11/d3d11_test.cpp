@@ -208,6 +208,9 @@ D3D11GraphicsTest::~D3D11GraphicsTest()
 
 bool D3D11GraphicsTest::Running()
 {
+  if(!FrameLimit())
+    return false;
+
   return window->Update();
 }
 

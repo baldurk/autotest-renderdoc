@@ -146,6 +146,12 @@ bool GraphicsTest::Init(int argc, char **argv)
     {
       debugDevice = true;
     }
+
+    if(i + 1 < argc && (!strcmp(argv[i], "--frames") || !strcmp(argv[i], "--framecount") ||
+                        !strcmp(argv[i], "--max-frames")))
+    {
+      maxFrameCount = atoi(argv[i + 1]);
+    }
   }
 
 #if defined(WIN32)
@@ -164,6 +170,15 @@ bool GraphicsTest::Init(int argc, char **argv)
 #else
 
 #endif
+
+  return true;
+}
+
+bool GraphicsTest::FrameLimit()
+{
+  frame++;
+  if(maxFrameCount > 0 && frame >= maxFrameCount)
+    return false;
 
   return true;
 }

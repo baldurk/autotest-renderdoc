@@ -201,5 +201,8 @@ GLuint OpenGLGraphicsTest::MakeFBO()
 
 bool OpenGLGraphicsTest::Running()
 {
+  if(!FrameLimit())
+    return false;
+
   return win->Update();
 }
