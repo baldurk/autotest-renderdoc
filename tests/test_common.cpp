@@ -135,3 +135,35 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
 
   return ret;
 }
+
+bool GraphicsTest::Init(int argc, char **argv)
+{
+  // parse parameters
+  for(int i = 0; i < argc; i++)
+  {
+    if(!strcmp(argv[i], "--debug") || !strcmp(argv[i], "-debug") ||
+       !strcmp(argv[i], "--validate") || !strcmp(argv[i], "-validate"))
+    {
+      debugDevice = true;
+    }
+  }
+
+#if defined(WIN32)
+
+  HMODULE mod = GetModuleHandleA("renderdoc.dll");
+  if(mod)
+  {
+    pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+
+    int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_0_0, (void **)&rdoc);
+
+    if(ret != 1)
+      rdoc = NULL;
+  }
+
+#else
+
+#endif
+
+  return true;
+}

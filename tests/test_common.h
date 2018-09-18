@@ -37,6 +37,8 @@
 #include <string>
 #include <vector>
 
+#include "renderdoc_app.h"
+
 typedef uint8_t byte;
 
 enum class ShaderLang
@@ -135,6 +137,8 @@ struct GraphicsTest
   bool fullscreen = false;
   bool debugDevice = false;
   bool headless = false;
+
+  RENDERDOC_API_1_0_0 *rdoc = NULL;
 };
 
 enum class TestAPI

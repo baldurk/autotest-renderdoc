@@ -151,7 +151,6 @@
     <ClCompile Include="win32_platform.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="win32_window.cpp" />
     <ClCompile Include="gl_test.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
@@ -176,12 +175,17 @@
     <ClCompile Include="gl_test_win32.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="vk_helpers.cpp" />
     <ClCompile Include="d3d11\d3d11_structured_buffer_misaligned_dirty.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
     <ClCompile Include="vk_test.cpp">
       <Filter>Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="vk_helpers.cpp">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_window.cpp">
+      <Filter>Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -26,23 +26,7 @@
 #include <string.h>
 #include <string>
 
-#include "renderdoc_app.h"
 #include "test_common.h"
-
-bool GraphicsTest::Init(int argc, char **argv)
-{
-  // parse parameters
-  for(int i = 0; i < argc; i++)
-  {
-    if(!strcmp(argv[i], "--debug") || !strcmp(argv[i], "-debug") ||
-       !strcmp(argv[i], "--validate") || !strcmp(argv[i], "-validate"))
-    {
-      debugDevice = true;
-    }
-  }
-
-  return true;
-}
 
 void GraphicsTest::StartFrameCapture(void *device, void *wnd)
 {
