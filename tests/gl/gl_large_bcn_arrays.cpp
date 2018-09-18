@@ -22,7 +22,6 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include <time.h>
 #include "gl_test.h"
 
 struct Large_BCn_Arrays : OpenGLGraphicsTest
@@ -98,8 +97,6 @@ void main()
 
     GLuint program = MakeProgram(common + vertex, common + pixel);
     glObjectLabel(GL_PROGRAM, program, -1, "Full program");
-
-    srand((unsigned int)time(NULL));
 
     const int width = 4;
     const int height = 4;

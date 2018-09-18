@@ -138,6 +138,8 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
 
 bool GraphicsTest::Init(int argc, char **argv)
 {
+  srand(0U);
+
   // parse parameters
   for(int i = 0; i < argc; i++)
   {

@@ -76,8 +76,6 @@ struct Overdraw_Stress : D3D11GraphicsTest
     ID3D11DepthStencilStatePtr ds;
     CHECK_HR(dev->CreateDepthStencilState(&dd, &ds));
 
-    srand(0U);
-
     const size_t numVerts = 1200;
 
     DefaultA2V triangle[numVerts] = {0};
