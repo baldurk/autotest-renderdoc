@@ -149,6 +149,9 @@ struct D3D11GraphicsTest : public GraphicsTest
   bool d3d11_1 = false;
   bool d3d11_2 = false;
 
+  D3D11_FEATURE_DATA_D3D11_OPTIONS opts;
+  D3D11_FEATURE_DATA_D3D11_OPTIONS1 opts1;
+
   pD3DCompile dyn_D3DCompile = NULL;
   pD3DStripShader dyn_D3DStripShader = NULL;
   pD3DSetBlobPart dyn_D3DSetBlobPart = NULL;

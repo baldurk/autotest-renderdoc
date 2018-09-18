@@ -193,6 +193,12 @@ void D3D11GraphicsTest::PostDeviceCreate()
   }
 
   ctx->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void **)&annot);
+
+  dev->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &opts, sizeof(opts));
+
+  memset(&opts1, 0, sizeof(opts1));
+  if(dev1)
+    dev1->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS1, &opts1, sizeof(opts1));
 }
 
 D3D11GraphicsTest::~D3D11GraphicsTest()

@@ -102,6 +102,7 @@
     <ClCompile Include="d3d11\d3d11_simple_triangle.cpp" />
     <ClCompile Include="d3d11\d3d11_streamout.cpp" />
     <ClCompile Include="d3d11\d3d11_stripped_shaders.cpp" />
+    <ClCompile Include="d3d11\d3d11_structured_buffer_misaligned_dirty.cpp" />
     <ClCompile Include="d3d11\d3d11_structured_buffer_read.cpp" />
     <ClCompile Include="d3d11\d3d11_test.cpp" />
     <ClCompile Include="d3d11\d3d11_texture_3d.cpp" />
