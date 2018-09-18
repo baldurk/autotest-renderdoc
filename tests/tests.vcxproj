@@ -50,7 +50,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)vulkan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)vk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -64,7 +64,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)vulkan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)vk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -106,14 +106,14 @@
     <ClCompile Include="d3d11\d3d11_structured_buffer_read.cpp" />
     <ClCompile Include="d3d11\d3d11_test.cpp" />
     <ClCompile Include="d3d11\d3d11_texture_3d.cpp" />
-    <ClCompile Include="glad\glad.c" />
-    <ClCompile Include="glad\glad_egl.c">
+    <ClCompile Include="gl\glad\glad.c" />
+    <ClCompile Include="gl\glad\glad_egl.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="glad\glad_glx.c">
+    <ClCompile Include="gl\glad\glad_glx.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="glad\glad_wgl.c" />
+    <ClCompile Include="gl\glad\glad_wgl.c" />
     <ClCompile Include="gl\gl_buffer_updates.cpp" />
     <ClCompile Include="gl\gl_cbuffer_zoo.cpp" />
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp" />
@@ -124,14 +124,14 @@
     <ClCompile Include="gl\gl_runtime_bind_prog_to_pipe.cpp" />
     <ClCompile Include="gl\gl_simple_triangle.cpp" />
     <ClCompile Include="gl\gl_spirv_shader.cpp" />
-    <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp" />
-    <ClCompile Include="gl\gl_vao_0.cpp" />
-    <ClCompile Include="gl_test.cpp" />
-    <ClCompile Include="gl_test_linux.cpp">
+    <ClCompile Include="gl\gl_test.cpp" />
+    <ClCompile Include="gl\gl_test_linux.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="gl_test_win32.cpp" />
-    <ClCompile Include="linux_platform.cpp">
+    <ClCompile Include="gl\gl_test_win32.cpp" />
+    <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp" />
+    <ClCompile Include="gl\gl_vao_0.cpp" />
+    <ClCompile Include="linux\linux_platform.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="lz4.c" />
@@ -140,33 +140,35 @@
     <ClCompile Include="vk\vk_awkward_triangle.cpp" />
     <ClCompile Include="vk\vk_cbuffer_zoo.cpp" />
     <ClCompile Include="vk\vk_draw_zoo.cpp" />
+    <ClCompile Include="vk\vk_helpers.cpp" />
     <ClCompile Include="vk\vk_simple_triangle.cpp" />
-    <ClCompile Include="vk_test.cpp" />
-    <ClCompile Include="vk_helpers.cpp" />
-    <ClCompile Include="volk\volk.c" />
-    <ClCompile Include="win32_platform.cpp" />
-    <ClCompile Include="win32_window.cpp" />
+    <ClCompile Include="vk\vk_test.cpp" />
+    <ClCompile Include="vk\vulkan\volk.c" />
+    <ClCompile Include="win32\win32_platform.cpp" />
+    <ClCompile Include="win32\win32_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d11\d3d11_helpers.h" />
     <ClInclude Include="d3d11\d3d11_test.h" />
-    <ClInclude Include="glad\glad.h" />
-    <ClInclude Include="glad\glad_egl.h" />
-    <ClInclude Include="glad\glad_glx.h" />
-    <ClInclude Include="glad\glad_wgl.h" />
-    <ClInclude Include="glad\khrplatform.h" />
-    <ClInclude Include="gl_test.h" />
-    <ClInclude Include="linux_platform.h" />
+    <ClInclude Include="gl\glad\glad.h" />
+    <ClInclude Include="gl\glad\glad_egl.h" />
+    <ClInclude Include="gl\glad\glad_glx.h" />
+    <ClInclude Include="gl\glad\glad_wgl.h" />
+    <ClInclude Include="gl\glad\khrplatform.h" />
+    <ClInclude Include="gl\gl_test.h" />
+    <ClInclude Include="linux\linux_platform.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="lz4.h" />
     <ClInclude Include="test_common.h" />
-    <ClInclude Include="vk_test.h" />
-    <ClInclude Include="vk_helpers.h" />
-    <ClInclude Include="volk\volk.h" />
-    <ClInclude Include="vulkan\vulkan\vk_mem_alloc.h" />
-    <ClInclude Include="vulkan\vulkan\vk_platform.h" />
-    <ClInclude Include="vulkan\vulkan\vulkan.h" />
-    <ClInclude Include="win32_platform.h" />
-    <ClInclude Include="win32_window.h" />
+    <ClInclude Include="vk\vk_helpers.h" />
+    <ClInclude Include="vk\vk_test.h" />
+    <ClInclude Include="vk\vulkan\vk_mem_alloc.h" />
+    <ClInclude Include="vk\vulkan\vk_platform.h" />
+    <ClInclude Include="vk\vulkan\volk.h" />
+    <ClInclude Include="vk\vulkan\vulkan.h" />
+    <ClInclude Include="win32\win32_platform.h" />
+    <ClInclude Include="win32\win32_window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

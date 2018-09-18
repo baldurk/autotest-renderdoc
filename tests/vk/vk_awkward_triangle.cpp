@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../vk_test.h"
+#include "vk_test.h"
 
 struct Awkward_Triangle : VulkanGraphicsTest
 {

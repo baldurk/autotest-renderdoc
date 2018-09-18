@@ -25,9 +25,9 @@
 #pragma once
 
 #if defined(WIN32)
-#include "win32_platform.h"
+#include "../win32/win32_platform.h"
 #else
-#include "linux_platform.h"
+#include "../linux/linux_platform.h"
 #endif
 
 #include <math.h>

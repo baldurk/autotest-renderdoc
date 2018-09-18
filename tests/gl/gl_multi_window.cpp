@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../gl_test.h"
+#include "gl_test.h"
 
 struct Multi_Window : OpenGLGraphicsTest
 {

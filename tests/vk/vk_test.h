@@ -24,16 +24,18 @@
 
 #pragma once
 
-#include "test_common.h"
-
-#include "volk/volk.h"
-#include "vulkan/vk_mem_alloc.h"
-
-#include "vk_helpers.h"
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 
 #include <functional>
 #include <set>
 #include <vector>
+#include "../test_common.h"
+#include "vulkan/volk.h"
+#include "vk_helpers.h"
+
+#include "vulkan/vk_mem_alloc.h"
 
 struct AllocatedBuffer
 {

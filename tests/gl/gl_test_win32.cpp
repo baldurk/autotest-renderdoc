@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include "glad/glad_wgl.h"
 
-#include "../win32_window.h"
+#include "../win32/win32_window.h"
 
 typedef BOOL(WINAPI *PFN_wglMakeCurrent)(HDC, HGLRC);
 typedef HGLRC(WINAPI *PFN_wglCreateContext)(HDC);

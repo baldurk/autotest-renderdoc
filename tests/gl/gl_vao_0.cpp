@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "../gl_test.h"
+#include "gl_test.h"
 
 struct VAO_0 : OpenGLGraphicsTest
 {

@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include "../lz4.h"
 #include "../renderdoc_app.h"
-#include "../win32_window.h"
+#include "../win32/win32_window.h"
 
 bool D3D11GraphicsTest::Init(int argc, char **argv)
 {

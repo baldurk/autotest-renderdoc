@@ -145,47 +145,47 @@
     <ClCompile Include="d3d11\d3d11_test.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="linux_platform.cpp">
-      <Filter>Linux</Filter>
-    </ClCompile>
-    <ClCompile Include="win32_platform.cpp">
-      <Filter>Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_test.cpp">
-      <Filter>OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="volk\volk.c">
-      <Filter>Vulkan\volk</Filter>
-    </ClCompile>
-    <ClCompile Include="glad\glad.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="glad\glad_wgl.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="glad\glad_egl.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="glad\glad_glx.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_test_linux.cpp">
-      <Filter>OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_test_win32.cpp">
-      <Filter>OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="d3d11\d3d11_structured_buffer_misaligned_dirty.cpp">
       <Filter>D3D11\tests</Filter>
     </ClCompile>
-    <ClCompile Include="vk_test.cpp">
-      <Filter>Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="vk_helpers.cpp">
-      <Filter>Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="win32_window.cpp">
+    <ClCompile Include="win32\win32_platform.cpp">
       <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="win32\win32_window.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="linux\linux_platform.cpp">
+      <Filter>Linux</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\vk_helpers.cpp">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\vk_test.cpp">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\gl_test.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\gl_test_linux.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\gl_test_win32.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="vk\vulkan\volk.c">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\glad\glad.c">
+      <Filter>OpenGL\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\glad\glad_egl.c">
+      <Filter>OpenGL\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\glad\glad_glx.c">
+      <Filter>OpenGL\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\glad\glad_wgl.c">
+      <Filter>OpenGL\glad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -213,14 +213,8 @@
     <Filter Include="Linux">
       <UniqueIdentifier>{9c5ec0e8-32a9-45b7-8cbc-e6507dfff362}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Vulkan\volk">
-      <UniqueIdentifier>{51d3318c-fe26-422a-bec9-cd9af74e34a0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="OpenGL\glad">
       <UniqueIdentifier>{d1888d63-46c9-4ff3-a81f-d470bfa0465d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vulkan\vma">
-      <UniqueIdentifier>{a0e9e5c5-1b65-4a09-a442-76f741c15426}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vulkan\vulkan">
       <UniqueIdentifier>{c46e8d15-ce7e-42d4-ae59-1a960527567c}</UniqueIdentifier>
@@ -235,50 +229,50 @@
     <ClInclude Include="d3d11\d3d11_test.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="win32_platform.h">
+    <ClInclude Include="win32\win32_platform.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="linux_platform.h">
+    <ClInclude Include="win32\win32_window.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="linux\linux_platform.h">
       <Filter>Linux</Filter>
     </ClInclude>
-    <ClInclude Include="win32_window.h">
-      <Filter>Windows</Filter>
+    <ClInclude Include="vk\vk_helpers.h">
+      <Filter>Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="gl_test.h">
+    <ClInclude Include="vk\vk_test.h">
+      <Filter>Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\gl_test.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="volk\volk.h">
-      <Filter>Vulkan\volk</Filter>
-    </ClInclude>
-    <ClInclude Include="glad\glad.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="glad\glad_egl.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="glad\glad_glx.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="glad\glad_wgl.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="glad\khrplatform.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="vulkan\vulkan\vk_mem_alloc.h">
-      <Filter>Vulkan\vma</Filter>
-    </ClInclude>
-    <ClInclude Include="vulkan\vulkan\vulkan.h">
+    <ClInclude Include="vk\vulkan\vk_mem_alloc.h">
       <Filter>Vulkan\vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="vulkan\vulkan\vk_platform.h">
+    <ClInclude Include="vk\vulkan\vk_platform.h">
       <Filter>Vulkan\vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="vk_helpers.h">
-      <Filter>Vulkan</Filter>
+    <ClInclude Include="vk\vulkan\volk.h">
+      <Filter>Vulkan\vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="vk_test.h">
-      <Filter>Vulkan</Filter>
+    <ClInclude Include="vk\vulkan\vulkan.h">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\glad\glad.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\glad\glad_egl.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\glad\glad_glx.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\glad\glad_wgl.h">
+      <Filter>OpenGL\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\glad\khrplatform.h">
+      <Filter>OpenGL\glad</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

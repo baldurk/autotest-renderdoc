@@ -22,16 +22,21 @@
 * THE SOFTWARE.
 ******************************************************************************/
 
-#pragma once
+#include "../test_common.h"
 
-#include "test_common.h"
-
-struct Win32Window : public Window
+std::string GetCWD()
 {
-  Win32Window(int width, int height, const char *title);
-  ~Win32Window();
-  void Resize(int width, int height);
-  bool Update();
+  char cwd[MAX_PATH + 1] = {0};
+  GetCurrentDirectoryA(MAX_PATH, cwd);
 
-  HWND wnd;
-};
+  std::string cwdstr = cwd;
+
+  for(size_t i = 0; i < cwdstr.size(); i++)
+    if(cwdstr[i] == '\\')
+      cwdstr[i] = '/';
+
+  while(cwdstr.back() == '/' || cwdstr.back() == '\\')
+    cwdstr.pop_back();
+
+  return cwdstr;
+}

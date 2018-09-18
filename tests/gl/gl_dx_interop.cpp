@@ -25,9 +25,9 @@
 #if defined(WIN32)
 
 #include "../d3d11/d3d11_test.h"
-#include "../gl_test.h"
+#include "gl_test.h"
 
-#include "../glad/glad_wgl.h"
+#include "glad/glad_wgl.h"
 
 struct DX_Interop : OpenGLGraphicsTest
 {
