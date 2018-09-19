@@ -1,6 +1,8 @@
 .idea/
 obj/
 ipch/
+tmp/
+artifacts/
 __pycache__/
 *.opensdf
 *.sdf
