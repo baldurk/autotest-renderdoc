@@ -244,7 +244,7 @@ float4 main(v2f IN) : SV_Target0
 
       ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), NULL);
 
-      D3D11_VIEWPORT view = {0.0f, 0.0f, 128.0f, 128.0f, 0.0f, 1.0f};
+      D3D11_VIEWPORT view = {0.0f, 0.0f, 48.0f, 48.0f, 0.0f, 1.0f};
 
       ctx->RSSetViewports(1, &view);
 

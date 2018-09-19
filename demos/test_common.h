@@ -134,8 +134,8 @@ struct GraphicsTest
   int curFrame = 0;
   int maxFrameCount = -1;
 
-  int screenWidth = 1280;
-  int screenHeight = 720;
+  int screenWidth = 400;
+  int screenHeight = 300;
   const char *screenTitle = "RenderDoc test program";
   bool fullscreen = false;
   bool debugDevice = false;

@@ -310,8 +310,8 @@ void main()
       vkCmdSetScissor(cmd, 0, 1, &scissor);
 
       VkViewport vp = viewport;
-      vp.width = 128.0f;
-      vp.height = 128.0f;
+      vp.width = 48.0f;
+      vp.height = 48.0f;
 
       vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, noInstPipe);
 
