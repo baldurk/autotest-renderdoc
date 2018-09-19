@@ -37,10 +37,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     PostQuitMessage(0);
     return 0;
   }
-  return DefWindowProc(hwnd, msg, wParam, lParam);
+  return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
-const char *classname = "renderdoc_d3d11_test";
+const wchar_t *classname = L"renderdoc_d3d11_test";
 
 void regClass()
 {
@@ -50,8 +50,8 @@ void regClass()
 
   init = true;
 
-  WNDCLASSEXA wc;
-  wc.cbSize = sizeof(WNDCLASSEXA);
+  WNDCLASSEXW wc;
+  wc.cbSize = sizeof(WNDCLASSEXW);
   wc.style = 0;
   wc.lpfnWndProc = WndProc;
   wc.cbClsExtra = 0;
@@ -64,7 +64,7 @@ void regClass()
   wc.lpszClassName = classname;
   wc.hIconSm = NULL;
 
-  if(!RegisterClassExA(&wc))
+  if(!RegisterClassExW(&wc))
   {
     TEST_ERROR("Couldn't register window class");
     return;
@@ -78,7 +78,14 @@ Win32Window::Win32Window(int width, int height, const char *title)
   RECT rect = {0, 0, width, height};
   AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_CLIENTEDGE);
 
-  wnd = CreateWindowExA(WS_EX_CLIENTEDGE, classname, title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+  int len = (int)strlen(title);
+
+  int wsize = MultiByteToWideChar(CP_UTF8, 0, title, len, NULL, 0);
+  WCHAR *wstr = (WCHAR *)_alloca(wsize * sizeof(wchar_t) + 2);
+  wstr[wsize] = 0;
+  MultiByteToWideChar(CP_UTF8, 0, title, len, wstr, wsize);
+
+  wnd = CreateWindowExW(WS_EX_CLIENTEDGE, classname, wstr, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                         CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top, NULL, NULL,
                         NULL, NULL);
   ShowWindow(wnd, SW_SHOW);

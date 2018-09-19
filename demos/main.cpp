@@ -61,10 +61,10 @@ static LRESULT CALLBACK NuklearWndProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM
   if(nk_gdi_handle_event(wnd, msg, wparam, lparam))
     return 0;
 
-  return DefWindowProcA(wnd, msg, wparam, lparam);
+  return DefWindowProcW(wnd, msg, wparam, lparam);
 }
 
-WNDCLASSA wc = {};
+WNDCLASSW wc = {};
 HWND wnd = NULL;
 HDC dc = NULL;
 GdiFont *font = NULL;
@@ -75,13 +75,20 @@ nk_context *NuklearInit(int width, int height, const char *title)
   wc.lpfnWndProc = NuklearWndProc;
   wc.hInstance = GetModuleHandleA(NULL);
   wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-  wc.lpszClassName = "NuklearWindowClass";
-  RegisterClassA(&wc);
+  wc.lpszClassName = L"NuklearWindowClass";
+  RegisterClassW(&wc);
+
+  int len = (int)strlen(title);
+
+  int wsize = MultiByteToWideChar(CP_UTF8, 0, title, len, NULL, 0);
+  WCHAR *wstr = (WCHAR *)_alloca(wsize * sizeof(wchar_t) + 2);
+  wstr[wsize] = 0;
+  MultiByteToWideChar(CP_UTF8, 0, title, len, wstr, wsize);
 
   RECT rect = {0, 0, width, height};
   AdjustWindowRectEx(&rect, WS_OVERLAPPED | WS_SYSMENU, FALSE, WS_EX_WINDOWEDGE);
-  wnd = CreateWindowExA(
-      WS_EX_WINDOWEDGE, wc.lpszClassName, title, WS_OVERLAPPED | WS_SYSMENU | WS_VISIBLE,
+  wnd = CreateWindowExW(
+      WS_EX_WINDOWEDGE, wc.lpszClassName, wstr, WS_OVERLAPPED | WS_SYSMENU | WS_VISIBLE,
       (GetSystemMetrics(SM_CXSCREEN) - (rect.right - rect.left)) / 2,
       (GetSystemMetrics(SM_CYSCREEN) - (rect.bottom - rect.top)) / 2, rect.right - rect.left,
       rect.bottom - rect.top, NULL, NULL, wc.hInstance, NULL);
@@ -118,7 +125,7 @@ void NuklearShutdown()
   nk_gdifont_del(font);
   ReleaseDC(wnd, dc);
   DestroyWindow(wnd);
-  UnregisterClassA(wc.lpszClassName, wc.hInstance);
+  UnregisterClassW(wc.lpszClassName, wc.hInstance);
 }
 
 #else
