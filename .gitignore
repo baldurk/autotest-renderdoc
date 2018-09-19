@@ -1,10 +1,14 @@
-Debug/
+.idea/
+obj/
 ipch/
+__pycache__/
 *.opensdf
 *.sdf
 *.suo
 *.user
 *.pdb
+*.ipdb
+*.iobj
 *.exe
 *.ilk
 *.VC.*

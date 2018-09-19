@@ -55,15 +55,18 @@ struct OpenGLGraphicsTest : public GraphicsTest
 
   bool Running();
   void Present(Window *window);
-  void Present() { Present(win); }
+  void Present() { Present(mainWindow); }
   int glMajor = 4;
   int glMinor = 3;
   bool coreProfile = true;
   bool gles = false;
 
-  Window *win = NULL;
-  void *ctx = NULL;
+  Window *mainWindow = NULL;
+  void *mainContext = NULL;
   bool inited = false;
 
-  std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
+  struct
+  {
+    std::vector<GLuint> bufs, texs, progs, pipes, vaos, fbos;
+  } managedResources;
 };

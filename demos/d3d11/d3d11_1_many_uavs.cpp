@@ -54,7 +54,7 @@ void main()
     ID3D11BufferPtr buf = MakeBuffer().Size(16).UAV();
     ID3D11UnorderedAccessViewPtr uav = MakeUAV(buf).Format(DXGI_FORMAT_R32G32B32A32_UINT);
 
-    for(int frame = 0; frame < 10 && Running(); frame++)
+    while(Running())
     {
       Vec4f col(0.4f, 0.5f, 0.6f, 1.0f);
       ClearRenderTargetView(bbRTV, col);

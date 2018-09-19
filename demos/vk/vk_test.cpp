@@ -22,11 +22,23 @@
 * THE SOFTWARE.
 ******************************************************************************/
 
+#include "../test_common.h"
+#include "vulkan/volk.h"
+
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 
-#include "vk_test.h"
+#define VMA_ASSERT(expr) TEST_ASSERT(expr, "VMA assertion failed");
+
+#pragma warning(push)
+#pragma warning(disable : 4127)
+
+#include "vulkan/vk_mem_alloc.h"
+
+#pragma warning(pop)
+
 #include "../win32/win32_window.h"
+#include "vk_test.h"
 
 static VkBool32 VKAPI_PTR vulkanCallback(VkDebugReportFlagsEXT flags,
                                          VkDebugReportObjectTypeEXT objectType, uint64_t object,
@@ -122,7 +134,7 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
         instance,
         vkh::DebugReportCallbackCreateInfoEXT(
             VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, &vulkanCallback),
-        NULL, &callback));
+        NULL, &debugReportCallback));
   }
 
   std::vector<VkPhysicalDevice> physDevices;
@@ -157,9 +169,9 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     return false;
   }
 
-  win = new Win32Window(screenWidth, screenHeight, "Autotesting");
+  mainWindow = new Win32Window(screenWidth, screenHeight, "Autotesting");
 
-  VkResult vkr = (VkResult)CreateSurface(win, &surface);
+  VkResult vkr = (VkResult)CreateSurface(mainWindow, &surface);
 
   if(vkr != VK_SUCCESS)
   {
@@ -176,7 +188,6 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   const VkBool32 *enabledEnd = enabledBegin + sizeof(features);
 
   const VkBool32 *supportedBegin = (VkBool32 *)&features;
-  const VkBool32 *supportedEnd = supportedBegin + sizeof(features);
 
   for(; enabledBegin != enabledEnd; ++enabledBegin, ++supportedBegin)
   {
@@ -320,15 +331,15 @@ VulkanGraphicsTest::~VulkanGraphicsTest()
     vkDestroyDevice(device, NULL);
   }
 
-  if(callback)
-    vkDestroyDebugReportCallbackEXT(instance, callback, NULL);
+  if(debugReportCallback)
+    vkDestroyDebugReportCallbackEXT(instance, debugReportCallback, NULL);
   if(surface)
     vkDestroySurfaceKHR(instance, surface, NULL);
 
   if(instance)
     vkDestroyInstance(instance, NULL);
 
-  delete win;
+  delete mainWindow;
 }
 
 bool VulkanGraphicsTest::Running()
@@ -336,7 +347,7 @@ bool VulkanGraphicsTest::Running()
   if(!FrameLimit())
     return false;
 
-  return win->Update();
+  return mainWindow->Update();
 }
 
 VkImage VulkanGraphicsTest::StartUsingBackbuffer(VkCommandBuffer cmd, VkAccessFlags nextUse,
@@ -691,7 +702,7 @@ void VulkanGraphicsTest::acquireImage()
   }
 }
 
-VkResult VulkanGraphicsTest::CreateSurface(Window *win, VkSurfaceKHR *surface)
+VkResult VulkanGraphicsTest::CreateSurface(Window *win, VkSurfaceKHR *outSurf)
 {
 #if defined(WIN32)
   VkWin32SurfaceCreateInfoKHR createInfo;
@@ -702,7 +713,7 @@ VkResult VulkanGraphicsTest::CreateSurface(Window *win, VkSurfaceKHR *surface)
   createInfo.hwnd = ((Win32Window *)win)->wnd;
   createInfo.hinstance = GetModuleHandleA(NULL);
 
-  return vkCreateWin32SurfaceKHR(instance, &createInfo, NULL, surface);
+  return vkCreateWin32SurfaceKHR(instance, &createInfo, NULL, outSurf);
 #else
 #endif
 }

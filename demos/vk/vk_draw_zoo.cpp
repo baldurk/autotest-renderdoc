@@ -166,58 +166,58 @@ void main()
       DefaultA2V *dst = (DefaultA2V *)vb1.map();
 
       // up-pointing triangle to offset 0
-      memcpy(dst + 0, vertData + 1, sizeof(DefaultA2V));
-      memcpy(dst + 1, vertData + 2, sizeof(DefaultA2V));
-      memcpy(dst + 2, vertData + 3, sizeof(DefaultA2V));
+      memcpy(dst + 0, src + 1, sizeof(DefaultA2V));
+      memcpy(dst + 1, src + 2, sizeof(DefaultA2V));
+      memcpy(dst + 2, src + 3, sizeof(DefaultA2V));
 
       // invalid vert for index 3 and 4
-      memcpy(dst + 3, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 4, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 3, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 4, src + 0, sizeof(DefaultA2V));
 
       // down-pointing triangle at offset 5
-      memcpy(dst + 5, vertData + 4, sizeof(DefaultA2V));
-      memcpy(dst + 6, vertData + 5, sizeof(DefaultA2V));
-      memcpy(dst + 7, vertData + 6, sizeof(DefaultA2V));
+      memcpy(dst + 5, src + 4, sizeof(DefaultA2V));
+      memcpy(dst + 6, src + 5, sizeof(DefaultA2V));
+      memcpy(dst + 7, src + 6, sizeof(DefaultA2V));
 
       // invalid vert for 8 - 12
-      memcpy(dst + 8, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 9, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 10, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 11, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 12, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 8, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 9, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 10, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 11, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 12, src + 0, sizeof(DefaultA2V));
 
       // left-pointing triangle data to offset 13
-      memcpy(dst + 13, vertData + 7, sizeof(DefaultA2V));
-      memcpy(dst + 14, vertData + 8, sizeof(DefaultA2V));
-      memcpy(dst + 15, vertData + 9, sizeof(DefaultA2V));
+      memcpy(dst + 13, src + 7, sizeof(DefaultA2V));
+      memcpy(dst + 14, src + 8, sizeof(DefaultA2V));
+      memcpy(dst + 15, src + 9, sizeof(DefaultA2V));
 
       // invalid vert for 16-22
-      memcpy(dst + 16, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 17, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 18, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 19, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 20, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 21, vertData + 0, sizeof(DefaultA2V));
-      memcpy(dst + 22, vertData + 0, sizeof(DefaultA2V));
+      memcpy(dst + 16, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 17, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 18, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 19, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 20, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 21, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 22, src + 0, sizeof(DefaultA2V));
 
       // right-pointing triangle data to offset 23
-      memcpy(dst + 23, vertData + 10, sizeof(DefaultA2V));
-      memcpy(dst + 24, vertData + 11, sizeof(DefaultA2V));
-      memcpy(dst + 25, vertData + 12, sizeof(DefaultA2V));
+      memcpy(dst + 23, src + 10, sizeof(DefaultA2V));
+      memcpy(dst + 24, src + 11, sizeof(DefaultA2V));
+      memcpy(dst + 25, src + 12, sizeof(DefaultA2V));
 
       // strip after 30
-      memcpy(dst + 30, vertData + 13, sizeof(DefaultA2V));
-      memcpy(dst + 31, vertData + 14, sizeof(DefaultA2V));
-      memcpy(dst + 32, vertData + 15, sizeof(DefaultA2V));
-      memcpy(dst + 33, vertData + 16, sizeof(DefaultA2V));
-      memcpy(dst + 34, vertData + 17, sizeof(DefaultA2V));
-      memcpy(dst + 35, vertData + 18, sizeof(DefaultA2V));
-      memcpy(dst + 36, vertData + 19, sizeof(DefaultA2V));
-      memcpy(dst + 37, vertData + 20, sizeof(DefaultA2V));
-      memcpy(dst + 38, vertData + 21, sizeof(DefaultA2V));
-      memcpy(dst + 39, vertData + 22, sizeof(DefaultA2V));
-      memcpy(dst + 40, vertData + 23, sizeof(DefaultA2V));
-      memcpy(dst + 41, vertData + 24, sizeof(DefaultA2V));
+      memcpy(dst + 30, src + 13, sizeof(DefaultA2V));
+      memcpy(dst + 31, src + 14, sizeof(DefaultA2V));
+      memcpy(dst + 32, src + 15, sizeof(DefaultA2V));
+      memcpy(dst + 33, src + 16, sizeof(DefaultA2V));
+      memcpy(dst + 34, src + 17, sizeof(DefaultA2V));
+      memcpy(dst + 35, src + 18, sizeof(DefaultA2V));
+      memcpy(dst + 36, src + 19, sizeof(DefaultA2V));
+      memcpy(dst + 37, src + 20, sizeof(DefaultA2V));
+      memcpy(dst + 38, src + 21, sizeof(DefaultA2V));
+      memcpy(dst + 39, src + 22, sizeof(DefaultA2V));
+      memcpy(dst + 40, src + 23, sizeof(DefaultA2V));
+      memcpy(dst + 41, src + 24, sizeof(DefaultA2V));
 
       vb1.unmap();
     }

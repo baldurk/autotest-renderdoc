@@ -135,8 +135,6 @@ void main()
     if(!d3d.Init(argc, argv))
       return 4;
 
-    HRESULT hr = S_OK;
-
     ID3DBlobPtr vsblob = d3d.Compile(dxcommon + dxvertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = d3d.Compile(dxcommon + dxpixel, "main", "ps_5_0");
 
@@ -212,13 +210,13 @@ void main()
 
     GLenum fbostatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
+    TEST_ASSERT(fbostatus != GL_FRAMEBUFFER_COMPLETE, "FBO is not complete");
+
     ID3D11DeviceContextPtr ctx = d3d.ctx;
 
     HANDLE lockHandles[] = {interop_tod3d, interop_fromd3d};
 
     float delta = 0.0f;
-
-    bool capd = false;
 
     int frame = 0;
 

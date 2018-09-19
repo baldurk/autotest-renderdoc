@@ -97,11 +97,11 @@ struct AllocatedImage
 #define CHECK_VKR(cmd)                                                               \
   do                                                                                 \
   {                                                                                  \
-    VkResult vkr = cmd;                                                              \
-    if(vkr != VK_SUCCESS)                                                            \
+    VkResult _vkr = cmd;                                                             \
+    if(_vkr != VK_SUCCESS)                                                           \
     {                                                                                \
       fprintf(stdout, "%s:%d Vulkan Error: %s executing:\n%s\n", __FILE__, __LINE__, \
-              vkh::result_str(vkr), #cmd);                                           \
+              vkh::result_str(_vkr), #cmd);                                          \
       fflush(stdout);                                                                \
       DEBUG_BREAK();                                                                 \
       exit(1);                                                                       \
@@ -118,7 +118,7 @@ struct VulkanGraphicsTest : public GraphicsTest
   bool Init(int argc, char **argv);
   bool IsSupported();
   Window *MakeWindow(int width, int height, const char *title);
-  VkResult CreateSurface(Window *win, VkSurfaceKHR *surface);
+  VkResult CreateSurface(Window *win, VkSurfaceKHR *outSurf);
 
   bool Running();
   VkImage StartUsingBackbuffer(VkCommandBuffer cmd, VkAccessFlags nextUse, VkImageLayout layout);
@@ -172,7 +172,7 @@ struct VulkanGraphicsTest : public GraphicsTest
   std::vector<VkFramebuffer> swapFramebuffers;
 
   // utilities
-  VkDebugReportCallbackEXT callback;
+  VkDebugReportCallbackEXT debugReportCallback;
   VkCommandPool cmdPool;
 
   // tracking object lifetimes
@@ -188,7 +188,7 @@ struct VulkanGraphicsTest : public GraphicsTest
   VkViewport viewport;
   VkRect2D scissor;
 
-  Window *win = NULL;
+  Window *mainWindow = NULL;
 
   // internal bookkeeping
   std::set<VkFence> fences;

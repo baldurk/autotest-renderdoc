@@ -178,8 +178,8 @@ bool GraphicsTest::Init(int argc, char **argv)
 
 bool GraphicsTest::FrameLimit()
 {
-  frame++;
-  if(maxFrameCount > 0 && frame >= maxFrameCount)
+  curFrame++;
+  if(maxFrameCount > 0 && curFrame >= maxFrameCount)
     return false;
 
   return true;

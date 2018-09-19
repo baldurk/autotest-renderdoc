@@ -66,7 +66,6 @@ inline VkVertexInputBindingDescription _VertexBinding(uint32_t binding, uint32_t
 
 // unfortunately we can't use this macro everywhere because it doesn't work for __VA_ARGS__ = 0
 #define VKH_ENUMERATE(func, ...)   \
-  VkResult vkr = VK_SUCCESS;       \
   uint32_t count = 0;              \
   func(__VA_ARGS__, &count, NULL); \
   vec.resize(count);               \

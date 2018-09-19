@@ -182,7 +182,7 @@ float4 main(v2f IN) : SV_Target0
       if(mip > 0)
       {
         for(uint32_t i = 0; i < d * d * (1024 >> mip); i++)
-          data[i] = (rand() % 0x7fff) << 1;
+          data[i] = uint8_t((rand() % 0x7f) << 1);
       }
       else
       {

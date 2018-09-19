@@ -28,10 +28,16 @@
 
 #include "test_common.h"
 
+#pragma warning(push)
+#pragma warning(disable : 4127)    // conditional expression is constant
+#pragma warning(disable : 4244)    // conversion from 'x' to 'y', possible loss of data
+#pragma warning(disable : 4505)    // unreferenced local function has been removed
+#pragma warning(disable : 4701)    // potentially uninitialized local variable used
+
 #define NK_IMPLEMENTATION
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_ASSERT(expr) TEST_ASSERT(expr, "nuklear assertion failed: " #expr)
+#define NK_ASSERT(expr) TEST_ASSERT(expr, "nuklear assertion failed")
 #include "nuklear/nuklear.h"
 
 #if defined(WIN32)
@@ -121,6 +127,9 @@ void NuklearShutdown()
 #include "nuklear/nuklear_xlib.h"
 
 #endif
+
+// nuklear
+#pragma warning(pop)
 
 std::vector<TestMetadata> &test_list()
 {

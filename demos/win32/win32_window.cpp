@@ -64,7 +64,7 @@ void regClass()
   wc.lpszClassName = classname;
   wc.hIconSm = NULL;
 
-  if(!RegisterClassEx(&wc))
+  if(!RegisterClassExA(&wc))
   {
     TEST_ERROR("Couldn't register window class");
     return;

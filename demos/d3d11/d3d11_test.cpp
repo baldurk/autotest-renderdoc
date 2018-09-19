@@ -104,7 +104,7 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
 
   Win32Window *win = new Win32Window(screenWidth, screenHeight, screenTitle);
 
-  window = win;
+  mainWindow = win;
 
   DXGI_SWAP_CHAIN_DESC swapDesc;
   ZeroMemory(&swapDesc, sizeof(swapDesc));
@@ -227,7 +227,7 @@ void D3D11GraphicsTest::PostDeviceCreate()
 
 D3D11GraphicsTest::~D3D11GraphicsTest()
 {
-  delete window;
+  delete mainWindow;
 }
 
 bool D3D11GraphicsTest::Running()
@@ -235,7 +235,7 @@ bool D3D11GraphicsTest::Running()
   if(!FrameLimit())
     return false;
 
-  return window->Update();
+  return mainWindow->Update();
 }
 
 void D3D11GraphicsTest::Present()
@@ -246,8 +246,6 @@ void D3D11GraphicsTest::Present()
 std::vector<byte> D3D11GraphicsTest::GetBufferData(ID3D11Buffer *buffer, uint32_t offset, uint32_t len)
 {
   D3D11_MAPPED_SUBRESOURCE mapped;
-
-  HRESULT hr = S_OK;
 
   TEST_ASSERT(buffer, "buffer is NULL");
 

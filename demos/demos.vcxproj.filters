@@ -3,141 +3,141 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="d3d11\d3d11_simple_triangle.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_simple_triangle.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_unsized_ms_fbo_attachment.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_overdraw_stress.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_1_many_uavs.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_debug_shader.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_mip_rtv.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_many_rtvs.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_empty_compute_dispatch.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_array_interpolator.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_empty_drawcall.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_structured_buffer_read.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_empty_viewports.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_simple_dispatch.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_runtime_bind_prog_to_pipe.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="lz4.c" />
     <ClCompile Include="d3d11\d3d11_discard_view.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_deferred_updatesubresource.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="test_common.cpp" />
     <ClCompile Include="d3d11\d3d11_stripped_shaders.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_divergent_shader.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_midframe_create.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_byte_address_buffers.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_mip_gen_rt.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_vao_0.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_streamout.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_texture_3d.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_buffer_updates.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_dx_interop.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_saturate.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_map_overrun.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_map_overrun.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_binding_hazards.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_primitive_restart.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_large_bcn_arrays.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_counter_query_pred.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="vk\vk_simple_triangle.cpp">
-      <Filter>Vulkan\tests</Filter>
+      <Filter>Vulkan\demos</Filter>
     </ClCompile>
     <ClCompile Include="vk\vk_draw_zoo.cpp">
-      <Filter>Vulkan\tests</Filter>
+      <Filter>Vulkan\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_draw_zoo.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_cbuffer_zoo.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_cbuffer_zoo.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="vk\vk_cbuffer_zoo.cpp">
-      <Filter>Vulkan\tests</Filter>
+      <Filter>Vulkan\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_refcount_check.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="vk\vk_awkward_triangle.cpp">
-      <Filter>Vulkan\tests</Filter>
+      <Filter>Vulkan\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_spirv_shader.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="gl\gl_multi_window.cpp">
-      <Filter>OpenGL\tests</Filter>
+      <Filter>OpenGL\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_helpers.cpp">
       <Filter>D3D11</Filter>
@@ -146,7 +146,7 @@
       <Filter>D3D11</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_structured_buffer_misaligned_dirty.cpp">
-      <Filter>D3D11\tests</Filter>
+      <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="win32\win32_platform.cpp">
       <Filter>Windows</Filter>
@@ -192,19 +192,19 @@
     <Filter Include="D3D11">
       <UniqueIdentifier>{2d925e41-46b9-4fc8-bed8-38f94377d4ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="D3D11\tests">
+    <Filter Include="D3D11\demos">
       <UniqueIdentifier>{ab751575-8361-4303-9660-a511267f4a6e}</UniqueIdentifier>
     </Filter>
     <Filter Include="OpenGL">
       <UniqueIdentifier>{067b0d96-2253-4f97-b4e9-9a398e73698f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OpenGL\tests">
+    <Filter Include="OpenGL\demos">
       <UniqueIdentifier>{1da9ebf5-0432-4265-b118-9ffa5857a317}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vulkan">
       <UniqueIdentifier>{edb31c02-2b14-4e5f-8332-bcf87d98e80d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Vulkan\tests">
+    <Filter Include="Vulkan\demos">
       <UniqueIdentifier>{e5a064fd-f7f5-41f7-af8f-27d766122f53}</UniqueIdentifier>
     </Filter>
     <Filter Include="Windows">

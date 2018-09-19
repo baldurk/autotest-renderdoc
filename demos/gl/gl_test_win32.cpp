@@ -51,15 +51,15 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
   PFN_wglDeleteContext deleteContext =
       (PFN_wglDeleteContext)GetProcAddress(opengl, "wglDeleteContext");
 
-  win = new Win32Window(screenWidth, screenHeight, screenTitle);
+  mainWindow = new Win32Window(screenWidth, screenHeight, screenTitle);
 
-  if(!win)
+  if(!mainWindow)
   {
     TEST_ERROR("Couldn't initialise window");
     return false;
   }
 
-  Win32Window *win32win = (Win32Window *)win;
+  Win32Window *win32win = (Win32Window *)mainWindow;
 
   HDC dc = GetDC(win32win->wnd);
 
@@ -87,20 +87,20 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
   ReleaseDC(win32win->wnd, dc);
   deleteContext(rc);
 
-  ctx = MakeContext(win, NULL);
+  mainContext = MakeContext(mainWindow, NULL);
 
-  if(!win || !ctx)
+  if(!mainWindow || !mainContext)
   {
-    delete win;
+    delete mainWindow;
     TEST_ERROR("Couldn't initialise context");
     return false;
   }
 
-  ActivateContext(win, ctx);
+  ActivateContext(mainWindow, mainContext);
 
   if(!gladLoadGL())
   {
-    delete win;
+    delete mainWindow;
     TEST_ERROR("Error initialising glad");
     return false;
   }

@@ -25,9 +25,9 @@
 #pragma once
 
 #if defined(WIN32)
-#include "../win32/win32_platform.h"
+#include "win32/win32_platform.h"
 #else
-#include "../linux/linux_platform.h"
+#include "linux/linux_platform.h"
 #endif
 
 #include <math.h>
@@ -131,7 +131,7 @@ struct GraphicsTest
 
   bool FrameLimit();
 
-  int frame = 0;
+  int curFrame = 0;
   int maxFrameCount = -1;
 
   int screenWidth = 1280;

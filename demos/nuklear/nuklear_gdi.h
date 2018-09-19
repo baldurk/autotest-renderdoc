@@ -431,7 +431,7 @@ nk_gdifont_create(const char *name, int size)
     if (!font)
         return NULL;
     font->dc = CreateCompatibleDC(0);
-    font->handle = CreateFont(size, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, name);
+    font->handle = CreateFontA(size, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, name);
     SelectObject(font->dc, font->handle);
     GetTextMetricsW(font->dc, &metric);
     font->height = metric.tmHeight;

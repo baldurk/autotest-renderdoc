@@ -160,7 +160,7 @@ struct D3D11GraphicsTest : public GraphicsTest
   PFN_D3D11_CREATE_DEVICE dyn_D3D11CreateDevice = NULL;
   PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN dyn_D3D11CreateDeviceAndSwapChain = NULL;
 
-  Window *window = NULL;
+  Window *mainWindow = NULL;
 
   IDXGISwapChainPtr swap;
 

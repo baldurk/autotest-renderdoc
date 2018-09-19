@@ -140,45 +140,45 @@ float4 main(v2f IN) : SV_Target0
       DefaultA2V *src = (DefaultA2V *)triangle;
       DefaultA2V *dst = (DefaultA2V *)&vbData[0];
 
-      // up-pointing triangle to offset 0
-      memcpy(dst + 0, triangle + 1, sizeof(DefaultA2V));
-      memcpy(dst + 1, triangle + 2, sizeof(DefaultA2V));
-      memcpy(dst + 2, triangle + 3, sizeof(DefaultA2V));
+      // up-pointing src to offset 0
+      memcpy(dst + 0, src + 1, sizeof(DefaultA2V));
+      memcpy(dst + 1, src + 2, sizeof(DefaultA2V));
+      memcpy(dst + 2, src + 3, sizeof(DefaultA2V));
 
       // invalid vert for index 3 and 4
-      memcpy(dst + 3, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 4, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 3, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 4, src + 0, sizeof(DefaultA2V));
 
-      // down-pointing triangle at offset 5
-      memcpy(dst + 5, triangle + 4, sizeof(DefaultA2V));
-      memcpy(dst + 6, triangle + 5, sizeof(DefaultA2V));
-      memcpy(dst + 7, triangle + 6, sizeof(DefaultA2V));
+      // down-pointing src at offset 5
+      memcpy(dst + 5, src + 4, sizeof(DefaultA2V));
+      memcpy(dst + 6, src + 5, sizeof(DefaultA2V));
+      memcpy(dst + 7, src + 6, sizeof(DefaultA2V));
 
       // invalid vert for 8 - 12
-      memcpy(dst + 8, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 9, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 10, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 11, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 12, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 8, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 9, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 10, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 11, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 12, src + 0, sizeof(DefaultA2V));
 
-      // left-pointing triangle data to offset 13
-      memcpy(dst + 13, triangle + 7, sizeof(DefaultA2V));
-      memcpy(dst + 14, triangle + 8, sizeof(DefaultA2V));
-      memcpy(dst + 15, triangle + 9, sizeof(DefaultA2V));
+      // left-pointing src data to offset 13
+      memcpy(dst + 13, src + 7, sizeof(DefaultA2V));
+      memcpy(dst + 14, src + 8, sizeof(DefaultA2V));
+      memcpy(dst + 15, src + 9, sizeof(DefaultA2V));
 
       // invalid vert for 16-22
-      memcpy(dst + 16, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 17, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 18, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 19, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 20, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 21, triangle + 0, sizeof(DefaultA2V));
-      memcpy(dst + 22, triangle + 0, sizeof(DefaultA2V));
+      memcpy(dst + 16, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 17, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 18, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 19, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 20, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 21, src + 0, sizeof(DefaultA2V));
+      memcpy(dst + 22, src + 0, sizeof(DefaultA2V));
 
-      // right-pointing triangle data to offset 23
-      memcpy(dst + 23, triangle + 10, sizeof(DefaultA2V));
-      memcpy(dst + 24, triangle + 11, sizeof(DefaultA2V));
-      memcpy(dst + 25, triangle + 12, sizeof(DefaultA2V));
+      // right-pointing src data to offset 23
+      memcpy(dst + 23, src + 10, sizeof(DefaultA2V));
+      memcpy(dst + 24, src + 11, sizeof(DefaultA2V));
+      memcpy(dst + 25, src + 12, sizeof(DefaultA2V));
     }
 
     ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(vbData);

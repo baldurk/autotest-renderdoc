@@ -213,9 +213,6 @@ float4 main(v2f IN) : SV_Target0
 
       ctx->Draw(3, 9);
 
-      ID3D11Device *device = dev;
-      ID3D11DeviceContext *context = ctx;
-
       // test update with box to ensure we don't read too much data
       D3D11_BOX smallbox = {2000, 2000, 0, 2040, 2040, 1};
       byte *smalldata = new byte[2048 * 39 + 40];

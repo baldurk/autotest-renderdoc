@@ -46,22 +46,22 @@ void OpenGLGraphicsTest::PostInit()
 
 OpenGLGraphicsTest::~OpenGLGraphicsTest()
 {
-  if(!bufs.empty())
-    glDeleteBuffers((GLsizei)bufs.size(), &bufs[0]);
-  if(!texs.empty())
-    glDeleteTextures((GLsizei)texs.size(), &texs[0]);
-  if(!vaos.empty())
-    glDeleteVertexArrays((GLsizei)vaos.size(), &vaos[0]);
-  if(!fbos.empty())
-    glDeleteFramebuffers((GLsizei)fbos.size(), &fbos[0]);
-  if(!pipes.empty())
-    glDeleteProgramPipelines((GLsizei)pipes.size(), &pipes[0]);
+  if(!managedResources.bufs.empty())
+    glDeleteBuffers((GLsizei)managedResources.bufs.size(), &managedResources.bufs[0]);
+  if(!managedResources.texs.empty())
+    glDeleteTextures((GLsizei)managedResources.texs.size(), &managedResources.texs[0]);
+  if(!managedResources.vaos.empty())
+    glDeleteVertexArrays((GLsizei)managedResources.vaos.size(), &managedResources.vaos[0]);
+  if(!managedResources.fbos.empty())
+    glDeleteFramebuffers((GLsizei)managedResources.fbos.size(), &managedResources.fbos[0]);
+  if(!managedResources.pipes.empty())
+    glDeleteProgramPipelines((GLsizei)managedResources.pipes.size(), &managedResources.pipes[0]);
 
-  for(GLuint p : progs)
+  for(GLuint p : managedResources.progs)
     glDeleteProgram(p);
 
-  delete win;
-  DestroyContext(ctx);
+  delete mainWindow;
+  DestroyContext(mainContext);
 }
 
 GLuint OpenGLGraphicsTest::MakeProgram(std::string vertSrc, std::string fragSrc, bool sep)
@@ -152,7 +152,7 @@ GLuint OpenGLGraphicsTest::MakeProgram(std::string vertSrc, std::string fragSrc,
   }
 
   if(program)
-    progs.push_back(program);
+    managedResources.progs.push_back(program);
 
   return program;
 }
@@ -160,12 +160,14 @@ GLuint OpenGLGraphicsTest::MakeProgram(std::string vertSrc, std::string fragSrc,
 GLuint OpenGLGraphicsTest::MakeProgram()
 {
   GLuint program = glCreateProgram();
-  progs.push_back(program);
+  managedResources.progs.push_back(program);
   return program;
 }
 
 GLuint OpenGLGraphicsTest::MakeBuffer()
 {
+  std::vector<uint32_t> &bufs = managedResources.bufs;
+
   bufs.push_back(0);
   glGenBuffers(1, &bufs[bufs.size() - 1]);
   return bufs[bufs.size() - 1];
@@ -173,6 +175,8 @@ GLuint OpenGLGraphicsTest::MakeBuffer()
 
 GLuint OpenGLGraphicsTest::MakePipeline()
 {
+  std::vector<uint32_t> &pipes = managedResources.pipes;
+
   pipes.push_back(0);
   glCreateProgramPipelines(1, &pipes[pipes.size() - 1]);
   return pipes[pipes.size() - 1];
@@ -180,6 +184,8 @@ GLuint OpenGLGraphicsTest::MakePipeline()
 
 GLuint OpenGLGraphicsTest::MakeTexture()
 {
+  std::vector<uint32_t> &texs = managedResources.texs;
+
   texs.push_back(0);
   glGenTextures(1, &texs[texs.size() - 1]);
   return texs[texs.size() - 1];
@@ -187,6 +193,8 @@ GLuint OpenGLGraphicsTest::MakeTexture()
 
 GLuint OpenGLGraphicsTest::MakeVAO()
 {
+  std::vector<uint32_t> &vaos = managedResources.vaos;
+
   vaos.push_back(0);
   glGenVertexArrays(1, &vaos[vaos.size() - 1]);
   return vaos[vaos.size() - 1];
@@ -194,6 +202,8 @@ GLuint OpenGLGraphicsTest::MakeVAO()
 
 GLuint OpenGLGraphicsTest::MakeFBO()
 {
+  std::vector<uint32_t> &fbos = managedResources.fbos;
+
   fbos.push_back(0);
   glGenFramebuffers(1, &fbos[fbos.size() - 1]);
   return fbos[fbos.size() - 1];
@@ -204,5 +214,5 @@ bool OpenGLGraphicsTest::Running()
   if(!FrameLimit())
     return false;
 
-  return win->Update();
+  return mainWindow->Update();
 }
