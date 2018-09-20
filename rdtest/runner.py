@@ -5,14 +5,8 @@ import re
 from . import util
 from . import testcase
 
-def run_tests(test_filter=".*"):
-    print("Cleaning up")
 
-    if os.path.exists(util.get_tmp_dir()):
-        shutil.rmtree(util.get_tmp_dir())
-
-    print("Running tests")
-
+def get_tests():
     testcases = []
 
     for m in sys.modules.values():
@@ -22,6 +16,19 @@ def run_tests(test_filter=".*"):
                 testcases.append(obj)
 
     testcases.sort(key=lambda t: t.__name__)
+
+    return testcases
+
+
+def run_tests(test_filter=".*"):
+    print("Cleaning up")
+
+    if os.path.exists(util.get_tmp_dir()):
+        shutil.rmtree(util.get_tmp_dir())
+
+    print("Running tests matching '{}'".format(test_filter))
+
+    testcases = get_tests()
 
     regexp = re.compile(test_filter)
 
