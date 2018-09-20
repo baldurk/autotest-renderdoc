@@ -2,6 +2,7 @@ import os
 import signal
 import renderdoc as rd
 from . import util
+from .logging import log
 
 
 # Keep running until we get a capture
@@ -118,6 +119,8 @@ def run_executable(exe: str, cmdline: str,
         cappath = util.get_tmp_path('capture')
 
     wait_for_exit = False
+
+    log.print("Running exe:'{}' cmd:'{}' in dir:'{}' with env:'{}'".format(exe, cmdline, workdir, envmods))
 
     # Execute the test program
     res = rd.ExecuteAndInject(exe, workdir, cmdline, envmods, cappath, opts, wait_for_exit)

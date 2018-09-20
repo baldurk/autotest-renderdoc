@@ -2,6 +2,7 @@ import os
 import renderdoc as rd
 from . import util
 from . import analyse
+from .logging import log, TestFailureException
 
 
 class TestCase:
@@ -9,7 +10,7 @@ class TestCase:
         self.capture_filename = ""
 
     def get_ref_path(self, name: str):
-        return os.path.join(os.getcwd(), 'data', self.__class__.__name__, name)
+        return os.path.join(util.get_root_dir(), 'data', self.__class__.__name__, name)
 
     def get_capture(self):
         """
@@ -36,15 +37,18 @@ class TestCase:
         if not os.path.exists(self.capture_filename):
             raise RuntimeError("Didn't generate capture in make_capture")
 
-        print("Loading capture...")
+        log.print("Loading capture")
 
         controller = analyse.open_capture(self.capture_filename)
 
-        print("Checking capture...")
+        log.print("Checking capture")
 
         self.check_capture(controller)
 
         controller.Shutdown()
+
+    def invoketest(self):
+        self.run()
 
     def check_final_backbuffer(self, controller: rd.ReplayController):
         img_path = util.get_tmp_path('backbuffer.png')
@@ -61,9 +65,9 @@ class TestCase:
         controller.SaveTexture(save_data, img_path)
 
         if not util.image_compare(img_path, ref_path):
-            raise RuntimeError("Reference and output backbuffer image differ")
+            raise TestFailureException("Reference and output backbuffer image differ", img_path, ref_path)
 
-        print("Backbuffer is identical to reference")
+        log.success("Backbuffer is identical to reference")
 
     def check_export(self, capture_filename):
         xml_out_path = util.get_tmp_path('export.xml')
@@ -99,9 +103,9 @@ class TestCase:
         origrdc.Convert(xml_out_path, 'xml', stripped_sdfile, None)
 
         if not util.md5_compare(xml_out_path, xml_ref_path):
-            raise RuntimeError("Reference and output XML differ")
+            raise TestFailureException("Reference and output XML differ", xml_out_path, xml_ref_path)
 
-        print("Exported XML format is identical to reference")
+        log.success("Exported XML format is identical to reference")
 
         # Export to rdc, to recompress
         origrdc.Convert(recomp_path, '', None, None)
@@ -122,6 +126,7 @@ class TestCase:
         zipxml.Shutdown()
 
         if not util.md5_compare(recomp_path, conv_path):
-            raise RuntimeError("Recompressed capture file doesn't match re-imported capture file")
+            raise TestFailureException("Recompressed capture file doesn't match re-imported capture file",
+                                       recomp_path, conv_path)
 
-        print("Recompressed and re-imported capture files are identical")
+        log.success("Recompressed and re-imported capture files are identical")

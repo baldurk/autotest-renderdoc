@@ -3,10 +3,16 @@ import os
 import sys
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-r', '--renderdoc', help="The location of the renderdoc library to use", type=str)
-parser.add_argument('-p', '--pyrenderdoc', help="The location of the renderdoc python module to use", type=str)
-parser.add_argument('-l', '--list', help="Lists the tests available to run", action="store_true")
-parser.add_argument('-t', '--test_filter', default=".*", help="The tests to run, as a regexp filter", type=str)
+parser.add_argument('-r', '--renderdoc',
+                    help="The location of the renderdoc library to use", type=str)
+parser.add_argument('-p', '--pyrenderdoc',
+                    help="The location of the renderdoc python module to use", type=str)
+parser.add_argument('-l', '--list',
+                    help="Lists the tests available to run", action="store_true")
+parser.add_argument('-t', '--test_filter', default=".*",
+                    help="The tests to run, as a regexp filter", type=str)
+parser.add_argument('-a', '--artifacts', default="artifacts",
+                    help="The folder to put output artifacts in. Will be completely cleared.", type=str)
 args = parser.parse_args()
 
 if args.renderdoc is not None:
@@ -33,5 +39,8 @@ if args.list:
     for test in rdtest.get_tests():
         print("Test: {}".format(test.__name__))
     sys.exit(0)
+
+if args.artifacts is not None:
+    rdtest.set_artifact_dir(args.artifacts)
 
 rdtest.run_tests(args.test_filter)

@@ -1,3 +1,4 @@
+import sys
 import os
 import time
 import hashlib
@@ -18,12 +19,31 @@ def _md5_file(fname):
     return hash_md5.hexdigest()
 
 
+def get_root_dir():
+    return os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__))
+
+
+_artifact_path = os.path.join(get_root_dir(), 'artifacts')
+
+
+def set_artifact_dir(path: str):
+    global _artifact_path
+    if os.path.isdir(path):
+        _artifact_path = os.path.abspath(path)
+
+
+def get_artifact_path(name: str):
+    return os.path.join(_artifact_path, name)
+
+
 def get_tmp_dir():
-    return os.path.join(os.getcwd(), 'tmp')
+    return os.path.join(get_root_dir(), 'tmp')
 
 
-def get_tmp_path(name: str):
-    return os.path.join(get_tmp_dir(), '{}_{}'.format(_timestr(), name))
+def get_tmp_path(name: str, include_time=True):
+    if include_time:
+        return os.path.join(get_tmp_dir(), '{}_{}'.format(_timestr(), name))
+    return os.path.join(get_tmp_dir(), name)
 
 
 def image_compare(test_img: str, ref_img: str):
@@ -34,7 +54,18 @@ def image_compare(test_img: str, ref_img: str):
         return False
 
     # Require an exact binary match
-    if sum(ImageStat.Stat(ImageChops.difference(out, ref)).sum) > 0:
+    diff = ImageChops.difference(out, ref)
+
+    # If the diff fails, dump the difference to a file
+    diff_file = get_tmp_path('diff.png', include_time=False)
+
+    if os.path.exists(diff_file):
+        os.remove(diff_file)
+
+    if sum(ImageStat.Stat(diff).sum) > 0:
+        # this does (img1 + img2) / scale, so scale=0.5 means we multiply the image by 2/0.5 = 4
+        diff = ImageChops.add(diff, diff, scale=0.5)
+        diff.convert("RGB").save(diff_file)
         return False
 
     return True
