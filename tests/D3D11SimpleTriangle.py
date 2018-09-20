@@ -7,3 +7,5 @@ class D3D11SimpleTriangle(rdtest.TestCase):
 
     def check_capture(self, controller):
         self.check_final_backbuffer(controller)
+
+        self.check_export(self.capture_filename)

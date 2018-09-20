@@ -123,7 +123,7 @@ def run_executable(exe: str, cmdline: str,
     res = rd.ExecuteAndInject(exe, workdir, cmdline, envmods, cappath, opts, wait_for_exit)
 
     if res.status != rd.ReplayStatus.Succeeded:
-        raise RuntimeError("Couldn't launch program: {}".format(res.status))
+        raise RuntimeError("Couldn't launch program: {}".format(str(res.status)))
 
     return res.ident
 
