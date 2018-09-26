@@ -187,6 +187,9 @@
     <ClCompile Include="gl\glad\glad_wgl.c">
       <Filter>OpenGL\glad</Filter>
     </ClCompile>
+    <ClCompile Include="gl\gl_midframe_context_create.cpp">
+      <Filter>OpenGL\demos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
