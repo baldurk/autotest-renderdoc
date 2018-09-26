@@ -86,9 +86,10 @@ nk_context *NuklearInit(int width, int height, const char *title)
   MultiByteToWideChar(CP_UTF8, 0, title, len, wstr, wsize);
 
   RECT rect = {0, 0, width, height};
-  AdjustWindowRectEx(&rect, WS_OVERLAPPED | WS_SYSMENU, FALSE, WS_EX_WINDOWEDGE);
+  AdjustWindowRectEx(&rect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_VISIBLE, FALSE,
+                     WS_EX_WINDOWEDGE);
   wnd = CreateWindowExW(
-      WS_EX_WINDOWEDGE, wc.lpszClassName, wstr, WS_OVERLAPPED | WS_SYSMENU | WS_VISIBLE,
+      WS_EX_WINDOWEDGE, wc.lpszClassName, wstr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
       (GetSystemMetrics(SM_CXSCREEN) - (rect.right - rect.left)) / 2,
       (GetSystemMetrics(SM_CYSCREEN) - (rect.bottom - rect.top)) / 2, rect.right - rect.left,
       rect.bottom - rect.top, NULL, NULL, wc.hInstance, NULL);
@@ -172,8 +173,10 @@ int main(int argc, char **argv)
   }
   else
   {
-    nk_context *ctx = NuklearInit(400, 300, "RenderDoc Test Program");
-    size_t curtest = 0;
+    const int width = 400, height = 575;
+
+    nk_context *ctx = NuklearInit(width, height, "RenderDoc Test Program");
+    int curtest = 0;
     bool allow[(int)TestAPI::Count] = {};
     const char *allow_names[] = {
         "D3D11", "Vulkan", "OpenGL",
@@ -182,111 +185,126 @@ int main(int argc, char **argv)
     for(size_t i = 0; i < ARRAY_COUNT(allow); i++)
       allow[i] = true;
 
+    char name_filter[256] = {};
+
     static_assert(ARRAY_COUNT(allow) == ARRAY_COUNT(allow_names), "Mismatched array");
 
     while(NuklearTick(ctx))
     {
-      if(nk_begin(ctx, "Demo", nk_rect(0, 0, 400, 300), 0))
+      if(nk_begin(ctx, "Demo", nk_rect(0, 0, (float)width, (float)height), NK_WINDOW_NO_SCROLLBAR))
       {
-        nk_layout_row_dynamic(ctx, 30, 4);
-
-        nk_label(ctx, "Filter tests:", NK_TEXT_LEFT);
-
-        for(size_t i = 0; i < ARRAY_COUNT(allow); i++)
+        nk_layout_row_dynamic(ctx, 100, 1);
+        if(nk_group_begin(ctx, "Test Filter", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
         {
-          std::string text = allow_names[i];
-          if(allow[i])
-            text = "Include " + text;
-          else
-            text = "Exclude " + text;
+          nk_layout_row_dynamic(ctx, 30, 4);
 
-          bool newstate = nk_check_label(ctx, text.c_str(), allow[i]) != 0;
+          nk_label(ctx, "Filter tests:", NK_TEXT_LEFT);
 
-          // disallow disabling last filter
-          bool otherEnabled = false;
-          for(size_t j = 0; j < ARRAY_COUNT(allow); j++)
+          for(size_t i = 0; i < ARRAY_COUNT(allow); i++)
           {
-            if(i == j)
-              continue;
+            std::string text = allow_names[i];
 
-            if(allow[j])
+            allow[i] = nk_check_label(ctx, text.c_str(), allow[i]) != 0;
+          }
+
+          nk_group_end(ctx);
+        }
+
+        nk_layout_row_dynamic(ctx, 270, 1);
+        if(nk_group_begin(ctx, "Test", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
+        {
+          nk_layout_row_begin(ctx, NK_STATIC, 20, 2);
+          nk_layout_row_push(ctx, 60.0f);
+          nk_label(ctx, "Test Filter:", NK_TEXT_ALIGN_MIDDLE | NK_TEXT_ALIGN_RIGHT);
+          nk_layout_row_push(ctx, 280.0f);
+          nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, name_filter, 256, NULL);
+          nk_layout_row_end(ctx);
+
+          float prevSpacing = 0;
+          std::swap(prevSpacing, ctx->style.window.spacing.y);
+
+          nk_layout_row_dynamic(ctx, 20, 1);
+
+          for(int i = 0; i < (int)tests.size(); i++)
+          {
+            std::string name = tests[i].QualifiedName();
+
+            // apply filters
+            if(!allow[(int)tests[i].API] ||
+               (name_filter[0] != 0 && !strcasestr(name.c_str(), name_filter)))
             {
-              otherEnabled = true;
-              break;
+              // if this was the selected test, unselect it. The next unfiltered test will grab it
+              if(curtest == i)
+                curtest = -1;
+
+              continue;
             }
-          }
 
-          if(otherEnabled)
-            allow[i] = newstate;
-        }
+            // grab the current test, if none is selected (see above)
+            if(curtest == -1)
+              curtest = i;
 
-        if(!allow[(int)tests[curtest].API])
-        {
-          // if the current test is no longer allowed, select the first one that is allowed
-          for(size_t i = 0; i < tests.size(); i++)
-          {
-            if(!allow[(int)tests[i].API])
-              continue;
-
-            curtest = i;
-            break;
-          }
-        }
-
-        nk_layout_row_dynamic(ctx, 30, 2);
-
-        nk_label(ctx, "Test:", NK_TEXT_LEFT);
-
-        if(nk_combo_begin_label(ctx, tests[curtest].QualifiedName().c_str(), nk_vec2(400, 200)))
-        {
-          nk_layout_row_dynamic(ctx, 30, 1);
-          for(size_t i = 0; i < tests.size(); i++)
-          {
-            if(!allow[(int)tests[i].API])
-              continue;
-
-            if(nk_combo_item_label(ctx, tests[i].QualifiedName().c_str(), NK_TEXT_LEFT))
+            if(nk_select_label(ctx, name.c_str(), NK_TEXT_LEFT, curtest == i))
               curtest = i;
           }
-          nk_combo_end(ctx);
+
+          std::swap(prevSpacing, ctx->style.window.spacing.y);
+          nk_group_end(ctx);
         }
 
-        nk_layout_row_dynamic(ctx, 100, 1);
+        nk_layout_row_dynamic(ctx, 150, 1);
 
-        TestMetadata &selected_test = tests[curtest];
+        TestMetadata &selected_test = tests[curtest >= 0 ? curtest : 0];
 
-        if(nk_group_begin(ctx, "Test Information", 0))
+        if(nk_group_begin(ctx, "Test Information", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
         {
-          nk_layout_row_begin(ctx, NK_DYNAMIC, 20, 2);
-          nk_layout_row_push(ctx, 0.25f);
-          nk_label(ctx, "Test name:", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_RIGHT);
-          nk_layout_row_push(ctx, 0.75f);
-          nk_label(ctx, selected_test.Name, NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_LEFT);
-          nk_layout_row_end(ctx);
+          if(curtest >= 0)
+          {
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 20, 2);
+            nk_layout_row_push(ctx, 0.25f);
+            nk_label(ctx, "Test name:", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_RIGHT);
+            nk_layout_row_push(ctx, 0.75f);
+            nk_label(ctx, selected_test.Name, NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_LEFT);
+            nk_layout_row_end(ctx);
 
-          nk_layout_row_begin(ctx, NK_DYNAMIC, 20, 2);
-          nk_layout_row_push(ctx, 0.25f);
-          nk_label(ctx, "API:", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_RIGHT);
-          nk_layout_row_push(ctx, 0.75f);
-          nk_label(ctx, selected_test.APIName(), NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_LEFT);
-          nk_layout_row_end(ctx);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 20, 2);
+            nk_layout_row_push(ctx, 0.25f);
+            nk_label(ctx, "API:", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_RIGHT);
+            nk_layout_row_push(ctx, 0.75f);
+            nk_label(ctx, selected_test.APIName(), NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_LEFT);
+            nk_layout_row_end(ctx);
 
-          nk_layout_row_begin(ctx, NK_DYNAMIC, 0, 2);
-          nk_layout_row_push(ctx, 0.25f);
-          nk_label(ctx, "Description:", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_RIGHT);
-          nk_layout_row_push(ctx, 0.75f);
-          nk_label_wrap(ctx, selected_test.Description);
-          nk_layout_row_end(ctx);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 0, 2);
+            nk_layout_row_push(ctx, 0.25f);
+            nk_label(ctx, "Description:", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_RIGHT);
+            nk_layout_row_push(ctx, 0.75f);
+            nk_label_wrap(ctx, selected_test.Description);
+            nk_layout_row_end(ctx);
+          }
+          else
+          {
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 20, 1);
+            nk_layout_row_push(ctx, 0.25f);
+            nk_label(ctx, "No test selected", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_CENTERED);
+            nk_layout_row_end(ctx);
+          }
 
           nk_group_end(ctx);
         }
 
         nk_layout_row_dynamic(ctx, 30, 1);
 
-        if(nk_button_label(ctx, "Run"))
+        if(curtest >= 0)
         {
-          testchoice = selected_test.Name;
-          break;
+          if(nk_button_label(ctx, "Run"))
+          {
+            testchoice = selected_test.Name;
+            break;
+          }
+        }
+        else
+        {
+          nk_label(ctx, "No test selected", NK_TEXT_ALIGN_TOP | NK_TEXT_ALIGN_CENTERED);
         }
       }
       nk_end(ctx);
