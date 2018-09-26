@@ -70,7 +70,7 @@ div.expanded > div.contents {
 	display: inherit;
 }
 
-span.expandtoggle::before {
+span.expandtoggle:before {
 	content: '+';
 	float: left;
 	margin-right: 10px;
@@ -80,6 +80,11 @@ span.expandtoggle::before {
 	line-height: 1.5em;
 	text-align: center;
 	border-radius: 1em;
+	background-color: #eee;
+}
+
+span.expandtoggle:hover:before {
+	background-color: #ccc;
 }
 
 div.expanded > span.expandtoggle::before {

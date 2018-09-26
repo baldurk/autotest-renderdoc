@@ -104,7 +104,7 @@
 
           html += `<div class="expandable imgdiff"><span class="expandtoggle"></span><div class="title">${vs}${diff}</div><div class="contents">`;
 
-          html += '<input type="range" min="0" max="100" value="50" class="img-slider" /> <input class="img-diff" type="checkbox" > Show diff';
+          html += '<input type="range" min="0" max="100" value="50" class="img-slider" /> <label><input class="img-diff" type="checkbox">Show diff</label>';
           html += '<div class="img-comp-container">';
           html += ` <div class="img-comp img-a"><div class="img-clip"><img src="${files[0]}" /></div></div>`;
           html += ` <div class="img-comp img-b"><div class="img-clip"><img src="${files[1]}" /></div></div>`;
@@ -213,8 +213,8 @@
   var diffs = document.getElementsByClassName('img-diff');
   
   for(var i=0; i < diffs.length; i++) {
-    diffs[i].addEventListener('input', function() {
-      var img_comp_container = this.nextElementSibling;
+    diffs[i].addEventListener('change', function() {
+      var img_comp_container = this.parentElement.nextElementSibling;
       while(img_comp_container && !img_comp_container.classList.contains("img-comp-container"))
         img_comp_container = img_comp_container.nextElementSibling;
 
