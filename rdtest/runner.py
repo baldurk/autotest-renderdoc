@@ -32,7 +32,10 @@ def run_tests(test_filter=".*"):
 
     log.add_output(util.get_artifact_path("output.log.html"))
 
-    log.header("Tests running for RenderDoc {} ({})".format(rd.GetVersionString(), rd.GetCommitHash()))
+    log.rawprint('<meta charset="utf-8"><!-- header to prevent output from being processed as html -->' +
+                 '<script id="logoutput" type="preformatted">\n\n', with_stdout=False)
+
+    log.header("Tests running for RenderDoc Version {} ({})".format(rd.GetVersionString(), rd.GetCommitHash()))
 
     log.print("Running tests matching '{}'".format(test_filter))
 
@@ -61,17 +64,18 @@ def run_tests(test_filter=".*"):
         log.end_test(name)
 
     log.header("Tests complete: {} passed out of {} run".format(len(testcases)-len(failedcases), len(testcases)))
-    log.print("Failed tests:")
+    if len(failedcases) > 0:
+        log.print("Failed tests:")
     for testclass in failedcases:
-        log.print("  '{}'".format(testclass.__name__))
+        log.print("  - {}".format(testclass.__name__))
 
     # Print code to style & invoke the javascript
-    log.print('\n\n\n' +
-              '<!-- format.js footer: This code will format the log nicely for display in a browser -->\n' +
-              '<style>body{visibility:hidden;}</style><script src="format.js"></script>', with_stdout=False)
+    log.rawprint('\n\n\n</script>' +
+                 '<body><link rel="stylesheet" type="text/css" media="all" href="testresults.css">' +
+                 '<script src="testresults.js"></script></body>', with_stdout=False)
 
-    # Copy javascript file to artifacts directory
-    shutil.copyfile(os.path.join(os.path.dirname(__file__), 'format.js'), util.get_artifact_path('format.js'))
+    for file in ['testresults.css', 'testresults.js']:
+        shutil.copyfile(os.path.join(os.path.dirname(__file__), file), util.get_artifact_path(file))
 
     if len(failedcases) > 0:
         sys.exit(1)
