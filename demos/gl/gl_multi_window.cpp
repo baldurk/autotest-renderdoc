@@ -151,7 +151,8 @@ void main()
       glDrawArrays(GL_TRIANGLES, 0, 3);
       glDrawArrays(GL_TRIANGLES, 0, 3);
 
-      win2->Update();
+      if(!win2->Update())
+        break;
       Present(win2);
     }
 

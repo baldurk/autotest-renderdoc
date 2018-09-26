@@ -33,10 +33,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     return 0;
   }
   if(msg == WM_DESTROY)
-  {
-    PostQuitMessage(0);
     return 0;
-  }
   return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
@@ -78,17 +75,23 @@ Win32Window::Win32Window(int width, int height, const char *title)
   RECT rect = {0, 0, width, height};
   AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_CLIENTEDGE);
 
-  int len = (int)strlen(title);
+  WCHAR *wstr = L"";
 
-  int wsize = MultiByteToWideChar(CP_UTF8, 0, title, len, NULL, 0);
-  WCHAR *wstr = (WCHAR *)_alloca(wsize * sizeof(wchar_t) + 2);
-  wstr[wsize] = 0;
-  MultiByteToWideChar(CP_UTF8, 0, title, len, wstr, wsize);
+  if(title)
+  {
+    int len = (int)strlen(title);
+
+    int wsize = MultiByteToWideChar(CP_UTF8, 0, title, len, NULL, 0);
+    wstr = (WCHAR *)_alloca(wsize * sizeof(wchar_t) + 2);
+    wstr[wsize] = 0;
+    MultiByteToWideChar(CP_UTF8, 0, title, len, wstr, wsize);
+  }
 
   wnd = CreateWindowExW(WS_EX_CLIENTEDGE, classname, wstr, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                         CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top, NULL, NULL,
                         NULL, NULL);
-  ShowWindow(wnd, SW_SHOW);
+  if(title)
+    ShowWindow(wnd, SW_SHOW);
 }
 
 Win32Window::~Win32Window()
@@ -116,10 +119,6 @@ bool Win32Window::Update()
   }
 
   if(!IsWindowVisible(wnd))
-    return false;
-
-  // If the message is WM_QUIT, exit the program
-  if(msg.message == WM_QUIT)
     return false;
 
   if(msg.message == WM_CHAR && msg.wParam == VK_ESCAPE)
