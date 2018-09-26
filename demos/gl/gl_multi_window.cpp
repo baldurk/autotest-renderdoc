@@ -100,7 +100,7 @@ void main()
     GLuint program = MakeProgram(common + vertex, common + pixel);
     glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
-    Window *win2 = MakeWindow(400, 300, "Autotesting 2");
+    Window *win2 = MakeWindow(300, 200, "Autotesting 2");
     void *ctx2 = MakeContext(win2, mainContext);
 
     ActivateContext(win2, ctx2);
@@ -146,7 +146,7 @@ void main()
 
       glUseProgram(program);
 
-      glViewport(0, 0, GLsizei(400), GLsizei(300));
+      glViewport(0, 0, GLsizei(300), GLsizei(200));
 
       glDrawArrays(GL_TRIANGLES, 0, 3);
       glDrawArrays(GL_TRIANGLES, 0, 3);
