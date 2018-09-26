@@ -75,7 +75,7 @@
 					<uint name="InstanceDataStepRate" typename="uint32_t" width="4">0</uint>
 				</struct>
 				<struct typename="D3D11_INPUT_ELEMENT_DESC">
-					<string name="SemanticName" typename="string">COfffLOR</string>
+					<string name="SemanticName" typename="string">COLOR</string>
 					<uint name="SemanticIndex" typename="uint32_t" width="4">0</uint>
 					<enum name="Format" typename="DXGI_FORMAT" string="DXGI_FORMAT_R32G32B32A32_FLOAT">2</enum>
 					<uint name="InputSlot" typename="uint32_t" width="4">0</uint>
@@ -84,10 +84,10 @@
 					<uint name="InstanceDataStepRate" typename="uint32_t" width="4">0</uint>
 				</struct>
 				<struct typename="D3D11_INPUT_ELEMENT_DESC">
-					<string name="SemanticName" typename="string">TadsfasdfasdEXCOORD</string>
+					<string name="SemanticName" typename="string">TEXCOORD</string>
 					<uint name="SemanticIndex" typename="uint32_t" width="4">0</uint>
 					<enum name="Format" typename="DXGI_FORMAT" string="DXGI_FORMAT_R32G32_FLOAT">16</enum>
-					<uint name="InputSlot" typename="uint32_t" width="4">0888</uint>
+					<uint name="InputSlot" typename="uint32_t" width="4">0</uint>
 					<uint name="AlignedByteOffset" typename="uint32_t" width="4">28</uint>
 					<enum name="InputSlotClass" typename="D3D11_INPUT_CLASSIFICATION" string="D3D11_INPUT_PER_VERTEX_DATA">0</enum>
 					<uint name="InstanceDataStepRate" typename="uint32_t" width="4">0</uint>
