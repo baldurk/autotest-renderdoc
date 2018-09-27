@@ -112,14 +112,23 @@ bool OpenGLGraphicsTest::Init(int argc, char **argv)
 
 bool OpenGLGraphicsTest::IsSupported()
 {
+  static bool checked = false, result = false;
+
+  if(checked)
+    return result;
+
+  checked = true;
+
   HMODULE opengl = LoadLibraryA("opengl32.dll");
 
-  if(!opengl)
-    return false;
+  if(opengl)
+  {
+    result = true;
 
-  FreeLibrary(opengl);
+    FreeLibrary(opengl);
+  }
 
-  return true;
+  return result;
 }
 
 Window *OpenGLGraphicsTest::MakeWindow(int width, int height, const char *title)

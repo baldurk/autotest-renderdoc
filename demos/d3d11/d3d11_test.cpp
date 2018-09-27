@@ -180,6 +180,13 @@ Window *D3D11GraphicsTest::MakeWindow(int width, int height, const char *title)
 
 bool D3D11GraphicsTest::IsSupported()
 {
+  static bool checked = false, result = false;
+
+  if(checked)
+    return result;
+
+  checked = true;
+
   HMODULE d3d11 = LoadLibraryA("d3d11.dll");
   HMODULE d3dcompiler = LoadLibraryA("d3dcompiler_47.dll");
   if(!d3dcompiler)
@@ -196,10 +203,10 @@ bool D3D11GraphicsTest::IsSupported()
   if(d3dcompiler)
     FreeLibrary(d3dcompiler);
 
-  if(!d3d11 || !d3dcompiler)
-    return false;
+  if(d3d11 && d3dcompiler)
+    result = true;
 
-  return true;
+  return result;
 }
 
 void D3D11GraphicsTest::PostDeviceCreate()
