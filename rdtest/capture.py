@@ -1,5 +1,6 @@
 import os
 import signal
+import time
 import renderdoc as rd
 from . import util
 from .logging import log
@@ -12,7 +13,7 @@ def run_until_capture(control):
 
 
 class TargetControl():
-    def __init__(self, ident: int, host="localhost", username="testrunner", force=True, exit_kill=True):
+    def __init__(self, ident: int, host="localhost", username="testrunner", force=True, timeout=30, exit_kill=True):
         """
         Creates a target control manager for a given ident
 
@@ -20,12 +21,14 @@ class TargetControl():
         :param host: The hostname.
         :param username: The username to use when connecting.
         :param force: Whether to force the connection.
+        :param timeout: The timeout in seconds before aborting the run.
         :param exit_kill: Whether to kill the process when the control loop ends.
         """
         self._pid = 0
         self._captures = []
         self._children = []
         self.control = rd.CreateTargetControl(host, ident, username, force)
+        self._timeout = timeout
         self._exit_kill = exit_kill
 
         if self.control is None:
@@ -70,8 +73,14 @@ class TargetControl():
         if self.control is None:
             return
 
+        start_time = time.time()
+
         while keep_running(self):
             msg: rd.TargetControlMessage = self.control.ReceiveMessage(None)
+
+            if time.time() - start_time > self._timeout:
+                log.error("Timed out")
+                break
 
             # If we got a graceful or non-graceful shutdown, break out of the loop
             if (msg.type == rd.TargetControlMessageType.Disconnected or
@@ -140,6 +149,7 @@ def run_and_capture(exe: str, cmdline: str, frame: int):
 
     :param exe: The executable to run.
     :param cmdline: The command line to pass.
+    :param frame: The frame to capture.
     :return: The path of the generated capture.
     :rtype: str
     """

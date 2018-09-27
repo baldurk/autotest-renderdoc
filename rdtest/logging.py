@@ -74,6 +74,11 @@ class TestLogger:
     def success(self, message):
         self.rawprint("** " + message)
 
+    def error(self, message):
+        self.failed = True
+
+        self.rawprint("!! " + message)
+
     def failure(self, ex):
         self.failed = True
 
