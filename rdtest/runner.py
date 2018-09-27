@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 import re
+import time
 import renderdoc as rd
 from . import util
 from . import testcase
@@ -23,6 +24,8 @@ def get_tests():
 
 
 def run_tests(test_filter=".*"):
+    start_time = time.time()
+
     # clean up artifacts and temp folder
     if os.path.exists(util.get_artifact_path('')):
         shutil.rmtree(util.get_artifact_path(''))
@@ -63,7 +66,14 @@ def run_tests(test_filter=".*"):
 
         log.end_test(name)
 
-    log.header("Tests complete: {} passed out of {} run".format(len(testcases)-len(failedcases), len(testcases)))
+    duration = time.time() - start_time
+
+    hours = round(duration/3600)
+    minutes = round(duration/60)%60
+    seconds = round(duration%60)
+
+    log.header("Tests complete: {} passed out of {} run in {}:{:02}:{:02}"
+               .format(len(testcases)-len(failedcases), len(testcases), hours, minutes, seconds))
     if len(failedcases) > 0:
         log.print("Failed tests:")
     for testclass in failedcases:
