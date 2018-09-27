@@ -32,6 +32,10 @@ struct D3D11_CBuffer_Zoo : D3D11GraphicsTest
 
   std::string pixel = R"EOSHADER(
 
+struct float3_1 { float3 a; float b; };
+
+struct nested { float3_1 a; float4 b[4]; float3_1 c[4]; };
+
 cbuffer consts : register(b0)
 {
   // dummy* entries are just to 'reset' packing to avoid pollution between tests
@@ -119,7 +123,37 @@ cbuffer consts : register(b0)
                                           // row2: {226}
                                           // row3: {227}
 
-  float4 test;                            // {228, 229, 230, 231}
+  float4 multiarray[3][2];                // [0][0] = {228, 229, 230, 231}
+                                          // [0][1] = {232, 233, 234, 235}
+                                          // [1][0] = {236, 237, 238, 239}
+                                          // [1][1] = {240, 241, 242, 243}
+                                          // [2][0] = {244, 245, 246, 247}
+                                          // [2][1] = {248, 249, 250, 251}
+
+  nested structa[2];                      // [0] = {
+                                          //   .a = { { 252, 253, 254 }, 255 }
+                                          //   .b[0] = { 256, 257, 258, 259 }
+                                          //   .b[1] = { 260, 261, 262, 263 }
+                                          //   .b[2] = { 264, 265, 266, 267 }
+                                          //   .b[3] = { 268, 269, 270, 271 }
+                                          //   .c[0] = { { 272, 273, 274 }, 275 }
+                                          //   .c[1] = { { 276, 277, 278 }, 279 }
+                                          //   .c[2] = { { 280, 281, 282 }, 283 }
+                                          //   .c[3] = { { 284, 285, 286 }, 287 }
+                                          // }
+                                          // [1] = {
+                                          //   .a = { { 288, 289, 290 }, 291 }
+                                          //   .b[0] = { 292, 293, 294, 295 }
+                                          //   .b[1] = { 296, 297, 298, 299 }
+                                          //   .b[2] = { 300, 301, 302, 303 }
+                                          //   .b[3] = { 304, 305, 306, 307 }
+                                          //   .c[0] = { { 308, 309, 310 }, 311 }
+                                          //   .c[1] = { { 312, 313, 314 }, 315 }
+                                          //   .c[2] = { { 316, 317, 318 }, 319 }
+                                          //   .c[3] = { { 320, 321, 322 }, 323 }
+                                          // }
+
+  float4 test;                            // {324, 325, 326, 327}
 };
 
 float4 main() : SV_Target0
@@ -143,9 +177,9 @@ float4 main() : SV_Target0
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);
     ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
-    Vec4f cbufferdata[256];
+    Vec4f cbufferdata[512];
 
-    for(int i = 0; i < 256; i++)
+    for(int i = 0; i < 512; i++)
       cbufferdata[i] = Vec4f(float(i * 4 + 0), float(i * 4 + 1), float(i * 4 + 2), float(i * 4 + 3));
 
     ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(DefaultTri);

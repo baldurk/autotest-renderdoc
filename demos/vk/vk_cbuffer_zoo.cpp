@@ -31,7 +31,7 @@ struct VK_CBuffer_Zoo : VulkanGraphicsTest
 
   std::string common = R"EOSHADER(
 
-#version 420 core
+#version 430 core
 
 struct v2f
 {
@@ -65,6 +65,10 @@ void main()
 layout(location = 0) in v2f vertIn;
 
 layout(location = 0, index = 0) out vec4 Color;
+
+struct vec3_1 { vec3 a; float b; };
+
+struct nested { vec3_1 a; vec4 b[4]; vec3_1 c[4]; };
 
 layout(set = 0, binding = 0, std140) uniform constsbuf
 {
@@ -152,22 +156,51 @@ layout(set = 0, binding = 0, std140) uniform constsbuf
 */
   vec4 dummy9[5];
 
-  vec4 test;                            // {228, 229, 230, 231}
+  vec4 multiarray[3][2];                // [0][0] = {228, 229, 230, 231}
+                                        // [0][1] = {232, 233, 234, 235}
+                                        // [1][0] = {236, 237, 238, 239}
+                                        // [1][1] = {240, 241, 242, 243}
+                                        // [2][0] = {244, 245, 246, 247}
+                                        // [2][1] = {248, 249, 250, 251}
+
+  nested structa[2];                    // [0] = {
+                                        //   .a = { { 252, 253, 254 }, 255 }
+                                        //   .b[0] = { 256, 257, 258, 259 }
+                                        //   .b[1] = { 260, 261, 262, 263 }
+                                        //   .b[2] = { 264, 265, 266, 267 }
+                                        //   .b[3] = { 268, 269, 270, 271 }
+                                        //   .c[0] = { { 272, 273, 274 }, 275 }
+                                        //   .c[1] = { { 276, 277, 278 }, 279 }
+                                        //   .c[2] = { { 280, 281, 282 }, 283 }
+                                        //   .c[3] = { { 284, 285, 286 }, 287 }
+                                        // }
+                                        // [1] = {
+                                        //   .a = { { 288, 289, 290 }, 291 }
+                                        //   .b[0] = { 292, 293, 294, 295 }
+                                        //   .b[1] = { 296, 297, 298, 299 }
+                                        //   .b[2] = { 300, 301, 302, 303 }
+                                        //   .b[3] = { 304, 305, 306, 307 }
+                                        //   .c[0] = { { 308, 309, 310 }, 311 }
+                                        //   .c[1] = { { 312, 313, 314 }, 315 }
+                                        //   .c[2] = { { 316, 317, 318 }, 319 }
+                                        //   .c[3] = { { 320, 321, 322 }, 323 }
+                                        // }
+
+  vec4 test;                            // {324, 325, 326, 327}
 };
 
 void main()
 {
-  // we need to ref all of the variables we want to include to force GL to include them :(.
-  float blah = a.x + b.x + c.x + d.x + e.x + f.x + j.x + k.x + l.x + m.x;
-  blah += n[0] + o[0] + p.x;
-  blah += q[0].x + r[0].x + s[0].x + t[0].x + u[0].x + v[0].x + w[0].x + x[0].x + y[0].x + z;
-  blah *= 0.0000001f;
-  Color = blah + test;
+  Color = test;
 }
 
 )EOSHADER";
 
   std::string hlslpixel = R"EOSHADER(
+
+struct float3_1 { float3 a; float b; };
+
+struct nested { float3_1 a; float4 b[4]; float3_1 c[4]; };
 
 layout(set = 0, binding = 0) cbuffer consts
 {
@@ -258,7 +291,37 @@ layout(set = 0, binding = 0) cbuffer consts
   column_major float4x1 ab;               // covers 1 float4 (equivalent to a plain float4 after row/column swap)
                                           // row0: {224, 225, 226, 227}
 
-  float4 test;                            // {228, 229, 230, 231}
+  float4 multiarray[3][2];                // [0][0] = {228, 229, 230, 231}
+                                          // [0][1] = {232, 233, 234, 235}
+                                          // [1][0] = {236, 237, 238, 239}
+                                          // [1][1] = {240, 241, 242, 243}
+                                          // [2][0] = {244, 245, 246, 247}
+                                          // [2][1] = {248, 249, 250, 251}
+
+  nested structa[2];                      // [0] = {
+                                          //   .a = { { 252, 253, 254 }, 255 }
+                                          //   .b[0] = { 256, 257, 258, 259 }
+                                          //   .b[1] = { 260, 261, 262, 263 }
+                                          //   .b[2] = { 264, 265, 266, 267 }
+                                          //   .b[3] = { 268, 269, 270, 271 }
+                                          //   .c[0] = { { 272, 273, 274 }, 275 }
+                                          //   .c[1] = { { 276, 277, 278 }, 279 }
+                                          //   .c[2] = { { 280, 281, 282 }, 283 }
+                                          //   .c[3] = { { 284, 285, 286 }, 287 }
+                                          // }
+                                          // [1] = {
+                                          //   .a = { { 288, 289, 290 }, 291 }
+                                          //   .b[0] = { 292, 293, 294, 295 }
+                                          //   .b[1] = { 296, 297, 298, 299 }
+                                          //   .b[2] = { 300, 301, 302, 303 }
+                                          //   .b[3] = { 304, 305, 306, 307 }
+                                          //   .c[0] = { { 308, 309, 310 }, 311 }
+                                          //   .c[1] = { { 312, 313, 314 }, 315 }
+                                          //   .c[2] = { { 316, 317, 318 }, 319 }
+                                          //   .c[3] = { { 320, 321, 322 }, 323 }
+                                          // }
+
+  float4 test;                            // {324, 325, 326, 327}
 };
 
 float4 main() : SV_Target0
@@ -331,9 +394,9 @@ float4 main() : SV_Target0
 
     vb.upload(DefaultTri);
 
-    Vec4f cbufferdata[256];
+    Vec4f cbufferdata[512];
 
-    for(int i = 0; i < 256; i++)
+    for(int i = 0; i < 512; i++)
       cbufferdata[i] = Vec4f(float(i * 4 + 0), float(i * 4 + 1), float(i * 4 + 2), float(i * 4 + 3));
 
     AllocatedBuffer cb(
