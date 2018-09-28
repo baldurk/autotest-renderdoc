@@ -94,10 +94,10 @@ cbuffer consts : register(b0)
   float4 dummy6;
 
   column_major float2x2 w;                // covers 2 float4s with padding at end of each column (but not row)
-                                          // row0: {168, 172, 172}
-                                          // row1: {169, 173, 173}
-                                          //       <170, 174, 174>
-                                          //       <171, 175, 175>
+                                          // row0: {172, 176}
+                                          // row1: {173, 177}
+                                          //       <174, 178>
+                                          //       <175, 179>
   float4 dummy7;
   row_major float2x2 x;                   // covers 2 float4s with padding at end of each row (but not column)
                                           // row1: {184, 185}, <186, 187>
