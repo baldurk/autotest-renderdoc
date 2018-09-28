@@ -44,14 +44,14 @@ def run_tests(test_filter=".*"):
 
     testcases = get_tests()
 
-    regexp = re.compile(test_filter)
+    regexp = re.compile(test_filter, re.IGNORECASE)
 
     failedcases = []
 
     for testclass in testcases:
         name = testclass.__name__
 
-        if not regexp.match(name):
+        if not regexp.search(name):
             log.print("Skipping {}".format(name))
             continue
 
