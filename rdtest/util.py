@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import time
 import hashlib
 import zipfile
@@ -46,9 +47,25 @@ def get_tmp_path(name: str, include_time=True):
     return os.path.join(get_tmp_dir(), name)
 
 
+def sanitise_filename(name: str):
+    name = name.replace(_artifact_path, '') \
+               .replace(get_tmp_dir(), '') \
+               .replace(get_root_dir(), '') \
+               .replace('\\', '/')
+
+    return re.sub('^/', '', name)
+
+
 def image_compare(test_img: str, ref_img: str):
-    out = Image.open(test_img)
-    ref = Image.open(ref_img)
+    try:
+        out = Image.open(test_img)
+    except Exception as ex:
+        raise FileNotFoundError("Can't open {}".format(sanitise_filename(test_img)))
+
+    try:
+        ref = Image.open(ref_img)
+    except Exception as ex:
+        raise FileNotFoundError("Can't open {}".format(sanitise_filename(ref_img)))
 
     if out.mode != ref.mode or out.size != ref.size:
         return False

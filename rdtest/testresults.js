@@ -166,7 +166,10 @@
         diff_text += line.substr(indent) + '\n';
       } else if(instack) {
         var frame = line.match(/File "(.*)", line (.*), in (.*)/);
-        html += `File <a href="https://github.com/baldurk/renderdoc/blob/${commit}/${basepath}${frame[1]}#L${frame[2]}">"${frame[1]}", line ${frame[2]}</a>, in ${frame[3]}\n`;
+        if(frame)
+          html += `File <a href="https://github.com/baldurk/renderdoc/blob/${commit}/${basepath}${frame[1]}#L${frame[2]}">"${frame[1]}", line ${frame[2]}</a>, in ${frame[3]}\n`;
+        else
+          html += line.substr(indent) + '\n';
       } else {
         html += line.substr(indent) + '\n';
       }

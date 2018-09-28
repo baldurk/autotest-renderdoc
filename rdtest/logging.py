@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import traceback
 import mimetypes
 import difflib
@@ -87,10 +88,12 @@ class TestLogger:
         self.rawprint('>> Callstack')
         tb = traceback.extract_tb(sys.exc_info()[2])
         for frame in reversed(tb):
-            filename = frame.filename.replace(util.get_root_dir(), '').replace('\\', '/')
+            filename = util.sanitise_filename(frame.filename)
+            filename = re.sub('.*site-packages/', 'site-packages/', filename)
             if filename[0] == '/':
                 filename = filename[1:]
             self.rawprint("    File \"{}\", line {}, in {}".format(filename, frame.lineno, frame.name))
+            self.rawprint("        {}".format(frame.line))
         self.rawprint('<< Callstack')
 
         if isinstance(ex, TestFailureException):
@@ -129,7 +132,7 @@ class TestLogger:
                 self.rawprint(''.join(diff).strip())
                 self.dedent()
                 self.rawprint("=- Compare")
-            else:
+            elif len(file_list) > 0:
                 self.rawprint("== Compare: " + ','.join(file_list) + diff_file)
 
         self.rawprint("!- FAILURE")
