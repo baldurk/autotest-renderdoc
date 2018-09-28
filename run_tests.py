@@ -31,7 +31,7 @@ if args.pyrenderdoc is not None:
     else:
         raise RuntimeError("'{}' is not a valid path to the pyrenderdoc module".format(args.pyrenderdoc))
 
-import rdtest as rdtest
+import rdtest
 
 from tests import *
 

@@ -7,10 +7,98 @@ from . import analyse
 from .logging import log, TestFailureException
 
 
+class ShaderVariableCheck:
+    def __init__(self, var: rd.ShaderVariable, name: str):
+        self.var = var
+
+        if self.var.name != name:
+            raise TestFailureException("Variable {} name mismatch, expected '{}' but got '{}'"
+                                       .format(self.var.name, name, self.var.name))
+
+    def rows(self, rows_: int):
+        if self.var.rows != rows_:
+            raise TestFailureException("Variable {} row count mismatch, expected {} but got {}"
+                                       .format(self.var.name, rows_, self.var.rows))
+
+        return self
+
+    def cols(self, cols_: int):
+        if self.var.columns != cols_:
+            raise TestFailureException("Variable {} column count mismatch, expected {} but got {}"
+                                       .format(self.var.name, cols_, self.var.columns))
+
+        return self
+
+    def value(self, value_: list):
+        count = len(value_)
+        if self.var.value.fv[0:count] != value_:
+            raise TestFailureException("Variable {} value mismatch, expected {} but got {}"
+                                       .format(self.var.name, value_, self.var.value.fv[0:count]))
+
+        return self
+
+    def row_major(self):
+        if not self.var.rowMajor:
+            raise TestFailureException("Variable {} is not row-major, as expected"
+                                       .format(self.var.name))
+
+        return self
+
+    def column_major(self):
+        if self.var.rowMajor:
+            raise TestFailureException("Variable {} is not row-major, as expected"
+                                       .format(self.var.name))
+
+        return self
+
+    def arraySize(self, elements_: int):
+        if len(self.var.members) != elements_:
+            raise TestFailureException("Variable {} array size mismatch, expected {} but got {}"
+                                       .format(self.var.name, elements_, len(self.var.members)))
+
+        return self
+
+    def structSize(self, elements_: int):
+        if not self.var.isStruct:
+            raise TestFailureException("Variable {} is not a struct as was expected"
+                                       .format(self.var.name))
+
+        if len(self.var.members) != elements_:
+            raise TestFailureException("Variable {} struct size mismatch, expected {} but got {}"
+                                       .format(self.var.name, elements_, len(self.var.members)))
+
+        return self
+
+    def members(self, member_callbacks: dict):
+        for i, m in enumerate(self.var.members):
+            if i in member_callbacks:
+                member_callbacks[i](ShaderVariableCheck(m, m.name))
+            elif m.name in member_callbacks:
+                member_callbacks[m.name](ShaderVariableCheck(m, m.name))
+            else:
+                raise TestFailureException("Unexpected member in {}: {}"
+                                           .format(self.var.name, m.name))
+
+
+class ConstantBufferChecker:
+    def __init__(self, variables: list):
+        self._variables = variables
+
+    def check(self, name: str):
+        if len(self._variables) == 0:
+            raise TestFailureException("Too many variables checked, {} has no matching data".format(name))
+        return ShaderVariableCheck(self._variables.pop(0), name)
+
+    def done(self):
+        if len(self._variables) != 0:
+            raise TestFailureException("Not all variables checked, {} still remain".format(len(self._variables)))
+
+
 class TestCase:
     def __init__(self):
         self.capture_filename = ""
         self.controller: rd.ReplayController = None
+        self._variables = []
 
     def get_ref_path(self, name: str):
         return os.path.join(util.get_root_dir(), 'data', self.__class__.__name__, name)
