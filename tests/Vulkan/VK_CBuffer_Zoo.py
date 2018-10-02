@@ -454,7 +454,7 @@ class VK_CBuffer_Zoo(rdtest.TestCase):
                     'a': lambda y: y.rows(1).cols(3).value([288.0, 289.0, 290.0]),
                     'b': lambda y: y.rows(1).cols(1).value([291.0]),
                 }),
-                'vv': lambda x: x.rows(0).cols(0).arraySize(4).members({
+                'b': lambda x: x.rows(0).cols(0).arraySize(4).members({
                     0: lambda y: y.rows(1).cols(4).value([292.0, 293.0, 294.0, 295.0]),
                     1: lambda y: y.rows(1).cols(4).value([296.0, 297.0, 298.0, 299.0]),
                     2: lambda y: y.rows(1).cols(4).value([300.0, 301.0, 302.0, 303.0]),

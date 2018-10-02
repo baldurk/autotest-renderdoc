@@ -136,7 +136,7 @@ class GL_CBuffer_Zoo(rdtest.TestCase):
                                                                 200.0, 201.0])
 
         # float z;
-        var_check.check('z').cols(1).rows(99).value([204.0])
+        var_check.check('z').cols(1).rows(1).value([204.0])
 
         # vec4 dummy9;
         var_check.check('dummy9')

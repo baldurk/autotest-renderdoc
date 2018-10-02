@@ -150,7 +150,7 @@ class D3D11_CBuffer_Zoo(rdtest.TestCase):
         var_check.check('gldummy3')
 
         # row_major float4x1 aa;
-        var_check.check('wrongname').rows(4).cols(1).value([208.0, 212.0, 216.0, 220.0])
+        var_check.check('aa').rows(4).cols(1).value([208.0, 212.0, 216.0, 220.0])
 
         # column_major float4x1 ab;
         var_check.check('ab').rows(4).cols(1).value([224.0, 225.0, 226.0, 227.0])
