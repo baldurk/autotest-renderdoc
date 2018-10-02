@@ -31,7 +31,21 @@ if args.pyrenderdoc is not None:
     else:
         raise RuntimeError("'{}' is not a valid path to the pyrenderdoc module".format(args.pyrenderdoc))
 
-import rdtest
+try:
+    import rdtest
+except ImportError as ex:
+    # very simple output, to ensure we have *something*
+    path = os.path.join(os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)),
+                        'artifacts')
+
+    import shutil
+
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path, exist_ok=True)
+
+    with open(os.path.join(path, 'output.log.html'), "w") as f:
+        f.write("<body><h1>Failed to import rdtest: {}</h1></body>".format(ex))
 
 from tests import *
 
