@@ -116,3 +116,49 @@ def zip_compare(test_file: str, ref_file: str):
     ref.close()
 
     return test_files == ref_files
+
+
+# Use the 32-bit float epsilon, not sys.float_info.epsilon which is for double floats
+FLT_EPSILON = 1.19209290E-07
+
+
+def value_compare(ref, data):
+    if type(ref) == float:
+        if type(data) != float:
+            return False
+
+        # Floats are equal if the absolute difference is less than epsilon times the largest.
+        largest = max(abs(ref), abs(data))
+        eps = largest * FLT_EPSILON if largest > 1.0 else FLT_EPSILON
+        return abs(ref-data) < eps
+    elif type(ref) == list or type(ref) == tuple:
+        # tuples and lists can be treated interchangeably
+        if type(data) != list and type(data) != tuple:
+            return False
+
+        # Lists are equal if they have the same length and all members have value_compare(i, j) == True
+        if len(ref) != len(data):
+            return False
+
+        for i in range(len(ref)):
+            if not value_compare(ref[i], data[i]):
+                return False
+
+        return True
+    elif type(ref) == dict:
+        if type(data) != dict:
+            return False
+
+        # Similarly, dicts are equal if both have the same set of keys and
+        # corresponding values are value_compare(i, j) == True
+        if ref.keys() != data.keys():
+            return False
+
+        for i in ref.keys():
+            if not value_compare(ref[i], data[i]):
+                return False
+
+        return True
+    else:
+        # For other types, just use normal comparison
+        return ref == data
