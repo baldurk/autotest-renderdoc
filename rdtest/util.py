@@ -25,12 +25,18 @@ def get_root_dir():
 
 
 _artifact_path = os.path.join(get_root_dir(), 'artifacts')
+_test_name = 'Unknown_Test'
 
 
 def set_artifact_dir(path: str):
     global _artifact_path
     if os.path.isdir(path):
         _artifact_path = os.path.abspath(path)
+
+
+def set_current_test(name: str):
+    global _test_name
+    _test_name = name
 
 
 def get_artifact_path(name: str):
@@ -43,7 +49,7 @@ def get_tmp_dir():
 
 def get_tmp_path(name: str, include_time=True):
     if include_time:
-        return os.path.join(get_tmp_dir(), '{}_{}'.format(_timestr(), name))
+        return os.path.join(get_tmp_dir(), _test_name, name)
     return os.path.join(get_tmp_dir(), name)
 
 

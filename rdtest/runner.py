@@ -57,6 +57,8 @@ def run_tests(test_filter=".*"):
 
         log.begin_test(name)
 
+        util.set_current_test(name)
+
         try:
             instance = testclass()
             instance.invoketest()
