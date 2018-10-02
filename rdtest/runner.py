@@ -1,7 +1,9 @@
 import os
 import shutil
+import ctypes
 import sys
 import re
+import subprocess
 import time
 import renderdoc as rd
 from . import util
@@ -23,12 +25,57 @@ def get_tests():
     return testcases
 
 
-def run_tests(test_filter=".*"):
+def _run_test(testclass, failedcases: list):
+    name = testclass.__name__
+
+    # Fork the interpreter to run the test, in case it crashes we can catch it.
+    # We can re-run with the same parameters
+    args = sys.argv.copy()
+    args.insert(0, sys.executable)
+
+    # Add parameter to run the test itself
+    args.append('--internal_run_test')
+    args.append(name)
+
+    test_run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+
+    try:
+        out,err = test_run.communicate(timeout=120)
+        log.subprocess_print(out)
+    except subprocess.TimeoutExpired as timeout:
+        log.failure('Timed out, 120s elapsed')
+        test_run.kill()
+        test_run.communicate()
+        raise timeout
+
+    # If we couldn't get the return code, something went wrong in the timeout above
+    # and the program never exited. Try once more to kill it then bail
+    if test_run.returncode is None:
+        test_run.kill()
+        test_run.communicate()
+        raise RuntimeError('INTERNAL ERROR: Couldn\'t get test return code')
+    # Return code of 0 means we exited cleanly, nothing to do
+    elif test_run.returncode == 0:
+        pass
+    # Return code of 1 means the test failed, but we have already logged the exception
+    # so we just need to mark this test as failed
+    elif test_run.returncode == 1:
+        failedcases.append(testclass)
+    else:
+        raise RuntimeError('Test did not exit cleanly while running, possible crash. Exit code {}'
+                           .format(test_run.returncode))
+
+
+def run_tests(test_filter: str=".*", in_process: bool=False):
     start_time = time.time()
 
+    # On windows, disable error reporting
+    if 'windll' in dir(ctypes):
+        ctypes.windll.kernel32.SetErrorMode(1 | 2)  # SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX
+
     # clean up artifacts and temp folder
-    if os.path.exists(util.get_artifact_path('')):
-        shutil.rmtree(util.get_artifact_path(''))
+    if os.path.exists(util.get_artifact_dir()):
+        shutil.rmtree(util.get_artifact_dir())
 
     if os.path.exists(util.get_tmp_dir()):
         shutil.rmtree(util.get_tmp_dir())
@@ -60,13 +107,17 @@ def run_tests(test_filter=".*"):
             log.print("Skipping {}".format(name))
             continue
 
+        # Print header (and footer) outside the exec so we know they will always be printed successfully
         log.begin_test(name)
 
         util.set_current_test(name)
 
         try:
-            instance = testclass()
-            instance.invoketest()
+            if in_process:
+                instance = testclass()
+                instance.invoketest()
+            else:
+                _run_test(testclass, failedcases)
         except Exception as ex:
             log.failure(ex)
             failedcases.append(testclass)
@@ -75,9 +126,9 @@ def run_tests(test_filter=".*"):
 
     duration = time.time() - start_time
 
-    hours = round(duration/3600)
-    minutes = round(duration/60)%60
-    seconds = round(duration%60)
+    hours = round(duration / 3600)
+    minutes = round(duration / 60) % 60
+    seconds = round(duration % 60)
 
     log.header("Tests complete: {} passed out of {} run in {}:{:02}:{:02}"
                .format(len(testcases)-len(failedcases), len(testcases), hours, minutes, seconds))
@@ -94,3 +145,29 @@ def run_tests(test_filter=".*"):
 
     sys.exit(0)
 
+
+def internal_run_test(test_name):
+    testcases = get_tests()
+
+    for testclass in testcases:
+        if testclass.__name__ == test_name:
+            log.begin_test(test_name, print_header=False)
+
+            util.set_current_test(test_name)
+
+            try:
+                instance = testclass()
+                instance.invoketest()
+                suceeded = True
+            except Exception as ex:
+                log.failure(ex)
+                suceeded = False
+
+            log.end_test(test_name, print_footer=False)
+
+            if suceeded:
+                sys.exit(0)
+            else:
+                sys.exit(1)
+
+    log.error("INTERNAL ERROR: Couldn't find '{}' test to run".format(test_name))

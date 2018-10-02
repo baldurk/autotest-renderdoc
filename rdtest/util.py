@@ -20,18 +20,31 @@ def _md5_file(fname):
     return hash_md5.hexdigest()
 
 
-def get_root_dir():
-    return os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__))
-
-
-_artifact_path = os.path.join(get_root_dir(), 'artifacts')
+_root_dir = os.getcwd()
+_artifact_dir = os.path.realpath('artifacts')
+_data_dir = os.path.realpath('data')
+_temp_dir = os.path.realpath('tmp')
 _test_name = 'Unknown_Test'
 
 
+def set_root_dir(path: str):
+    global _root_dir
+    _root_dir = path
+
+
+def set_data_dir(path: str):
+    global _data_dir
+    _data_dir = os.path.abspath(path)
+
+
 def set_artifact_dir(path: str):
-    global _artifact_path
-    if os.path.isdir(path):
-        _artifact_path = os.path.abspath(path)
+    global _artifact_dir
+    _artifact_dir = os.path.abspath(path)
+
+
+def set_temp_dir(path: str):
+    global _temp_dir
+    _temp_dir = os.path.abspath(path)
 
 
 def set_current_test(name: str):
@@ -39,22 +52,38 @@ def set_current_test(name: str):
     _test_name = name
 
 
+def get_root_dir():
+    return _root_dir
+
+
+def get_data_dir():
+    return _data_dir
+
+
+def get_data_path(name: str):
+    return os.path.join(_data_dir, name)
+
+
+def get_artifact_dir():
+    return _artifact_dir
+
+
 def get_artifact_path(name: str):
-    return os.path.join(_artifact_path, name)
+    return os.path.join(_artifact_dir, name)
 
 
 def get_tmp_dir():
-    return os.path.join(get_root_dir(), 'tmp')
+    return _temp_dir
 
 
 def get_tmp_path(name: str, include_time=True):
     if include_time:
-        return os.path.join(get_tmp_dir(), _test_name, name)
-    return os.path.join(get_tmp_dir(), name)
+        return os.path.join(_temp_dir, _test_name, name)
+    return os.path.join(_temp_dir, name)
 
 
 def sanitise_filename(name: str):
-    name = name.replace(_artifact_path, '') \
+    name = name.replace(_artifact_dir, '') \
                .replace(get_tmp_dir(), '') \
                .replace(get_root_dir(), '') \
                .replace('\\', '/')

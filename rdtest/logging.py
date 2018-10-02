@@ -29,6 +29,11 @@ class TestLogger:
         self.outputs = [sys.stdout]
         self.failed = False
 
+    def subprocess_print(self, line: str):
+        for o in self.outputs:
+            o.write(line)
+            o.flush()
+
     def rawprint(self, line: str, with_stdout=True):
         for o in self.outputs:
             if o == sys.stdout and not with_stdout:
@@ -58,18 +63,20 @@ class TestLogger:
     def dedent(self):
         self.indentation -= 4
 
-    def begin_test(self, test_name: str):
+    def begin_test(self, test_name: str, print_header: bool=True):
         self.test_name = test_name
-        self.rawprint(">> Test {}".format(test_name))
+        if print_header:
+            self.rawprint(">> Test {}".format(test_name))
         self.indent()
 
         self.failed = False
 
-    def end_test(self, test_name: str):
+    def end_test(self, test_name: str, print_footer: bool=True):
         if self.failed:
             self.rawprint("$$ FAILED")
         self.dedent()
-        self.rawprint("<< Test {}".format(test_name))
+        if print_footer:
+            self.rawprint("<< Test {}".format(test_name))
         self.test_name = ''
 
     def success(self, message):

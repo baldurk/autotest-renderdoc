@@ -102,7 +102,7 @@ class TestCase:
         self._variables = []
 
     def get_ref_path(self, name: str):
-        return os.path.join(util.get_root_dir(), 'data', self.__class__.__name__, name)
+        return util.get_data_path(os.path.join(self.__class__.__name__, name))
 
     def check(self, expr, msg=None):
         if not expr:
