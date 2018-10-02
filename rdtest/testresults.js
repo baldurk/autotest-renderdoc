@@ -1,4 +1,4 @@
-(function() {
+document.body.onload = function() {
   function htmlEntityEncode(str) {
     return str.replace(/&/g, '&amp;')
               .replace(/"/g, '&quot;')
@@ -246,4 +246,4 @@
     }) (imgcomps[i]);
   }
 
-})();
+};

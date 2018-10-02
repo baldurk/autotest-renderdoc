@@ -35,8 +35,13 @@ def run_tests(test_filter=".*"):
 
     log.add_output(util.get_artifact_path("output.log.html"))
 
+    for file in ['testresults.css', 'testresults.js']:
+        shutil.copyfile(os.path.join(os.path.dirname(__file__), file), util.get_artifact_path(file))
+
     log.rawprint('<meta charset="utf-8"><!-- header to prevent output from being processed as html -->' +
-                 '<script id="logoutput" type="preformatted">\n\n', with_stdout=False)
+                 '<body><link rel="stylesheet" type="text/css" media="all" href="testresults.css">' +
+                 '<script src="testresults.js"></script>' +
+                 '<script id="logoutput" type="preformatted">\n\n\n', with_stdout=False)
 
     log.header("Tests running for RenderDoc Version {} ({})".format(rd.GetVersionString(), rd.GetCommitHash()))
 
@@ -81,13 +86,8 @@ def run_tests(test_filter=".*"):
     for testclass in failedcases:
         log.print("  - {}".format(testclass.__name__))
 
-    # Print code to style & invoke the javascript
-    log.rawprint('\n\n\n</script>' +
-                 '<body><link rel="stylesheet" type="text/css" media="all" href="testresults.css">' +
-                 '<script src="testresults.js"></script></body>', with_stdout=False)
-
-    for file in ['testresults.css', 'testresults.js']:
-        shutil.copyfile(os.path.join(os.path.dirname(__file__), file), util.get_artifact_path(file))
+    # Print a proper footer if we got here
+    log.rawprint('\n\n\n</script>', with_stdout=False)
 
     if len(failedcases) > 0:
         sys.exit(1)
