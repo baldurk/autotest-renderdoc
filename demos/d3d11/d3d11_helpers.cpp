@@ -53,7 +53,7 @@ struct v2f
 {
 	float4 pos : SV_POSITION;
 	float4 col : COLOR0;
-	float4 uv : TEXCOORD0;
+	float2 uv : TEXCOORD0;
 };
 
 v2f main(vertin IN, uint vid : SV_VertexID)
@@ -62,7 +62,7 @@ v2f main(vertin IN, uint vid : SV_VertexID)
 
 	OUT.pos = float4(IN.pos.xyz, 1);
 	OUT.col = IN.col;
-	OUT.uv = float4(IN.uv, 0, 1);
+	OUT.uv = IN.uv;
 
 	return OUT;
 }
@@ -75,7 +75,7 @@ struct v2f
 {
 	float4 pos : SV_POSITION;
 	float4 col : COLOR0;
-	float4 uv : TEXCOORD0;
+	float2 uv : TEXCOORD0;
 };
 
 float4 main(v2f IN) : SV_Target0
