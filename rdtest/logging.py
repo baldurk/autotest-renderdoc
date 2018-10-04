@@ -107,6 +107,8 @@ class TestLogger:
             file_list = []
             for f in ex.files:
                 fname = '{}_{}'.format(self.test_name, os.path.basename(f))
+                if 'data' in f:
+                    fname += '_ref'
                 shutil.copyfile(f, util.get_artifact_path(fname))
                 file_list.append(fname)
 
