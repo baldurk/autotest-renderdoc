@@ -103,7 +103,15 @@ class TargetControl():
 
         # If we should make sure the application is killed when we exit, do that now
         if self._exit_kill:
-            os.kill(self._pid, signal.SIGTERM)
+            # Try 5 times to kill the application. This may fail if the application exited already
+            for attempt in range(5):
+                try:
+                    os.kill(self._pid, signal.SIGTERM)
+                    time.sleep(1)
+                    return
+                except Exception:
+                    # Ignore errors killing the program
+                    continue
 
 
 def run_executable(exe: str, cmdline: str,
