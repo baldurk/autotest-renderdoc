@@ -4,7 +4,7 @@ import renderdoc as rd
 
 class GL_CBuffer_Zoo(rdtest.TestCase):
     def get_capture(self):
-        return rdtest.run_and_capture("demos_x64.exe", "GL_CBuffer_Zoo", 5, "GL_CBuffer_Zoo")
+        return rdtest.run_and_capture("demos_x64.exe", "GL_CBuffer_Zoo", 5)
 
     def check_capture(self):
         draw = self.find_draw("Draw")

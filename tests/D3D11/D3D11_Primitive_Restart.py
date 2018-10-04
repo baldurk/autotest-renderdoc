@@ -4,7 +4,7 @@ import renderdoc as rd
 
 class D3D11_Primitive_Restart(rdtest.TestCase):
     def get_capture(self):
-        return rdtest.run_and_capture("demos_x64.exe", "Primitive_Restart", 5, "Primitive_Restart")
+        return rdtest.run_and_capture("demos_x64.exe", "Primitive_Restart", 5)
 
     def check_capture(self):
         self.check_final_backbuffer()
