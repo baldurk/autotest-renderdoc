@@ -310,6 +310,56 @@ void D3D11GraphicsTest::RSSetViewport(D3D11_VIEWPORT view)
   ctx->RSSetViewports(1, &view);
 }
 
+D3D11_DEPTH_STENCIL_DESC D3D11GraphicsTest::GetDepthState()
+{
+  ID3D11DepthStencilState *state = NULL;
+  UINT ref = 0;
+  ctx->OMGetDepthStencilState(&state, &ref);
+
+  D3D11_DEPTH_STENCIL_DESC ret;
+
+  if(state)
+  {
+    state->GetDesc(&ret);
+    return ret;
+  }
+
+  ret.DepthEnable = TRUE;
+  ret.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+  ret.DepthFunc = D3D11_COMPARISON_LESS;
+  ret.StencilEnable = FALSE;
+  ret.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+  ret.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+  const D3D11_DEPTH_STENCILOP_DESC op = {
+      D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS,
+  };
+  ret.FrontFace = op;
+  ret.BackFace = op;
+
+  return ret;
+}
+
+void D3D11GraphicsTest::SetDepthState(const D3D11_DEPTH_STENCIL_DESC &desc)
+{
+  ID3D11DepthStencilState *state = NULL;
+  UINT ref = 0;
+  ctx->OMGetDepthStencilState(&state, &ref);
+
+  depthState = NULL;
+  dev->CreateDepthStencilState(&desc, &depthState);
+
+  ctx->OMSetDepthStencilState(depthState, ref);
+}
+
+void D3D11GraphicsTest::SetStencilRef(UINT ref)
+{
+  ID3D11DepthStencilState *state = NULL;
+  UINT dummy = 0;
+  ctx->OMGetDepthStencilState(&state, &dummy);
+
+  ctx->OMSetDepthStencilState(state, ref);
+}
+
 ID3DBlobPtr D3D11GraphicsTest::Compile(std::string src, std::string entry, std::string profile,
                                        ID3DBlob **unstripped)
 {

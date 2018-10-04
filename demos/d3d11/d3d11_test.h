@@ -141,6 +141,10 @@ struct D3D11GraphicsTest : public GraphicsTest
 
   void RSSetViewport(D3D11_VIEWPORT view);
 
+  D3D11_DEPTH_STENCIL_DESC GetDepthState();
+  void SetDepthState(const D3D11_DEPTH_STENCIL_DESC &desc);
+  void SetStencilRef(UINT ref);
+
   bool Running();
   void Present();
 
@@ -152,6 +156,8 @@ struct D3D11GraphicsTest : public GraphicsTest
 
   D3D11_FEATURE_DATA_D3D11_OPTIONS opts;
   D3D11_FEATURE_DATA_D3D11_OPTIONS1 opts1;
+
+  ID3D11DepthStencilStatePtr depthState;
 
   pD3DCompile dyn_D3DCompile = NULL;
   pD3DStripShader dyn_D3DStripShader = NULL;
