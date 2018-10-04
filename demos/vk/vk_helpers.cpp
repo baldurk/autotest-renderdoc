@@ -113,12 +113,10 @@ void cmdBindVertexBuffers(VkCommandBuffer cmd, uint32_t firstBinding,
 
 void cmdBindDescriptorSets(VkCommandBuffer cmd, VkPipelineBindPoint pipelineBindPoint,
                            VkPipelineLayout layout, uint32_t firstSet,
-                           std::initializer_list<VkDescriptorSet> bufs,
-                           std::initializer_list<uint32_t> dynamicOffsets)
+                           std::vector<VkDescriptorSet> bufs, std::vector<uint32_t> dynamicOffsets)
 {
   vkCmdBindDescriptorSets(cmd, pipelineBindPoint, layout, firstSet, (uint32_t)bufs.size(),
-                          &(*bufs.begin()), (uint32_t)dynamicOffsets.size(),
-                          &(*dynamicOffsets.begin()));
+                          bufs.data(), (uint32_t)dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 GraphicsPipelineCreateInfo::GraphicsPipelineCreateInfo()

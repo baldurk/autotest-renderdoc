@@ -128,6 +128,13 @@ inline VkResult getSwapchainImagesKHR(std::vector<VkImage> &vec, VkDevice device
 
 #undef VKH_ENUMERATE
 
+inline VkPhysicalDeviceProperties getPhysicalDeviceProperties(VkPhysicalDevice physDev)
+{
+  VkPhysicalDeviceProperties props;
+  vkGetPhysicalDeviceProperties(physDev, &props);
+  return props;
+}
+
 void updateDescriptorSets(VkDevice device, const std::vector<VkWriteDescriptorSet> &writes,
                           const std::vector<VkCopyDescriptorSet> &copies = {});
 
@@ -151,8 +158,7 @@ void cmdBindVertexBuffers(VkCommandBuffer cmd, uint32_t firstBinding,
 
 void cmdBindDescriptorSets(VkCommandBuffer cmd, VkPipelineBindPoint pipelineBindPoint,
                            VkPipelineLayout layout, uint32_t firstSet,
-                           std::initializer_list<VkDescriptorSet> bufs,
-                           std::initializer_list<uint32_t> dynamicOffsets);
+                           std::vector<VkDescriptorSet> bufs, std::vector<uint32_t> dynamicOffsets);
 
 struct ApplicationInfo : public VkApplicationInfo
 {
