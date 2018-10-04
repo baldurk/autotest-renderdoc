@@ -185,13 +185,15 @@ def decode_mesh_data(controller: rd.ReplayController, indices: List[int], attrs:
     ret = []
 
     # Calculate the strip restart index for this index width
-    striprestart_index = (controller.GetPipelineState().GetStripRestartIndex() &
-                          ((1 << (attrs[0].mesh.indexByteStride*8)) - 1))
+    striprestart_index = None
+    if controller.GetPipelineState().IsStripRestartEnabled():
+        striprestart_index = (controller.GetPipelineState().GetStripRestartIndex() &
+                              ((1 << (attrs[0].mesh.indexByteStride*8)) - 1))
 
     for i,idx in enumerate(indices):
         vertex = {'vtx': i, 'idx': idx}
 
-        if idx != striprestart_index:
+        if striprestart_index is None or idx != striprestart_index:
             for attr in attrs:
                 offset = attr.mesh.vertexByteOffset + attr.mesh.vertexByteStride * idx
 
