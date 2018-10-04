@@ -75,10 +75,10 @@ def run_tests(test_filter: str=".*", in_process: bool=False):
 
     # clean up artifacts and temp folder
     if os.path.exists(util.get_artifact_dir()):
-        shutil.rmtree(util.get_artifact_dir())
+        shutil.rmtree(util.get_artifact_dir(), ignore_errors=True)
 
     if os.path.exists(util.get_tmp_dir()):
-        shutil.rmtree(util.get_tmp_dir())
+        shutil.rmtree(util.get_tmp_dir(), ignore_errors=True)
 
     log.add_output(util.get_artifact_path("output.log.html"))
 

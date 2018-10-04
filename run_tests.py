@@ -52,7 +52,7 @@ except ImportError as ex:
     import shutil
 
     if os.path.exists(artifacts_dir):
-        shutil.rmtree(artifacts_dir)
+        shutil.rmtree(artifacts_dir, ignore_errors=True)
     os.makedirs(artifacts_dir, exist_ok=True)
 
     with open(os.path.join(artifacts_dir, 'output.log.html'), "w") as f:
