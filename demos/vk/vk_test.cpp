@@ -374,7 +374,8 @@ void VulkanGraphicsTest::FinishUsingBackbuffer(VkCommandBuffer cmd, VkAccessFlag
                                });
 }
 
-void VulkanGraphicsTest::Submit(int index, int totalSubmits, const std::vector<VkCommandBuffer> &cmds)
+void VulkanGraphicsTest::Submit(int index, int totalSubmits, const std::vector<VkCommandBuffer> &cmds,
+                                const std::vector<VkCommandBuffer> &seccmds)
 {
   VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 
@@ -399,7 +400,10 @@ void VulkanGraphicsTest::Submit(int index, int totalSubmits, const std::vector<V
   fences.insert(fence);
 
   for(const VkCommandBuffer &cmd : cmds)
-    pendingCommandBuffers.push_back(std::make_pair(cmd, fence));
+    pendingCommandBuffers[0].push_back(std::make_pair(cmd, fence));
+
+  for(const VkCommandBuffer &cmd : seccmds)
+    pendingCommandBuffers[1].push_back(std::make_pair(cmd, fence));
 
   vkQueueSubmit(queue, 1, &submit, fence);
 }
@@ -415,17 +419,20 @@ void VulkanGraphicsTest::Present()
 
   std::set<VkFence> doneFences;
 
-  for(auto it = pendingCommandBuffers.begin(); it != pendingCommandBuffers.end();)
+  for(int level = 0; level < VK_COMMAND_BUFFER_LEVEL_RANGE_SIZE; level++)
   {
-    if(vkGetFenceStatus(device, it->second) == VK_SUCCESS)
+    for(auto it = pendingCommandBuffers[level].begin(); it != pendingCommandBuffers[level].end();)
     {
-      freeCommandBuffers.push_back(it->first);
-      doneFences.insert(it->second);
-      it = pendingCommandBuffers.erase(it);
-    }
-    else
-    {
-      ++it;
+      if(vkGetFenceStatus(device, it->second) == VK_SUCCESS)
+      {
+        freeCommandBuffers[level].push_back(it->first);
+        doneFences.insert(it->second);
+        it = pendingCommandBuffers[level].erase(it);
+      }
+      else
+      {
+        ++it;
+      }
     }
   }
 
@@ -464,17 +471,19 @@ VkPipelineShaderStageCreateInfo VulkanGraphicsTest::CompileShaderModule(
   return vkh::PipelineShaderStageCreateInfo(ret, vkstage[(int)stage], entry_point);
 }
 
-VkCommandBuffer VulkanGraphicsTest::GetCommandBuffer()
+VkCommandBuffer VulkanGraphicsTest::GetCommandBuffer(VkCommandBufferLevel level)
 {
-  if(freeCommandBuffers.empty())
+  std::vector<VkCommandBuffer> buflist = freeCommandBuffers[level];
+
+  if(buflist.empty())
   {
-    freeCommandBuffers.resize(4);
-    CHECK_VKR(vkAllocateCommandBuffers(device, vkh::CommandBufferAllocateInfo(cmdPool, 4),
-                                       &freeCommandBuffers[0]));
+    buflist.resize(4);
+    CHECK_VKR(vkAllocateCommandBuffers(device, vkh::CommandBufferAllocateInfo(cmdPool, 4, level),
+                                       &buflist[0]));
   }
 
-  VkCommandBuffer ret = freeCommandBuffers.back();
-  freeCommandBuffers.pop_back();
+  VkCommandBuffer ret = buflist.back();
+  buflist.pop_back();
 
   return ret;
 }

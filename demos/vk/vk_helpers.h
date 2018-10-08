@@ -720,6 +720,27 @@ struct CommandBufferBeginInfo : public VkCommandBufferBeginInfo
   operator const VkCommandBufferBeginInfo *() const { return this; }
 };
 
+struct CommandBufferInheritanceInfo : public VkCommandBufferInheritanceInfo
+{
+  CommandBufferInheritanceInfo(VkRenderPass renderPass, uint32_t subpass,
+                               VkFramebuffer framebuffer = VK_NULL_HANDLE,
+                               VkBool32 occlusionQueryEnable = FALSE,
+                               VkQueryControlFlags queryFlags = 0,
+                               VkQueryPipelineStatisticFlags pipelineStatistics = 0)
+  {
+    sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+    pNext = NULL;
+    this->renderPass = renderPass;
+    this->subpass = subpass;
+    this->framebuffer = framebuffer;
+    this->occlusionQueryEnable = occlusionQueryEnable;
+    this->queryFlags = queryFlags;
+    this->pipelineStatistics = pipelineStatistics;
+  }
+
+  operator const VkCommandBufferInheritanceInfo *() const { return this; }
+};
+
 struct RenderPassBeginInfo : public VkRenderPassBeginInfo
 {
   RenderPassBeginInfo(VkRenderPass renderPass, VkFramebuffer framebuffer, VkRect2D renderArea,
@@ -735,6 +756,24 @@ struct RenderPassBeginInfo : public VkRenderPassBeginInfo
   }
 
   operator const VkRenderPassBeginInfo *() const { return this; }
+};
+
+struct SubpassDependency : public VkSubpassDependency
+{
+  SubpassDependency(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcStageMask,
+                    VkPipelineStageFlags dstStageMask, VkAccessFlags srcAccessMask,
+                    VkAccessFlags dstAccessMask, VkDependencyFlags dependencyFlags = 0)
+  {
+    this->srcSubpass = srcSubpass;
+    this->dstSubpass = dstSubpass;
+    this->srcStageMask = srcStageMask;
+    this->dstStageMask = dstStageMask;
+    this->srcAccessMask = srcAccessMask;
+    this->dstAccessMask = dstAccessMask;
+    this->dependencyFlags = dependencyFlags;
+  }
+
+  operator const VkSubpassDependency *() const { return this; }
 };
 
 struct ClearColorValue

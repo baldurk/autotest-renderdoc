@@ -123,13 +123,14 @@ struct VulkanGraphicsTest : public GraphicsTest
   bool Running();
   VkImage StartUsingBackbuffer(VkCommandBuffer cmd, VkAccessFlags nextUse, VkImageLayout layout);
   void FinishUsingBackbuffer(VkCommandBuffer cmd, VkAccessFlags prevUse, VkImageLayout layout);
-  void Submit(int index, int totalSubmits, const std::vector<VkCommandBuffer> &cmds);
+  void Submit(int index, int totalSubmits, const std::vector<VkCommandBuffer> &cmds,
+              const std::vector<VkCommandBuffer> &seccmds = {});
   void Present();
 
   VkPipelineShaderStageCreateInfo CompileShaderModule(const std::string &source_text,
                                                       ShaderLang lang, ShaderStage stage,
                                                       const char *entry_point = "main");
-  VkCommandBuffer GetCommandBuffer();
+  VkCommandBuffer GetCommandBuffer(VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
   VkDescriptorSet allocateDescriptorSet(VkDescriptorSetLayout setLayout);
   VkPipeline createGraphicsPipeline(const VkGraphicsPipelineCreateInfo *info);
@@ -193,8 +194,9 @@ struct VulkanGraphicsTest : public GraphicsTest
   // internal bookkeeping
   std::set<VkFence> fences;
 
-  std::vector<VkCommandBuffer> freeCommandBuffers;
-  std::vector<std::pair<VkCommandBuffer, VkFence>> pendingCommandBuffers;
+  std::vector<VkCommandBuffer> freeCommandBuffers[VK_COMMAND_BUFFER_LEVEL_RANGE_SIZE];
+  std::vector<std::pair<VkCommandBuffer, VkFence>>
+      pendingCommandBuffers[VK_COMMAND_BUFFER_LEVEL_RANGE_SIZE];
 
   // VMA
   VmaAllocator allocator = VK_NULL_HANDLE;
