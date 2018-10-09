@@ -391,11 +391,14 @@ class VK_CBuffer_Zoo(rdtest.TestCase):
         # float z;
         var_check.check('z').rows(1).cols(1).value([204.0])
 
+        # Temporarily until SPIR-V support for degenerate HLSL matrices is determined
+        var_check.check('dummy9')
+
         # row_major float4x1 aa;
-        var_check.check('aa').rows(1).cols(4).value([208.0, 212.0, 216.0, 220.0])
+        #var_check.check('aa').rows(1).cols(4).value([208.0, 212.0, 216.0, 220.0])
 
         # column_major float4x1 ab;
-        var_check.check('ab').rows(1).cols(4).value([224.0, 225.0, 226.0, 227.0])
+        #var_check.check('ab').rows(1).cols(4).value([224.0, 225.0, 226.0, 227.0])
 
         # float4 multiarray[3][2];
         var_check.check('multiarray').cols(0).rows(0).arraySize(3).members({

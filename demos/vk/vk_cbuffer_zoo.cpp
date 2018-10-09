@@ -282,6 +282,8 @@ layout(set = 0, binding = 0) cbuffer consts
                                           //       <199, 203>
   float z;                                // doesn't overlap in final row = 204, <205, 206, 207>
 
+  // SPIR-V can't represent single-dimension matrices properly at the moment
+/*
   row_major float4x1 aa;                  // covers 4 vec4s with maximum padding
                                           // row0: {208, 212, 216, 220}
                                           //       <209, 213, 217, 221>
@@ -290,6 +292,8 @@ layout(set = 0, binding = 0) cbuffer consts
 
   column_major float4x1 ab;               // covers 1 float4 (equivalent to a plain float4 after row/column swap)
                                           // row0: {224, 225, 226, 227}
+*/
+  float4 dummy9[5];
 
   float4 multiarray[3][2];                // [0][0] = {228, 229, 230, 231}
                                           // [0][1] = {232, 233, 234, 235}
