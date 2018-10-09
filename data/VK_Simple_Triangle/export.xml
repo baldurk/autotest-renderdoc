@@ -6,7 +6,7 @@
 		<thumbnail width="400" height="300">thumb.jpg</thumbnail>
 	</header>
 	<chunks version="14">
-		<chunk id="1" name="Driver Initialisation Parameters" length="220" threadID="999" timestamp="123450" duration="5">
+		<chunk id="1" name="Driver Initialisation Parameters" length="246" threadID="999" timestamp="123450" duration="5">
 			<struct name="InitParams" typename="VkInitParams">
 				<string name="AppName" typename="string">RenderDoc autotesting</string>
 				<string name="EngineName" typename="string">RenderDoc autotesting</string>
@@ -17,6 +17,7 @@
 				<array name="Extensions">
 					<string typename="string">VK_KHR_surface</string>
 					<string typename="string">VK_KHR_win32_surface</string>
+					<string typename="string">VK_EXT_debug_utils</string>
 				</array>
 				<ResourceId name="InstanceID" typename="VkInstance" width="8" string="ResourceId::7">7</ResourceId>
 			</struct>
