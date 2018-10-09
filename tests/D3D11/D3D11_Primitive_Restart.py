@@ -9,8 +9,6 @@ class D3D11_Primitive_Restart(rdtest.TestCase):
     def check_capture(self):
         self.check_final_backbuffer()
 
-        self.check_export(self.capture_filename)
-
         draw = self.find_draw("Draw")
 
         self.check(draw is not None)

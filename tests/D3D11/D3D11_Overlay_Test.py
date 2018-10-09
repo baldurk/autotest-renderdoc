@@ -9,8 +9,6 @@ class D3D11_Overlay_Test(rdtest.TestCase):
     def check_capture(self):
         self.check_final_backbuffer()
 
-        self.check_export(self.capture_filename)
-
         out: rd.ReplayOutput = self.controller.CreateOutput(rd.CreateHeadlessWindowingData(), rd.ReplayOutputType.Texture)
 
         self.check(out is not None)
