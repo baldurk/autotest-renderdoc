@@ -71,10 +71,12 @@ document.body.onload = function() {
 
     if(m) {
       if(m[1] == '##') {
-        html += '<h1>' + m[2].replace(/ ##$/, '') + '</h1>';
+      	title = m[2].replace(/ ##$/, '');
+        html += '<h1>' + title + '</h1>';
 
         var hash = m[2].match(/Version ([0-9.]*) \(([a-f0-9]*)\)/);
         if(hash) {
+        	document.title = title;
           commit = hash[2];
         }
       } else if(m[1] == '..') {
