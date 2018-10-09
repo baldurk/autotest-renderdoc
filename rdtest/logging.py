@@ -124,7 +124,7 @@ class TestLogger:
                 if 'image' in mime[0]:
                     # If we have two files and they are images, a failed image comparison should have
                     # generated a diff.png. Grab it and include it
-                    diff_tmp_file = util.get_tmp_path('diff.png', include_time=False)
+                    diff_tmp_file = util.get_tmp_path('diff.png')
                     if os.path.exists(diff_tmp_file):
                         diff_artifact = '{}_diff.png'.format(self.test_name)
                         shutil.move(diff_tmp_file, util.get_artifact_path(diff_artifact))

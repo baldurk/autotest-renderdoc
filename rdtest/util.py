@@ -76,10 +76,9 @@ def get_tmp_dir():
     return _temp_dir
 
 
-def get_tmp_path(name: str, include_time=True):
-    if include_time:
-        return os.path.join(_temp_dir, _test_name, name)
-    return os.path.join(_temp_dir, name)
+def get_tmp_path(name: str):
+    os.makedirs(os.path.join(_temp_dir, _test_name), exist_ok=True)
+    return os.path.join(_temp_dir, _test_name, name)
 
 
 def sanitise_filename(name: str):
@@ -109,7 +108,7 @@ def image_compare(test_img: str, ref_img: str):
     diff = ImageChops.difference(out, ref)
 
     # If the diff fails, dump the difference to a file
-    diff_file = get_tmp_path('diff.png', include_time=False)
+    diff_file = get_tmp_path('diff.png')
 
     if os.path.exists(diff_file):
         os.remove(diff_file)
