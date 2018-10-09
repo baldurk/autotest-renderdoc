@@ -295,5 +295,17 @@
     <ClInclude Include="nuklear\nuklear_xlib.h">
       <Filter>nuklear</Filter>
     </ClInclude>
+    <ClInclude Include="vk\vulkan\vulkan_core.h">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\vulkan\vulkan_win32.h">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\vulkan\vulkan_xcb.h">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\vulkan\vulkan_xlib.h">
+      <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

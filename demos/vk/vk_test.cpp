@@ -121,6 +121,15 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     }
   }
 
+  for(const VkExtensionProperties &ext : supportedExts)
+  {
+    if(!strcmp(ext.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME))
+    {
+      instExts.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+      break;
+    }
+  }
+
   vkh::ApplicationInfo app("RenderDoc autotesting", VK_MAKE_VERSION(1, 0, 0),
                            "RenderDoc autotesting", VK_MAKE_VERSION(1, 0, 0), VK_API_VERSION_1_0);
 
@@ -198,6 +207,7 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     }
   }
 
+  supportedExts.clear();
   CHECK_VKR(vkh::enumerateDeviceExtensionProperties(supportedExts, phys, NULL));
 
   for(const char *search : devExts)
@@ -486,6 +496,55 @@ VkCommandBuffer VulkanGraphicsTest::GetCommandBuffer(VkCommandBufferLevel level)
   buflist.pop_back();
 
   return ret;
+}
+
+template <>
+void VulkanGraphicsTest::setName(VkPipeline obj, const std::string &name)
+{
+  setName(VK_OBJECT_TYPE_PIPELINE, (uint64_t)(uintptr_t)obj, name);
+}
+
+void VulkanGraphicsTest::setName(VkObjectType objType, uint64_t obj, const std::string &name)
+{
+  if(vkSetDebugUtilsObjectNameEXT)
+  {
+    VkDebugUtilsObjectNameInfoEXT info = {};
+    info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+    info.objectType = objType;
+    info.objectHandle = obj;
+    info.pObjectName = name.c_str();
+    vkSetDebugUtilsObjectNameEXT(device, &info);
+  }
+}
+
+void VulkanGraphicsTest::pushMarker(VkCommandBuffer cmd, const std::string &name)
+{
+  if(vkCmdBeginDebugUtilsLabelEXT)
+  {
+    VkDebugUtilsLabelEXT info = {};
+    info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+    info.pLabelName = name.c_str();
+    vkCmdBeginDebugUtilsLabelEXT(cmd, &info);
+  }
+}
+
+void VulkanGraphicsTest::setMarker(VkCommandBuffer cmd, const std::string &name)
+{
+  if(vkCmdInsertDebugUtilsLabelEXT)
+  {
+    VkDebugUtilsLabelEXT info = {};
+    info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+    info.pLabelName = name.c_str();
+    vkCmdInsertDebugUtilsLabelEXT(cmd, &info);
+  }
+}
+
+void VulkanGraphicsTest::popMarker(VkCommandBuffer cmd)
+{
+  if(vkCmdEndDebugUtilsLabelEXT)
+  {
+    vkCmdEndDebugUtilsLabelEXT(cmd);
+  }
 }
 
 VkDescriptorSet VulkanGraphicsTest::allocateDescriptorSet(VkDescriptorSetLayout setLayout)

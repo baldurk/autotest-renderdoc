@@ -132,6 +132,14 @@ struct VulkanGraphicsTest : public GraphicsTest
                                                       const char *entry_point = "main");
   VkCommandBuffer GetCommandBuffer(VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
+  void setName(VkObjectType objType, uint64_t obj, const std::string &name);
+  void pushMarker(VkCommandBuffer cmd, const std::string &name);
+  void setMarker(VkCommandBuffer cmd, const std::string &name);
+  void popMarker(VkCommandBuffer cmd);
+
+  template <typename T>
+  void setName(T obj, const std::string &name);
+
   VkDescriptorSet allocateDescriptorSet(VkDescriptorSetLayout setLayout);
   VkPipeline createGraphicsPipeline(const VkGraphicsPipelineCreateInfo *info);
   VkFramebuffer createFramebuffer(const VkFramebufferCreateInfo *info);

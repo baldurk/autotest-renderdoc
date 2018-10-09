@@ -194,6 +194,10 @@
     <ClInclude Include="vk\vulkan\vk_platform.h" />
     <ClInclude Include="vk\vulkan\volk.h" />
     <ClInclude Include="vk\vulkan\vulkan.h" />
+    <ClInclude Include="vk\vulkan\vulkan_core.h" />
+    <ClInclude Include="vk\vulkan\vulkan_win32.h" />
+    <ClInclude Include="vk\vulkan\vulkan_xcb.h" />
+    <ClInclude Include="vk\vulkan\vulkan_xlib.h" />
     <ClInclude Include="win32\win32_platform.h" />
     <ClInclude Include="win32\win32_window.h" />
   </ItemGroup>
