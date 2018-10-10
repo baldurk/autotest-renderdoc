@@ -142,6 +142,7 @@ struct VulkanGraphicsTest : public GraphicsTest
 
   VkDescriptorSet allocateDescriptorSet(VkDescriptorSetLayout setLayout);
   VkPipeline createGraphicsPipeline(const VkGraphicsPipelineCreateInfo *info);
+  VkPipeline createComputePipeline(const VkComputePipelineCreateInfo *info);
   VkFramebuffer createFramebuffer(const VkFramebufferCreateInfo *info);
   VkRenderPass createRenderPass(const VkRenderPassCreateInfo *info);
   VkImageView createImageView(const VkImageViewCreateInfo *info);

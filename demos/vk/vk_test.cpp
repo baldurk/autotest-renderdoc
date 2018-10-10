@@ -623,6 +623,14 @@ VkPipeline VulkanGraphicsTest::createGraphicsPipeline(const VkGraphicsPipelineCr
   return ret;
 }
 
+VkPipeline VulkanGraphicsTest::createComputePipeline(const VkComputePipelineCreateInfo *info)
+{
+  VkPipeline ret;
+  CHECK_VKR(vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, info, NULL, &ret));
+  pipes.push_back(ret);
+  return ret;
+}
+
 VkFramebuffer VulkanGraphicsTest::createFramebuffer(const VkFramebufferCreateInfo *info)
 {
   VkFramebuffer ret;

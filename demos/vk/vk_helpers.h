@@ -337,6 +337,25 @@ struct ImageMemoryBarrier : public VkImageMemoryBarrier
   }
 };
 
+struct BufferMemoryBarrier : public VkBufferMemoryBarrier
+{
+  BufferMemoryBarrier(VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkBuffer buffer,
+                      VkDeviceSize offset = 0, VkDeviceSize size = VK_WHOLE_SIZE,
+                      uint32_t srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                      uint32_t dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED)
+  {
+    sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+    pNext = NULL;
+    this->srcAccessMask = srcAccessMask;
+    this->dstAccessMask = dstAccessMask;
+    this->srcQueueFamilyIndex = srcQueueFamilyIndex;
+    this->dstQueueFamilyIndex = dstQueueFamilyIndex;
+    this->buffer = buffer;
+    this->offset = offset;
+    this->size = size;
+  }
+};
+
 struct CommandBufferAllocateInfo : public VkCommandBufferAllocateInfo
 {
   CommandBufferAllocateInfo(VkCommandPool commandPool, uint32_t commandBufferCount,
@@ -492,6 +511,18 @@ struct DescriptorSetAllocateInfo : public VkDescriptorSetAllocateInfo
   }
 
   operator const VkDescriptorSetAllocateInfo *() const { return this; }
+};
+
+struct PushConstantRange : public VkPushConstantRange
+{
+  PushConstantRange(VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size)
+  {
+    this->stageFlags = stageFlags;
+    this->offset = offset;
+    this->size = size;
+  }
+
+  operator const VkPushConstantRange *() const { return this; }
 };
 
 struct PipelineLayoutCreateInfo : public VkPipelineLayoutCreateInfo
@@ -858,6 +889,26 @@ struct PipelineShaderStageCreateInfo : public VkPipelineShaderStageCreateInfo
 
   operator const VkPipelineShaderStageCreateInfo *() const { return this; }
   operator const VkPipelineShaderStageCreateInfo &() const { return *this; }
+};
+
+struct ComputePipelineCreateInfo : public VkComputePipelineCreateInfo
+{
+  ComputePipelineCreateInfo(VkPipelineLayout layout, VkPipelineShaderStageCreateInfo stage,
+                            VkPipelineCreateFlags flags = 0,
+                            VkPipeline basePipelineHandle = VK_NULL_HANDLE,
+                            int32_t basePipelineIndex = -1)
+  {
+    sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+    pNext = NULL;
+    this->flags = 0;
+    this->stage = stage;
+    this->layout = layout;
+    this->basePipelineHandle = basePipelineHandle;
+    this->basePipelineIndex = basePipelineIndex;
+  }
+
+  operator const VkComputePipelineCreateInfo *() const { return this; }
+  operator const VkComputePipelineCreateInfo &() const { return *this; }
 };
 
 // we inherit privately and selectively make public the things we want to give direct access to
