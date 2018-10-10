@@ -1352,7 +1352,7 @@
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
 			<uint name="queueFamilyIndex" typename="uint32_t" width="4">0</uint>
 			<uint name="queueIndex" typename="uint32_t" width="4">0</uint>
-			<ResourceId name="Queue" typename="VkQueue" width="8" string="ResourceId::114">114</ResourceId>
+			<ResourceId name="Queue" typename="VkQueue" width="8" string="ResourceId::106">106</ResourceId>
 		</chunk>
 		<chunk id="1025" name="vkCreateSemaphore" length="26" threadID="999" timestamp="123500" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1362,7 +1362,7 @@
 				<enum name="flags" typename="VkFlagWithNoBits" string="0">0</enum>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Semaphore" typename="VkSemaphore" width="8" string="ResourceId::115">115</ResourceId>
+			<ResourceId name="Semaphore" typename="VkSemaphore" width="8" string="ResourceId::107">107</ResourceId>
 		</chunk>
 		<chunk id="1025" name="vkCreateSemaphore" length="26" threadID="999" timestamp="123510" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1372,7 +1372,7 @@
 				<enum name="flags" typename="VkFlagWithNoBits" string="0">0</enum>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Semaphore" typename="VkSemaphore" width="8" string="ResourceId::116">116</ResourceId>
+			<ResourceId name="Semaphore" typename="VkSemaphore" width="8" string="ResourceId::108">108</ResourceId>
 		</chunk>
 		<chunk id="1006" name="vkCreateCommandPool" length="30" threadID="999" timestamp="123520" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1383,7 +1383,7 @@
 				<uint name="queueFamilyIndex" typename="uint32_t" width="4">0</uint>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="CmdPool" typename="VkCommandPool" width="8" string="ResourceId::117">117</ResourceId>
+			<ResourceId name="CmdPool" typename="VkCommandPool" width="8" string="ResourceId::109">109</ResourceId>
 		</chunk>
 		<chunk id="1093" name="vkCreateSwapchainKHR" length="106" threadID="999" timestamp="123530" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1411,20 +1411,20 @@
 				<ResourceId name="oldSwapchain" typename="VkSwapchainKHR" width="8" string="ResourceId::0">0</ResourceId>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="SwapChain" typename="VkSwapchainKHR" width="8" string="ResourceId::118">118</ResourceId>
+			<ResourceId name="SwapChain" typename="VkSwapchainKHR" width="8" string="ResourceId::110">110</ResourceId>
 			<uint name="NumImages" typename="uint32_t" width="4">2</uint>
 		</chunk>
 		<chunk id="1024" name="vkGetSwapchainImagesKHR" length="28" threadID="999" timestamp="123540" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
-			<ResourceId name="Swapchain" typename="VkSwapchainKHR" width="8" string="ResourceId::118">118</ResourceId>
+			<ResourceId name="Swapchain" typename="VkSwapchainKHR" width="8" string="ResourceId::110">110</ResourceId>
 			<uint name="SwapchainImageIndex" typename="uint32_t" width="4">0</uint>
-			<ResourceId name="SwapchainImage" typename="VkImage" width="8" string="ResourceId::120">120</ResourceId>
+			<ResourceId name="SwapchainImage" typename="VkImage" width="8" string="ResourceId::112">112</ResourceId>
 		</chunk>
 		<chunk id="1024" name="vkGetSwapchainImagesKHR" length="28" threadID="999" timestamp="123550" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
-			<ResourceId name="Swapchain" typename="VkSwapchainKHR" width="8" string="ResourceId::118">118</ResourceId>
+			<ResourceId name="Swapchain" typename="VkSwapchainKHR" width="8" string="ResourceId::110">110</ResourceId>
 			<uint name="SwapchainImageIndex" typename="uint32_t" width="4">1</uint>
-			<ResourceId name="SwapchainImage" typename="VkImage" width="8" string="ResourceId::121">121</ResourceId>
+			<ResourceId name="SwapchainImage" typename="VkImage" width="8" string="ResourceId::113">113</ResourceId>
 		</chunk>
 		<chunk id="1010" name="vkCreateRenderPass" length="159" threadID="999" timestamp="123560" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1470,7 +1470,7 @@
 				<array name="pDependencies" typename="VkSubpassDependency" />
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="RenderPass" typename="VkRenderPass" width="8" string="ResourceId::151">151</ResourceId>
+			<ResourceId name="RenderPass" typename="VkRenderPass" width="8" string="ResourceId::118">118</ResourceId>
 		</chunk>
 		<chunk id="1016" name="vkCreateImageView" length="78" threadID="999" timestamp="123570" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1478,7 +1478,7 @@
 				<enum name="sType" typename="VkStructureType" string="VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO">15</enum>
 				<null name="pNext" typename="void *" />
 				<enum name="flags" typename="VkFlagWithNoBits" string="0">0</enum>
-				<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::121">121</ResourceId>
+				<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::113">113</ResourceId>
 				<enum name="viewType" typename="VkImageViewType" string="VK_IMAGE_VIEW_TYPE_2D">1</enum>
 				<enum name="format" typename="VkFormat" string="VK_FORMAT_B8G8R8A8_UNORM">44</enum>
 				<struct name="components" typename="VkComponentMapping">
@@ -1496,7 +1496,7 @@
 				</struct>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="View" typename="VkImageView" width="8" string="ResourceId::153">153</ResourceId>
+			<ResourceId name="View" typename="VkImageView" width="8" string="ResourceId::120">120</ResourceId>
 		</chunk>
 		<chunk id="1009" name="vkCreateFramebuffer" length="66" threadID="999" timestamp="123580" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1504,17 +1504,17 @@
 				<enum name="sType" typename="VkStructureType" string="VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO">37</enum>
 				<null name="pNext" typename="void *" />
 				<enum name="flags" typename="VkFlagWithNoBits" string="0">0</enum>
-				<ResourceId name="renderPass" typename="VkRenderPass" width="8" string="ResourceId::151">151</ResourceId>
+				<ResourceId name="renderPass" typename="VkRenderPass" width="8" string="ResourceId::118">118</ResourceId>
 				<uint name="attachmentCount" typename="uint32_t" width="4">1</uint>
 				<array name="pAttachments">
-					<ResourceId typename="VkImageView" width="8" string="ResourceId::153">153</ResourceId>
+					<ResourceId typename="VkImageView" width="8" string="ResourceId::120">120</ResourceId>
 				</array>
 				<uint name="width" typename="uint32_t" width="4">400</uint>
 				<uint name="height" typename="uint32_t" width="4">300</uint>
 				<uint name="layers" typename="uint32_t" width="4">1</uint>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Framebuffer" typename="VkFramebuffer" width="8" string="ResourceId::155">155</ResourceId>
+			<ResourceId name="Framebuffer" typename="VkFramebuffer" width="8" string="ResourceId::122">122</ResourceId>
 		</chunk>
 		<chunk id="1020" name="vkCreatePipelineLayout" length="50" threadID="999" timestamp="123590" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1528,7 +1528,7 @@
 				<array name="pPushConstantRanges" typename="VkPushConstantRange" />
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="PipelineLayout" typename="VkPipelineLayout" width="8" string="ResourceId::156">156</ResourceId>
+			<ResourceId name="PipelineLayout" typename="VkPipelineLayout" width="8" string="ResourceId::123">123</ResourceId>
 		</chunk>
 		<chunk id="1019" name="vkCreateShaderModule" length="1529" threadID="999" timestamp="123600" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1540,7 +1540,7 @@
 				<buffer name="pCode" typename="Byte Buffer" byteLength="1424">0</buffer>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="ShaderModule" typename="VkShaderModule" width="8" string="ResourceId::157">157</ResourceId>
+			<ResourceId name="ShaderModule" typename="VkShaderModule" width="8" string="ResourceId::124">124</ResourceId>
 		</chunk>
 		<chunk id="1019" name="vkCreateShaderModule" length="713" threadID="999" timestamp="123610" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1552,7 +1552,7 @@
 				<buffer name="pCode" typename="Byte Buffer" byteLength="608">1</buffer>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="ShaderModule" typename="VkShaderModule" width="8" string="ResourceId::158">158</ResourceId>
+			<ResourceId name="ShaderModule" typename="VkShaderModule" width="8" string="ResourceId::125">125</ResourceId>
 		</chunk>
 		<chunk id="1022" name="vkCreateGraphicsPipelines" length="593" threadID="999" timestamp="123620" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1569,7 +1569,7 @@
 						<null name="pNext" typename="void *" />
 						<enum name="flags" typename="VkFlagWithNoBits" string="0">0</enum>
 						<enum name="stage" typename="VkShaderStageFlagBits" string="VK_SHADER_STAGE_VERTEX_BIT">1</enum>
-						<ResourceId name="module" typename="VkShaderModule" width="8" string="ResourceId::157">157</ResourceId>
+						<ResourceId name="module" typename="VkShaderModule" width="8" string="ResourceId::124">124</ResourceId>
 						<string name="pName" typename="string">main</string>
 						<null name="pSpecializationInfo" typename="VkSpecializationInfo" />
 					</struct>
@@ -1578,7 +1578,7 @@
 						<null name="pNext" typename="void *" />
 						<enum name="flags" typename="VkFlagWithNoBits" string="0">0</enum>
 						<enum name="stage" typename="VkShaderStageFlagBits" string="VK_SHADER_STAGE_FRAGMENT_BIT">16</enum>
-						<ResourceId name="module" typename="VkShaderModule" width="8" string="ResourceId::158">158</ResourceId>
+						<ResourceId name="module" typename="VkShaderModule" width="8" string="ResourceId::125">125</ResourceId>
 						<string name="pName" typename="string">main</string>
 						<null name="pSpecializationInfo" typename="VkSpecializationInfo" />
 					</struct>
@@ -1731,14 +1731,14 @@
 						<enum typename="VkDynamicState" string="VK_DYNAMIC_STATE_SCISSOR">1</enum>
 					</array>
 				</struct>
-				<ResourceId name="layout" typename="VkPipelineLayout" width="8" string="ResourceId::156">156</ResourceId>
-				<ResourceId name="renderPass" typename="VkRenderPass" width="8" string="ResourceId::151">151</ResourceId>
+				<ResourceId name="layout" typename="VkPipelineLayout" width="8" string="ResourceId::123">123</ResourceId>
+				<ResourceId name="renderPass" typename="VkRenderPass" width="8" string="ResourceId::118">118</ResourceId>
 				<uint name="subpass" typename="uint32_t" width="4">0</uint>
 				<ResourceId name="basePipelineHandle" typename="VkPipeline" width="8" string="ResourceId::0">0</ResourceId>
 				<int name="basePipelineIndex" typename="int32_t" width="4">-1</int>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Pipeline" typename="VkPipeline" width="8" string="ResourceId::159">159</ResourceId>
+			<ResourceId name="Pipeline" typename="VkPipeline" width="8" string="ResourceId::126">126</ResourceId>
 		</chunk>
 		<chunk id="1013" name="vkCreateBuffer" length="67" threadID="999" timestamp="123630" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1753,7 +1753,7 @@
 				<null name="pQueueFamilyIndices" typename="uint32_t" />
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Buffer" typename="VkBuffer" width="8" string="ResourceId::160">160</ResourceId>
+			<ResourceId name="Buffer" typename="VkBuffer" width="8" string="ResourceId::127">127</ResourceId>
 			<struct name="memoryRequirements" typename="VkMemoryRequirements">
 				<uint name="size" typename="uint64_t" width="8">256</uint>
 				<uint name="alignment" typename="uint64_t" width="8">256</uint>
@@ -1769,12 +1769,12 @@
 				<uint name="memoryTypeIndex" typename="uint32_t" width="4">9</uint>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Memory" typename="VkDeviceMemory" width="8" string="ResourceId::161">161</ResourceId>
+			<ResourceId name="Memory" typename="VkDeviceMemory" width="8" string="ResourceId::128">128</ResourceId>
 		</chunk>
 		<chunk id="1042" name="vkBindBufferMemory" length="32" threadID="999" timestamp="123650" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
-			<ResourceId name="buffer" typename="VkBuffer" width="8" string="ResourceId::160">160</ResourceId>
-			<ResourceId name="memory" typename="VkDeviceMemory" width="8" string="ResourceId::161">161</ResourceId>
+			<ResourceId name="buffer" typename="VkBuffer" width="8" string="ResourceId::127">127</ResourceId>
+			<ResourceId name="memory" typename="VkDeviceMemory" width="8" string="ResourceId::128">128</ResourceId>
 			<uint name="memoryOffset" typename="uint64_t" width="8">0</uint>
 		</chunk>
 		<chunk id="1008" name="vkAllocateCommandBuffers" length="37" threadID="999" timestamp="123660" duration="5">
@@ -1782,11 +1782,11 @@
 			<struct name="AllocateInfo" typename="VkCommandBufferAllocateInfo">
 				<enum name="sType" typename="VkStructureType" string="VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO">40</enum>
 				<null name="pNext" typename="void *" />
-				<ResourceId name="commandPool" typename="VkCommandPool" width="8" string="ResourceId::117">117</ResourceId>
+				<ResourceId name="commandPool" typename="VkCommandPool" width="8" string="ResourceId::109">109</ResourceId>
 				<enum name="level" typename="VkCommandBufferLevel" string="VK_COMMAND_BUFFER_LEVEL_PRIMARY">0</enum>
 				<uint name="commandBufferCount" typename="uint32_t" width="4">4</uint>
 			</struct>
-			<ResourceId name="CommandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="CommandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 		</chunk>
 		<chunk id="1026" name="vkCreateFence" length="26" threadID="999" timestamp="123670" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1796,7 +1796,7 @@
 				<enum name="flags" typename="VkFenceCreateFlagBits" string="VkFenceCreateFlagBits(0)">0</enum>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Fence" typename="VkFence" width="8" string="ResourceId::180">180</ResourceId>
+			<ResourceId name="Fence" typename="VkFence" width="8" string="ResourceId::147">147</ResourceId>
 		</chunk>
 		<chunk id="1026" name="vkCreateFence" length="26" threadID="999" timestamp="123680" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
@@ -1806,11 +1806,11 @@
 				<enum name="flags" typename="VkFenceCreateFlagBits" string="VkFenceCreateFlagBits(0)">0</enum>
 			</struct>
 			<null name="pAllocator" typename="VkAllocationCallbacks" />
-			<ResourceId name="Fence" typename="VkFence" width="8" string="ResourceId::185">185</ResourceId>
+			<ResourceId name="Fence" typename="VkFence" width="8" string="ResourceId::152">152</ResourceId>
 		</chunk>
 		<chunk id="3" name="Initial Contents" length="33554624" threadID="999" timestamp="123690" duration="5">
 			<enum name="type" typename="VkResourceType" string="eResDeviceMemory">5</enum>
-			<ResourceId name="id" typename="VkDeviceMemory" width="8" string="ResourceId::161">161</ResourceId>
+			<ResourceId name="id" typename="VkDeviceMemory" width="8" string="ResourceId::128">128</ResourceId>
 			<bool name="IsSparse" typename="bool">false</bool>
 			<uint name="ContentsSize" typename="uint64_t" width="8">33554432</uint>
 			<buffer name="Contents" typename="Byte Buffer" byteLength="33554432">2</buffer>
@@ -1818,7 +1818,7 @@
 		<chunk id="2" name="List of Initial Contents Resources" length="160" threadID="999" timestamp="123700" duration="5">
 			<array name="WrittenRecords">
 				<struct typename="ResourceManagerInternal::WrittenRecord">
-					<ResourceId name="id" typename="ResourceId" width="8" string="ResourceId::121">121</ResourceId>
+					<ResourceId name="id" typename="ResourceId" width="8" string="ResourceId::113">113</ResourceId>
 					<bool name="written" typename="bool">false</bool>
 				</struct>
 				<struct typename="ResourceManagerInternal::WrittenRecord">
@@ -1846,11 +1846,11 @@
 					<bool name="written" typename="bool">true</bool>
 				</struct>
 				<struct typename="ResourceManagerInternal::WrittenRecord">
-					<ResourceId name="id" typename="ResourceId" width="8" string="ResourceId::120">120</ResourceId>
+					<ResourceId name="id" typename="ResourceId" width="8" string="ResourceId::112">112</ResourceId>
 					<bool name="written" typename="bool">true</bool>
 				</struct>
 				<struct typename="ResourceManagerInternal::WrittenRecord">
-					<ResourceId name="id" typename="ResourceId" width="8" string="ResourceId::161">161</ResourceId>
+					<ResourceId name="id" typename="ResourceId" width="8" string="ResourceId::128">128</ResourceId>
 					<bool name="written" typename="bool">true</bool>
 				</struct>
 			</array>
@@ -1858,8 +1858,8 @@
 		<chunk id="5" name="Frame Metadata" length="16" threadID="999" timestamp="123710" duration="5">
 			<uint name="m_FrameCounter" typename="uint32_t" width="4">6</uint>
 		</chunk>
-		<chunk id="4" name="Beginning of Capture" length="404" threadID="999" timestamp="123720" duration="5">
-			<uint name="NumImages" typename="uint32_t" width="4">5</uint>
+		<chunk id="4" name="Beginning of Capture" length="244" threadID="999" timestamp="123720" duration="5">
+			<uint name="NumImages" typename="uint32_t" width="4">3</uint>
 			<ResourceId name="Image" typename="VkImage" width="8" string="ResourceId::51">51</ResourceId>
 			<struct name="ImageState" typename="ImageLayouts">
 				<uint name="queueFamilyIndex" typename="uint32_t" width="4">0</uint>
@@ -1887,7 +1887,7 @@
 				</struct>
 				<enum name="format" typename="VkFormat" string="VK_FORMAT_R8_UNORM">9</enum>
 			</struct>
-			<ResourceId name="Image" typename="VkImage" width="8" string="ResourceId::120">120</ResourceId>
+			<ResourceId name="Image" typename="VkImage" width="8" string="ResourceId::112">112</ResourceId>
 			<struct name="ImageState" typename="ImageLayouts">
 				<uint name="queueFamilyIndex" typename="uint32_t" width="4">0</uint>
 				<array name="subresourceStates">
@@ -1914,7 +1914,7 @@
 				</struct>
 				<enum name="format" typename="VkFormat" string="VK_FORMAT_UNDEFINED">0</enum>
 			</struct>
-			<ResourceId name="Image" typename="VkImage" width="8" string="ResourceId::121">121</ResourceId>
+			<ResourceId name="Image" typename="VkImage" width="8" string="ResourceId::113">113</ResourceId>
 			<struct name="ImageState" typename="ImageLayouts">
 				<uint name="queueFamilyIndex" typename="uint32_t" width="4">0</uint>
 				<array name="subresourceStates">
@@ -1940,90 +1940,36 @@
 					<uint name="depth" typename="uint32_t" width="4">1</uint>
 				</struct>
 				<enum name="format" typename="VkFormat" string="VK_FORMAT_UNDEFINED">0</enum>
-			</struct>
-			<ResourceId name="Image" typename="VkImage" width="8" string="ResourceId::131">131</ResourceId>
-			<struct name="ImageState" typename="ImageLayouts">
-				<uint name="queueFamilyIndex" typename="uint32_t" width="4">0</uint>
-				<array name="subresourceStates">
-					<struct typename="ImageRegionState">
-						<uint name="dstQueueFamilyIndex" typename="uint32_t" width="4">4294967295</uint>
-						<struct name="subresourceRange" typename="VkImageSubresourceRange">
-							<enum name="aspectMask" typename="VkImageAspectFlagBits" string="VK_IMAGE_ASPECT_COLOR_BIT">1</enum>
-							<uint name="baseMipLevel" typename="uint32_t" width="4">0</uint>
-							<uint name="levelCount" typename="uint32_t" width="4">1</uint>
-							<uint name="baseArrayLayer" typename="uint32_t" width="4">0</uint>
-							<uint name="layerCount" typename="uint32_t" width="4">1</uint>
-						</struct>
-						<enum name="oldLayout" typename="VkImageLayout" string="VkImageLayout&lt;4294967295&gt;">4294967295</enum>
-						<enum name="newLayout" typename="VkImageLayout" string="VK_IMAGE_LAYOUT_UNDEFINED">0</enum>
-					</struct>
-				</array>
-				<int name="layerCount" typename="int32_t" width="4">1</int>
-				<int name="levelCount" typename="int32_t" width="4">1</int>
-				<int name="sampleCount" typename="int32_t" width="4">1</int>
-				<struct name="extent" typename="VkExtent3D">
-					<uint name="width" typename="uint32_t" width="4">400</uint>
-					<uint name="height" typename="uint32_t" width="4">300</uint>
-					<uint name="depth" typename="uint32_t" width="4">1</uint>
-				</struct>
-				<enum name="format" typename="VkFormat" string="VK_FORMAT_B8G8R8A8_UNORM">44</enum>
-			</struct>
-			<ResourceId name="Image" typename="VkImage" width="8" string="ResourceId::142">142</ResourceId>
-			<struct name="ImageState" typename="ImageLayouts">
-				<uint name="queueFamilyIndex" typename="uint32_t" width="4">0</uint>
-				<array name="subresourceStates">
-					<struct typename="ImageRegionState">
-						<uint name="dstQueueFamilyIndex" typename="uint32_t" width="4">4294967295</uint>
-						<struct name="subresourceRange" typename="VkImageSubresourceRange">
-							<enum name="aspectMask" typename="VkImageAspectFlagBits" string="VK_IMAGE_ASPECT_COLOR_BIT">1</enum>
-							<uint name="baseMipLevel" typename="uint32_t" width="4">0</uint>
-							<uint name="levelCount" typename="uint32_t" width="4">1</uint>
-							<uint name="baseArrayLayer" typename="uint32_t" width="4">0</uint>
-							<uint name="layerCount" typename="uint32_t" width="4">1</uint>
-						</struct>
-						<enum name="oldLayout" typename="VkImageLayout" string="VkImageLayout&lt;4294967295&gt;">4294967295</enum>
-						<enum name="newLayout" typename="VkImageLayout" string="VK_IMAGE_LAYOUT_UNDEFINED">0</enum>
-					</struct>
-				</array>
-				<int name="layerCount" typename="int32_t" width="4">1</int>
-				<int name="levelCount" typename="int32_t" width="4">1</int>
-				<int name="sampleCount" typename="int32_t" width="4">1</int>
-				<struct name="extent" typename="VkExtent3D">
-					<uint name="width" typename="uint32_t" width="4">400</uint>
-					<uint name="height" typename="uint32_t" width="4">300</uint>
-					<uint name="depth" typename="uint32_t" width="4">1</uint>
-				</struct>
-				<enum name="format" typename="VkFormat" string="VK_FORMAT_B8G8R8A8_UNORM">44</enum>
 			</struct>
 		</chunk>
 		<chunk id="1039" name="vkQueueWaitIdle" length="8" threadID="999" timestamp="123730" duration="5">
-			<ResourceId name="queue" typename="VkQueue" width="8" string="ResourceId::114">114</ResourceId>
+			<ResourceId name="queue" typename="VkQueue" width="8" string="ResourceId::106">106</ResourceId>
 		</chunk>
 		<chunk id="1027" name="vkGetFenceStatus" length="24" threadID="999" timestamp="123740" duration="5">
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
-			<ResourceId name="fence" typename="VkFence" width="8" string="ResourceId::180">180</ResourceId>
+			<ResourceId name="fence" typename="VkFence" width="8" string="ResourceId::147">147</ResourceId>
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1037" name="vkBeginCommandBuffer" length="55" threadID="999" timestamp="123750" duration="5">
-			<ResourceId name="CommandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="CommandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<struct name="BeginInfo" typename="VkCommandBufferBeginInfo">
 				<enum name="sType" typename="VkStructureType" string="VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO">42</enum>
 				<null name="pNext" typename="void *" />
 				<enum name="flags" typename="VkCommandBufferUsageFlagBits" string="VkCommandBufferUsageFlagBits(0)">0</enum>
 				<null name="pInheritanceInfo" typename="VkCommandBufferInheritanceInfo" />
 			</struct>
-			<ResourceId name="BakedCommandBuffer" typename="ResourceId" width="8" string="ResourceId::184">184</ResourceId>
+			<ResourceId name="BakedCommandBuffer" typename="ResourceId" width="8" string="ResourceId::151">151</ResourceId>
 			<ResourceId name="device" typename="VkDevice" width="8" string="ResourceId::11">11</ResourceId>
 			<struct name="AllocateInfo" typename="VkCommandBufferAllocateInfo" hidden="true">
 				<enum name="sType" typename="VkStructureType" string="VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO">40</enum>
 				<null name="pNext" typename="void *" />
-				<ResourceId name="commandPool" typename="VkCommandPool" width="8" string="ResourceId::117">117</ResourceId>
+				<ResourceId name="commandPool" typename="VkCommandPool" width="8" string="ResourceId::109">109</ResourceId>
 				<enum name="level" typename="VkCommandBufferLevel" string="VK_COMMAND_BUFFER_LEVEL_PRIMARY">0</enum>
 				<uint name="commandBufferCount" typename="uint32_t" width="4">1</uint>
 			</struct>
 		</chunk>
 		<chunk id="1074" name="vkCmdPipelineBarrier" length="121" threadID="999" timestamp="123760" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<enum name="srcStageMask" typename="VkPipelineStageFlagBits" string="VK_PIPELINE_STAGE_ALL_COMMANDS_BIT">65536</enum>
 			<enum name="destStageMask" typename="VkPipelineStageFlagBits" string="VK_PIPELINE_STAGE_ALL_COMMANDS_BIT">65536</enum>
 			<enum name="dependencyFlags" typename="VkDependencyFlagBits" string="VkDependencyFlagBits(0)">0</enum>
@@ -2042,7 +1988,7 @@
 					<enum name="newLayout" typename="VkImageLayout" string="VK_IMAGE_LAYOUT_GENERAL">1</enum>
 					<int name="srcQueueFamilyIndex" typename="int32_t" width="4">-1</int>
 					<int name="dstQueueFamilyIndex" typename="int32_t" width="4">-1</int>
-					<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::121">121</ResourceId>
+					<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::113">113</ResourceId>
 					<struct name="subresourceRange" typename="VkImageSubresourceRange">
 						<enum name="aspectMask" typename="VkImageAspectFlagBits" string="VK_IMAGE_ASPECT_COLOR_BIT">1</enum>
 						<uint name="baseMipLevel" typename="uint32_t" width="4">0</uint>
@@ -2055,8 +2001,8 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1071" name="vkCmdClearColorImage" length="132" threadID="999" timestamp="123770" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
-			<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::121">121</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
+			<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::113">113</ResourceId>
 			<enum name="imageLayout" typename="VkImageLayout" string="VK_IMAGE_LAYOUT_GENERAL">1</enum>
 			<struct name="Color" typename="VkClearColorValue" union="true">
 				<array name="float32" fixedarray="true">
@@ -2091,12 +2037,12 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1045" name="vkCmdBeginRenderPass" length="69" threadID="999" timestamp="123780" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<struct name="RenderPassBegin" typename="VkRenderPassBeginInfo">
 				<enum name="sType" typename="VkStructureType" string="VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO">43</enum>
 				<null name="pNext" typename="void *" />
-				<ResourceId name="renderPass" typename="VkRenderPass" width="8" string="ResourceId::151">151</ResourceId>
-				<ResourceId name="framebuffer" typename="VkFramebuffer" width="8" string="ResourceId::155">155</ResourceId>
+				<ResourceId name="renderPass" typename="VkRenderPass" width="8" string="ResourceId::118">118</ResourceId>
+				<ResourceId name="framebuffer" typename="VkFramebuffer" width="8" string="ResourceId::122">122</ResourceId>
 				<struct name="renderArea" typename="VkRect2D">
 					<struct name="offset" typename="VkOffset2D">
 						<int name="x" typename="int32_t" width="4">0</int>
@@ -2114,13 +2060,13 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1049" name="vkCmdBindPipeline" length="28" threadID="999" timestamp="123790" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<enum name="pipelineBindPoint" typename="VkPipelineBindPoint" string="VK_PIPELINE_BIND_POINT_GRAPHICS">0</enum>
-			<ResourceId name="pipeline" typename="VkPipeline" width="8" string="ResourceId::159">159</ResourceId>
+			<ResourceId name="pipeline" typename="VkPipeline" width="8" string="ResourceId::126">126</ResourceId>
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1050" name="vkCmdSetViewport" length="56" threadID="999" timestamp="123800" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<uint name="firstViewport" typename="uint32_t" width="4">0</uint>
 			<uint name="viewportCount" typename="uint32_t" width="4">1</uint>
 			<array name="pViewports">
@@ -2136,7 +2082,7 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1051" name="vkCmdSetScissor" length="48" threadID="999" timestamp="123810" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<uint name="firstScissor" typename="uint32_t" width="4">0</uint>
 			<uint name="scissorCount" typename="uint32_t" width="4">1</uint>
 			<array name="pScissors">
@@ -2154,11 +2100,11 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1060" name="vkCmdBindVertexBuffers" length="56" threadID="999" timestamp="123820" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<uint name="firstBinding" typename="uint32_t" width="4">0</uint>
 			<uint name="bindingCount" typename="uint32_t" width="4">1</uint>
 			<array name="pBuffers">
-				<ResourceId typename="VkBuffer" width="8" string="ResourceId::160">160</ResourceId>
+				<ResourceId typename="VkBuffer" width="8" string="ResourceId::127">127</ResourceId>
 			</array>
 			<array name="pOffsets">
 				<uint typename="uint64_t" width="8">0</uint>
@@ -2166,7 +2112,7 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1083" name="vkCmdDraw" length="32" threadID="999" timestamp="123830" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<uint name="vertexCount" typename="uint32_t" width="4">3</uint>
 			<uint name="instanceCount" typename="uint32_t" width="4">1</uint>
 			<uint name="firstVertex" typename="uint32_t" width="4">0</uint>
@@ -2174,11 +2120,11 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1048" name="vkCmdEndRenderPass" length="16" threadID="999" timestamp="123840" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1074" name="vkCmdPipelineBarrier" length="121" threadID="999" timestamp="123850" duration="5">
-			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+			<ResourceId name="commandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 			<enum name="srcStageMask" typename="VkPipelineStageFlagBits" string="VK_PIPELINE_STAGE_ALL_COMMANDS_BIT">65536</enum>
 			<enum name="destStageMask" typename="VkPipelineStageFlagBits" string="VK_PIPELINE_STAGE_ALL_COMMANDS_BIT">65536</enum>
 			<enum name="dependencyFlags" typename="VkDependencyFlagBits" string="VkDependencyFlagBits(0)">0</enum>
@@ -2197,7 +2143,7 @@
 					<enum name="newLayout" typename="VkImageLayout" string="VK_IMAGE_LAYOUT_PRESENT_SRC_KHR">1000001002</enum>
 					<int name="srcQueueFamilyIndex" typename="int32_t" width="4">-1</int>
 					<int name="dstQueueFamilyIndex" typename="int32_t" width="4">-1</int>
-					<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::121">121</ResourceId>
+					<ResourceId name="image" typename="VkImage" width="8" string="ResourceId::113">113</ResourceId>
 					<struct name="subresourceRange" typename="VkImageSubresourceRange">
 						<enum name="aspectMask" typename="VkImageAspectFlagBits" string="VK_IMAGE_ASPECT_COLOR_BIT">1</enum>
 						<uint name="baseMipLevel" typename="uint32_t" width="4">0</uint>
@@ -2210,11 +2156,11 @@
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="1038" name="vkEndCommandBuffer" length="16" threadID="999" timestamp="123860" duration="5">
-			<ResourceId name="CommandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
-			<ResourceId name="BakedCommandBuffer" typename="ResourceId" width="8" string="ResourceId::184">184</ResourceId>
+			<ResourceId name="CommandBuffer" typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
+			<ResourceId name="BakedCommandBuffer" typename="ResourceId" width="8" string="ResourceId::151">151</ResourceId>
 		</chunk>
 		<chunk id="1041" name="vkQueueSubmit" length="113" threadID="999" timestamp="123870" duration="5">
-			<ResourceId name="queue" typename="VkQueue" width="8" string="ResourceId::114">114</ResourceId>
+			<ResourceId name="queue" typename="VkQueue" width="8" string="ResourceId::106">106</ResourceId>
 			<uint name="submitCount" typename="uint32_t" width="4">1</uint>
 			<array name="pSubmits">
 				<struct typename="VkSubmitInfo">
@@ -2222,26 +2168,26 @@
 					<null name="pNext" typename="void *" />
 					<uint name="waitSemaphoreCount" typename="uint32_t" width="4">1</uint>
 					<array name="pWaitSemaphores">
-						<ResourceId typename="VkSemaphore" width="8" string="ResourceId::115">115</ResourceId>
+						<ResourceId typename="VkSemaphore" width="8" string="ResourceId::107">107</ResourceId>
 					</array>
 					<array name="pWaitDstStageMask">
 						<enum typename="VkPipelineStageFlagBits" string="VK_PIPELINE_STAGE_ALL_COMMANDS_BIT">65536</enum>
 					</array>
 					<uint name="commandBufferCount" typename="uint32_t" width="4">1</uint>
 					<array name="pCommandBuffers">
-						<ResourceId typename="VkCommandBuffer" width="8" string="ResourceId::168">168</ResourceId>
+						<ResourceId typename="VkCommandBuffer" width="8" string="ResourceId::135">135</ResourceId>
 					</array>
 					<uint name="signalSemaphoreCount" typename="uint32_t" width="4">1</uint>
 					<array name="pSignalSemaphores">
-						<ResourceId typename="VkSemaphore" width="8" string="ResourceId::116">116</ResourceId>
+						<ResourceId typename="VkSemaphore" width="8" string="ResourceId::108">108</ResourceId>
 					</array>
 				</struct>
 			</array>
-			<ResourceId name="fence" typename="VkFence" width="8" string="ResourceId::185">185</ResourceId>
+			<ResourceId name="fence" typename="VkFence" width="8" string="ResourceId::152">152</ResourceId>
 			<array name="DebugMessages" typename="DebugMessage" hidden="true" />
 		</chunk>
 		<chunk id="6" name="End of Capture" length="8" threadID="999" timestamp="123880" duration="5">
-			<ResourceId name="PresentedImage" typename="VkImage" width="8" string="ResourceId::121">121</ResourceId>
+			<ResourceId name="PresentedImage" typename="VkImage" width="8" string="ResourceId::113">113</ResourceId>
 		</chunk>
 	</chunks>
 </rdc>
