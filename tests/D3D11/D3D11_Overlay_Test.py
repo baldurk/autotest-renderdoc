@@ -17,7 +17,7 @@ class D3D11_Overlay_Test(rdtest.TestCase):
 
         test_marker: rd.DrawcallDescription = self.find_draw("Test")
 
-        self.controller.SetFrameEvent(test_marker.children[0].eventId, True)
+        self.controller.SetFrameEvent(test_marker.next.eventId, True)
 
         pipe: rd.PipeState = self.controller.GetPipelineState()
 

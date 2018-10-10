@@ -165,6 +165,9 @@ void main()
       vkCmdSetViewport(cmd2, 0, 1, &viewport);
       vkCmdSetScissor(cmd2, 0, 1, &size);
       vkh::cmdBindVertexBuffers(cmd2, 0, {vb.buffer}, {sizeof(DefaultA2V) * 3});
+
+      setMarker(cmd2, "Secondary");
+
       vkCmdDraw(cmd2, 3, 1, 0, 0);
 
       vkEndCommandBuffer(cmd2);
@@ -188,6 +191,9 @@ void main()
       vkCmdSetViewport(cmd, 0, 1, &viewport);
       vkCmdSetScissor(cmd, 0, 1, &size);
       vkh::cmdBindVertexBuffers(cmd, 0, {vb.buffer}, {0});
+
+      setMarker(cmd, "Primary");
+
       vkCmdDraw(cmd, 3, 1, 0, 0);
 
       vkCmdNextSubpass(cmd, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);

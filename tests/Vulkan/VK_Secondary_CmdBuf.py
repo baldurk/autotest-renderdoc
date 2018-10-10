@@ -9,7 +9,7 @@ class VK_Secondary_CmdBuf(rdtest.TestCase):
     def check_capture(self):
         self.check_final_backbuffer()
 
-        draw = self.find_draw("vkCmdBeginRenderPass")
+        draw = self.find_draw("Primary")
 
         resources = self.controller.GetResources()
 
@@ -36,12 +36,11 @@ class VK_Secondary_CmdBuf(rdtest.TestCase):
 
         rdtest.log.success("Primary draw has correct pipeline bound")
 
-        draw = self.find_draw("vkCmdExecuteCommands")
+        draw = self.find_draw("Secondary")
 
-        # Expect 3 children - BeginCmdBuffer / CmdDraw / EndCmdBfufer
-        self.check(draw is not None and len(draw.children) == 3)
+        self.check(draw is not None and draw.next is not None)
 
-        self.controller.SetFrameEvent(draw.children[1].eventId, False)
+        self.controller.SetFrameEvent(draw.next.eventId, False)
 
         pipe: rd.PipeState = self.controller.GetPipelineState()
 

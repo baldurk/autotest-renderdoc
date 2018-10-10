@@ -151,14 +151,12 @@ struct D3D11_Overlay_Test : D3D11GraphicsTest
           {10.0f, 10.0f, (float)screenWidth - 20.0f, (float)screenHeight - 20.0f, 0.0f, 1.0f});
 
       // add a marker so we can easily locate this draw
-      annot->BeginEvent(L"Test Begin");
+      annot->SetMarker(L"Test Begin");
 
       depth.StencilEnable = TRUE;
       depth.FrontFace.StencilFunc = D3D11_COMPARISON_GREATER;
       SetDepthState(depth);
       ctx->Draw(21, 9);
-
-      annot->EndEvent();
 
       Present();
     }
