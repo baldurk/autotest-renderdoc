@@ -510,7 +510,7 @@ VkPipelineShaderStageCreateInfo VulkanGraphicsTest::CompileShaderModule(
 
 VkCommandBuffer VulkanGraphicsTest::GetCommandBuffer(VkCommandBufferLevel level)
 {
-  std::vector<VkCommandBuffer> buflist = freeCommandBuffers[level];
+  std::vector<VkCommandBuffer> &buflist = freeCommandBuffers[level];
 
   if(buflist.empty())
   {
