@@ -157,9 +157,13 @@ struct VulkanGraphicsTest : public GraphicsTest
   // requested features
   VkPhysicalDeviceFeatures features = {};
 
-  // requested extensions
+  // required extensions before Init(), enabled extensions after Init()
   std::vector<const char *> instExts;
   std::vector<const char *> devExts;
+
+  // optional extensions
+  std::vector<const char *> optInstExts;
+  std::vector<const char *> optDevExts;
 
   // core objects
   VkInstance instance;

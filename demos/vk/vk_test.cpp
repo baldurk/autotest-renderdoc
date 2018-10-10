@@ -82,6 +82,8 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
   if(debugDevice)
     instExts.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
+  optInstExts.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
   std::vector<const char *> layers;
 
   std::vector<VkLayerProperties> supportedLayers;
@@ -121,13 +123,21 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     }
   }
 
-  for(const VkExtensionProperties &ext : supportedExts)
+  // add any optional extensions that are supported
+  for(const char *search : optInstExts)
   {
-    if(!strcmp(ext.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME))
+    bool found = false;
+    for(VkExtensionProperties &ext : supportedExts)
     {
-      instExts.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-      break;
+      if(!strcmp(ext.extensionName, search))
+      {
+        found = true;
+        break;
+      }
     }
+
+    if(found)
+      instExts.push_back(search);
   }
 
   vkh::ApplicationInfo app("RenderDoc autotesting", VK_MAKE_VERSION(1, 0, 0),
@@ -227,6 +237,23 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
       TEST_ERROR("Required device extension '%s' missing", search);
       return false;
     }
+  }
+
+  // add any optional extensions that are supported
+  for(const char *search : optDevExts)
+  {
+    bool found = false;
+    for(VkExtensionProperties &ext : supportedExts)
+    {
+      if(!strcmp(ext.extensionName, search))
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if(found)
+      devExts.push_back(search);
   }
 
   CHECK_VKR(vkCreateDevice(phys,
