@@ -234,8 +234,30 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
 
     if(!found)
     {
-      TEST_ERROR("Required device extension '%s' missing", search);
-      return false;
+      // try the layers we're enabling
+      for(const char *layer : layers)
+      {
+        std::vector<VkExtensionProperties> layerExts;
+        CHECK_VKR(vkh::enumerateDeviceExtensionProperties(layerExts, phys, layer));
+
+        for(VkExtensionProperties &ext : layerExts)
+        {
+          if(!strcmp(ext.extensionName, search))
+          {
+            found = true;
+            break;
+          }
+        }
+
+        if(found)
+          break;
+      }
+
+      if(!found)
+      {
+        TEST_ERROR("Required device extension '%s' missing", search);
+        return false;
+      }
     }
   }
 
