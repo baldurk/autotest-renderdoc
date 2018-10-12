@@ -110,12 +110,12 @@ class TestCase:
             callstack.pop()
             assertion_line = callstack[-1].line
 
-            assert_msg = re.sub(r'[^(]*\(([^,]*)(,.*)?\).*', r'\1', assertion_line)
+            assert_msg = re.sub(r'[^(]*\((.*)?\)', r'\1', assertion_line)
 
             if msg is None:
                 raise TestFailureException('Assertion Failure: {}'.format(assert_msg))
             else:
-                raise TestFailureException('{}: {}'.format(msg, assert_msg))
+                raise TestFailureException('Assertion Failure: {}'.format(msg))
 
     def get_capture(self):
         """
