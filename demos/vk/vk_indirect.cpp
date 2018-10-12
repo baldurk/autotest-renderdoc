@@ -340,7 +340,7 @@ void main()
       {
         pushMarker(cmd, "KHR_draw_indirect_count");
 
-        pushMarker(cmd, "Empty draws");
+        pushMarker(cmd, "Empty count draws");
         // empty draws
         vkCmdDrawIndirectCountKHR(cmd, ssbo.buffer, 11 * sizeof(uvec4), ssbo.buffer,
                                   10 * sizeof(uvec4), 0, sizeof(uvec4));
