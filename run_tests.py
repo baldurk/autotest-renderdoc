@@ -15,6 +15,9 @@ parser.add_argument('--in-process',
                     help="Lists the tests available to run", action="store_true")
 parser.add_argument('--data', default="data",
                     help="The folder that reference data is in. Will not be modified.", type=str)
+parser.add_argument('--data-extra', default="data_extra",
+                    help="The folder that extra reference data is in (typically very large captures that aren't part "
+                         "of the normal repo). Will not be modified.", type=str)
 parser.add_argument('--artifacts', default="artifacts",
                     help="The folder to put output artifacts in. Will be completely cleared.", type=str)
 parser.add_argument('--temp', default="tmp",
@@ -68,6 +71,7 @@ if args.list:
 rdtest.set_root_dir(os.path.realpath(os.path.dirname(__file__)))
 rdtest.set_artifact_dir(artifacts_dir)
 rdtest.set_data_dir(os.path.realpath(args.data))
+rdtest.set_data_extra_dir(os.path.realpath(args.data_extra))
 rdtest.set_temp_dir(os.path.realpath(args.temp))
 
 if args.internal_run_test is not None:

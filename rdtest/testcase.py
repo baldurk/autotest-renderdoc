@@ -101,8 +101,11 @@ class TestCase:
         self.controller: rd.ReplayController = None
         self._variables = []
 
-    def get_ref_path(self, name: str):
-        return util.get_data_path(os.path.join(self.__class__.__name__, name))
+    def get_ref_path(self, name: str, extra: bool = False):
+        if extra:
+            return util.get_data_extra_path(os.path.join(self.__class__.__name__, name))
+        else:
+            return util.get_data_path(os.path.join(self.__class__.__name__, name))
 
     def check(self, expr, msg=None):
         if not expr:

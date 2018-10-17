@@ -23,6 +23,7 @@ def _md5_file(fname):
 _root_dir = os.getcwd()
 _artifact_dir = os.path.realpath('artifacts')
 _data_dir = os.path.realpath('data')
+_data_extra_dir = os.path.realpath('data_extra')
 _temp_dir = os.path.realpath('tmp')
 _test_name = 'Unknown_Test'
 
@@ -35,6 +36,11 @@ def set_root_dir(path: str):
 def set_data_dir(path: str):
     global _data_dir
     _data_dir = os.path.abspath(path)
+
+
+def set_data_extra_dir(path: str):
+    global _data_extra_dir
+    _data_extra_dir = os.path.abspath(path)
 
 
 def set_artifact_dir(path: str):
@@ -62,6 +68,14 @@ def get_data_dir():
 
 def get_data_path(name: str):
     return os.path.join(_data_dir, name)
+
+
+def get_data_extra_dir():
+    return _data_extra_dir
+
+
+def get_data_extra_path(name: str):
+    return os.path.join(_data_extra_dir, name)
 
 
 def get_artifact_dir():
