@@ -40,3 +40,13 @@ std::string GetCWD()
 
   return cwdstr;
 }
+
+bool FixedAlloc(void *ptr, size_t size)
+{
+  return VirtualAlloc(ptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE) != NULL;
+}
+
+void FreeFixedAlloc(void *ptr, size_t size)
+{
+  VirtualFree(ptr, size, MEM_RELEASE);
+}
