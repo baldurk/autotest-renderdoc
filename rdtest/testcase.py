@@ -225,11 +225,27 @@ class TestCase:
     def invoketest(self):
         self.run()
 
+    def get_first_draw(self):
+        first_draw: rd.DrawcallDescription = self.controller.GetDrawcalls()[0]
+
+        while len(first_draw.children) > 0:
+            first_draw = first_draw.children[0]
+
+        return first_draw
+
+    def get_last_draw(self):
+        last_draw: rd.DrawcallDescription = self.controller.GetDrawcalls()[-1]
+
+        while len(last_draw.children) > 0:
+            last_draw = last_draw.children[-1]
+
+        return last_draw
+
     def check_final_backbuffer(self):
         img_path = util.get_tmp_path('backbuffer.png')
         ref_path = self.get_ref_path('backbuffer.png')
 
-        last_draw: rd.DrawcallDescription = self.controller.GetDrawcalls()[-1]
+        last_draw: rd.DrawcallDescription = self.get_last_draw()
 
         self.controller.SetFrameEvent(last_draw.eventId, True)
 
