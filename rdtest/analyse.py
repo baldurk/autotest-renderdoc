@@ -129,7 +129,7 @@ def get_postvs_attrs(controller: rd.ReplayController, mesh: rd.MeshFormat, data_
 
         accum_offset += (8 if fmt.compType == rd.CompType.Double else 4) * fmt.compCount
 
-        if pipe.HasAlignedPostVSData() and (accum_offset % 16) != 0:
+        if pipe.HasAlignedPostVSData(data_stage) and (accum_offset % 16) != 0:
             accum_offset += 16 - (accum_offset % 16)
 
     return attrs
