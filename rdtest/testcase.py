@@ -96,6 +96,8 @@ class ConstantBufferChecker:
 
 
 class TestCase:
+    slow_test = False
+
     def __init__(self):
         self.capture_filename = ""
         self.controller: rd.ReplayController = None

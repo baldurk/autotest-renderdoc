@@ -13,6 +13,8 @@ parser.add_argument('-t', '--test_filter', default=".*",
                     help="The tests to run, as a regexp filter", type=str)
 parser.add_argument('--in-process',
                     help="Lists the tests available to run", action="store_true")
+parser.add_argument('--slow-tests',
+                    help="Run potentially slow tests", action="store_true")
 parser.add_argument('--data', default="data",
                     help="The folder that reference data is in. Will not be modified.", type=str)
 parser.add_argument('--data-extra', default="data_extra",
@@ -77,4 +79,4 @@ rdtest.set_temp_dir(os.path.realpath(args.temp))
 if args.internal_run_test is not None:
     rdtest.internal_run_test(args.internal_run_test)
 else:
-    rdtest.run_tests(args.test_filter, args.in_process)
+    rdtest.run_tests(args.test_filter, args.in_process, args.slow_tests)

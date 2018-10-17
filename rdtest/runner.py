@@ -66,7 +66,7 @@ def _run_test(testclass, failedcases: list):
                            .format(test_run.returncode))
 
 
-def run_tests(test_filter: str=".*", in_process: bool=False):
+def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
     start_time = time.time()
 
     # On windows, disable error reporting
@@ -104,7 +104,12 @@ def run_tests(test_filter: str=".*", in_process: bool=False):
         name = testclass.__name__
 
         if not regexp.search(name):
-            log.print("Skipping {}".format(name))
+
+            log.print("Skipping {} as it doesn't match '{}'".format(name, test_filter))
+            continue
+
+        if not slow_tests and testclass.slow_test:
+            log.print("Skipping {} as it is a slow test, which are not enabled".format(name))
             continue
 
         # Print header (and footer) outside the exec so we know they will always be printed successfully
