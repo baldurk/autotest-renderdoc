@@ -173,7 +173,7 @@ def zip_compare(test_file: str, ref_file: str):
 
 
 # Use the 32-bit float epsilon, not sys.float_info.epsilon which is for double floats
-FLT_EPSILON = 1.19209290E-07
+FLT_EPSILON = 2.0*1.19209290E-07
 
 
 def value_compare(ref, data):
