@@ -38,10 +38,10 @@ struct OpenGLGraphicsTest : public GraphicsTest
 
   bool Init(int argc, char **argv);
   bool IsSupported();
-  Window *MakeWindow(int width, int height, const char *title);
-  void *MakeContext(Window *win, void *share);
+  GraphicsWindow *MakeWindow(int width, int height, const char *title);
+  void *MakeContext(GraphicsWindow *win, void *share);
   void DestroyContext(void *ctx);
-  void ActivateContext(Window *win, void *ctx);
+  void ActivateContext(GraphicsWindow *win, void *ctx);
 
   void PostInit();
 
@@ -54,14 +54,14 @@ struct OpenGLGraphicsTest : public GraphicsTest
   GLuint MakeFBO();
 
   bool Running();
-  void Present(Window *window);
+  void Present(GraphicsWindow *window);
   void Present() { Present(mainWindow); }
   int glMajor = 4;
   int glMinor = 3;
   bool coreProfile = true;
   bool gles = false;
 
-  Window *mainWindow = NULL;
+  GraphicsWindow *mainWindow = NULL;
   void *mainContext = NULL;
   bool inited = false;
 

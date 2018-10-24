@@ -114,9 +114,9 @@ struct DefaultA2V
 
 extern const DefaultA2V DefaultTri[3];
 
-struct Window
+struct GraphicsWindow
 {
-  virtual ~Window() {}
+  virtual ~GraphicsWindow() {}
   virtual void Resize(int width, int height) = 0;
   virtual bool Update() = 0;
 };
@@ -124,7 +124,7 @@ struct Window
 struct GraphicsTest
 {
   virtual ~GraphicsTest() {}
-  virtual Window *MakeWindow(int width, int height, const char *title) { return NULL; }
+  virtual GraphicsWindow *MakeWindow(int width, int height, const char *title) { return NULL; }
   virtual int main(int argc, char **argv) { return 9; }
   virtual bool IsSupported() { return false; }
   virtual bool Init(int argc, char **argv);

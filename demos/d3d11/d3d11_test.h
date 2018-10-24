@@ -47,7 +47,7 @@ struct D3D11GraphicsTest : public GraphicsTest
   ~D3D11GraphicsTest();
 
   bool Init(int argc, char **argv);
-  Window *MakeWindow(int width, int height, const char *title);
+  GraphicsWindow *MakeWindow(int width, int height, const char *title);
   bool IsSupported();
 
   void PostDeviceCreate();
@@ -166,7 +166,7 @@ struct D3D11GraphicsTest : public GraphicsTest
   PFN_D3D11_CREATE_DEVICE dyn_D3D11CreateDevice = NULL;
   PFN_D3D11_CREATE_DEVICE_AND_SWAP_CHAIN dyn_D3D11CreateDeviceAndSwapChain = NULL;
 
-  Window *mainWindow = NULL;
+  GraphicsWindow *mainWindow = NULL;
 
   IDXGISwapChainPtr swap;
 

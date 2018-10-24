@@ -131,7 +131,7 @@ bool OpenGLGraphicsTest::IsSupported()
   return result;
 }
 
-Window *OpenGLGraphicsTest::MakeWindow(int width, int height, const char *title)
+GraphicsWindow *OpenGLGraphicsTest::MakeWindow(int width, int height, const char *title)
 {
   if(!GLAD_WGL_ARB_pixel_format)
   {
@@ -211,7 +211,7 @@ Window *OpenGLGraphicsTest::MakeWindow(int width, int height, const char *title)
   return win32win;
 }
 
-void *OpenGLGraphicsTest::MakeContext(Window *win, void *share)
+void *OpenGLGraphicsTest::MakeContext(GraphicsWindow *win, void *share)
 {
   if(!GLAD_WGL_ARB_create_context_profile)
   {
@@ -261,7 +261,7 @@ void OpenGLGraphicsTest::DestroyContext(void *ctx)
   deleteContext((HGLRC)ctx);
 }
 
-void OpenGLGraphicsTest::ActivateContext(Window *win, void *ctx)
+void OpenGLGraphicsTest::ActivateContext(GraphicsWindow *win, void *ctx)
 {
   Win32Window *win32win = (Win32Window *)win;
 
@@ -275,7 +275,7 @@ void OpenGLGraphicsTest::ActivateContext(Window *win, void *ctx)
   ReleaseDC(win32win->wnd, dc);
 }
 
-void OpenGLGraphicsTest::Present(Window *window)
+void OpenGLGraphicsTest::Present(GraphicsWindow *window)
 {
   Win32Window *win32win = (Win32Window *)window;
 

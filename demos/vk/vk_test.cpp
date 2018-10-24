@@ -188,7 +188,7 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
     return false;
   }
 
-  mainWindow = new Win32Window(screenWidth, screenHeight, "Autotesting");
+  mainWindow = MakeWindow(screenWidth, screenHeight, "Autotesting");
 
   VkResult vkr = (VkResult)CreateSurface(mainWindow, &surface);
 
@@ -338,7 +338,7 @@ bool VulkanGraphicsTest::IsSupported()
   return volkInitialize() == VK_SUCCESS;
 }
 
-Window *VulkanGraphicsTest::MakeWindow(int width, int height, const char *title)
+GraphicsWindow *VulkanGraphicsTest::MakeWindow(int width, int height, const char *title)
 {
   return new Win32Window(width, height, title);
 }
@@ -827,7 +827,7 @@ void VulkanGraphicsTest::acquireImage()
   }
 }
 
-VkResult VulkanGraphicsTest::CreateSurface(Window *win, VkSurfaceKHR *outSurf)
+VkResult VulkanGraphicsTest::CreateSurface(GraphicsWindow *win, VkSurfaceKHR *outSurf)
 {
 #if defined(WIN32)
   VkWin32SurfaceCreateInfoKHR createInfo;

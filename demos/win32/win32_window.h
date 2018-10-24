@@ -26,7 +26,7 @@
 
 #include "../test_common.h"
 
-struct Win32Window : public Window
+struct Win32Window : public GraphicsWindow
 {
   Win32Window(int width, int height, const char *title);
   ~Win32Window();

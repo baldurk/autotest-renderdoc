@@ -105,7 +105,7 @@ void main()
     GLuint program = MakeProgram(common + vertex, common + pixel);
     glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
-    Window *win2 = NULL;
+    GraphicsWindow *win2 = NULL;
     void *ctx2 = NULL;
 
     while(Running())

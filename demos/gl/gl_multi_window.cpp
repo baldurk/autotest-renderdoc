@@ -100,7 +100,7 @@ void main()
     GLuint program = MakeProgram(common + vertex, common + pixel);
     glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
-    Window *win2 = MakeWindow(300, 200, "Autotesting 2");
+    GraphicsWindow *win2 = MakeWindow(300, 200, "Autotesting 2");
     void *ctx2 = MakeContext(win2, mainContext);
 
     ActivateContext(win2, ctx2);

@@ -173,7 +173,7 @@ bool D3D11GraphicsTest::Init(int argc, char **argv)
   return true;
 }
 
-Window *D3D11GraphicsTest::MakeWindow(int width, int height, const char *title)
+GraphicsWindow *D3D11GraphicsTest::MakeWindow(int width, int height, const char *title)
 {
   return new Win32Window(width, height, title);
 }

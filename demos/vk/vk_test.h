@@ -117,8 +117,8 @@ struct VulkanGraphicsTest : public GraphicsTest
 
   bool Init(int argc, char **argv);
   bool IsSupported();
-  Window *MakeWindow(int width, int height, const char *title);
-  VkResult CreateSurface(Window *win, VkSurfaceKHR *outSurf);
+  GraphicsWindow *MakeWindow(int width, int height, const char *title);
+  VkResult CreateSurface(GraphicsWindow *win, VkSurfaceKHR *outSurf);
 
   bool Running();
   VkImage StartUsingBackbuffer(VkCommandBuffer cmd, VkAccessFlags nextUse, VkImageLayout layout);
@@ -202,7 +202,7 @@ struct VulkanGraphicsTest : public GraphicsTest
   VkViewport viewport;
   VkRect2D scissor;
 
-  Window *mainWindow = NULL;
+  GraphicsWindow *mainWindow = NULL;
 
   // internal bookkeeping
   std::set<VkFence> fences;
