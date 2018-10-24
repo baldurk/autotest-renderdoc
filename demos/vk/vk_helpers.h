@@ -567,7 +567,7 @@ struct AttachmentDescription : public VkAttachmentDescription
     this->stencilLoadOp =
         stencilLoadOp != VK_ATTACHMENT_LOAD_OP_MAX_ENUM ? stencilLoadOp : this->loadOp;
     this->stencilStoreOp =
-        stencilStoreOp != VK_ATTACHMENT_LOAD_OP_MAX_ENUM ? stencilStoreOp : this->storeOp;
+        stencilStoreOp != VK_ATTACHMENT_STORE_OP_MAX_ENUM ? stencilStoreOp : this->storeOp;
   }
 };
 
@@ -728,10 +728,17 @@ struct SubmitInfo : public VkSubmitInfo
 {
   SubmitInfo(const std::vector<VkCommandBuffer> &cmds)
   {
-    memset(this, 0, sizeof(*this));
     sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    pNext = NULL;
     this->commandBufferCount = (uint32_t)cmds.size();
     this->pCommandBuffers = cmds.data();
+
+    this->waitSemaphoreCount = 0;
+    this->pWaitSemaphores = NULL;
+    this->pWaitDstStageMask = NULL;
+
+    this->signalSemaphoreCount = 0;
+    this->pSignalSemaphores = NULL;
   }
 
   operator const VkSubmitInfo *() const { return this; }
@@ -755,7 +762,7 @@ struct CommandBufferInheritanceInfo : public VkCommandBufferInheritanceInfo
 {
   CommandBufferInheritanceInfo(VkRenderPass renderPass, uint32_t subpass,
                                VkFramebuffer framebuffer = VK_NULL_HANDLE,
-                               VkBool32 occlusionQueryEnable = FALSE,
+                               VkBool32 occlusionQueryEnable = VK_FALSE,
                                VkQueryControlFlags queryFlags = 0,
                                VkQueryPipelineStatisticFlags pipelineStatistics = 0)
   {
