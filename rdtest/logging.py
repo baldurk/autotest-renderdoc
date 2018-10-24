@@ -130,7 +130,7 @@ class TestLogger:
                         shutil.move(diff_tmp_file, util.get_artifact_path(diff_artifact))
                         diff_file = ' ({})'.format(diff_artifact)
 
-                elif 'text' in mime[0]:
+                elif 'text' in mime[0] or 'xml' in mime[0]:
                     with open(ex.files[0]) as f:
                         fromlines = f.readlines()
                     with open(ex.files[1]) as f:
