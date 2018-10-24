@@ -3,6 +3,7 @@ import shutil
 import ctypes
 import sys
 import re
+import platform
 import subprocess
 import time
 import renderdoc as rd
@@ -100,11 +101,18 @@ def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
 
     failedcases = []
 
+    plat = os.name
+    if plat == 'nt' or 'Windows' in platform.platform():
+        plat = 'win32'
+
     for testclass in testcases:
         name = testclass.__name__
 
-        if not regexp.search(name):
+        if testclass.platform != plat and testclass.platform != '':
+            log.print("Skipping {} as it's not supported on this platform '{}'".format(name, plat))
+            continue
 
+        if not regexp.search(name):
             log.print("Skipping {} as it doesn't match '{}'".format(name, test_filter))
             continue
 

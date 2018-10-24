@@ -97,6 +97,7 @@ class ConstantBufferChecker:
 
 class TestCase:
     slow_test = False
+    platform = ''
 
     def __init__(self):
         self.capture_filename = ""
