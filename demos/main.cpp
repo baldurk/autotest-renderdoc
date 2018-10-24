@@ -121,6 +121,11 @@ bool NuklearTick(nk_context *ctx)
   return true;
 }
 
+void NuklearRender()
+{
+  nk_gdi_render(nk_rgb(30, 30, 30));
+}
+
 void NuklearShutdown()
 {
   nk_gdifont_del(font);
@@ -133,6 +138,76 @@ void NuklearShutdown()
 
 #define NK_XLIB_IMPLEMENTATION
 #include "nuklear/nuklear_xlib.h"
+
+Display *dpy = NULL;
+Colormap cmap = 0;
+Window win = 0;
+int screen = 0;
+XFont *font = NULL;
+
+nk_context *NuklearInit(int width, int height, const char *title)
+{
+  dpy = XOpenDisplay(NULL);
+  if(!dpy)
+    return NULL;
+  Window root = DefaultRootWindow(dpy);
+  screen = XDefaultScreen(dpy);
+  Visual *vis = XDefaultVisual(dpy, screen);
+  cmap = XCreateColormap(dpy, root, vis, AllocNone);
+
+  XSetWindowAttributes swa = {};
+  swa.colormap = cmap;
+  swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPress | ButtonReleaseMask |
+                   ButtonMotionMask | Button1MotionMask | Button3MotionMask | Button4MotionMask |
+                   Button5MotionMask | PointerMotionMask | KeymapStateMask;
+  win = XCreateWindow(dpy, root, 0, 0, width, height, 0, XDefaultDepth(dpy, screen), InputOutput,
+                      vis, CWEventMask | CWColormap, &swa);
+
+  XStoreName(dpy, win, title);
+  XMapWindow(dpy, win);
+  Atom wm_delete_window = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+  XSetWMProtocols(dpy, win, &wm_delete_window, 1);
+
+  /* GUI */
+  font = nk_xfont_create(dpy, "fixed");
+  return nk_xlib_init(font, dpy, screen, win, width, height);
+}
+
+bool NuklearTick(nk_context *ctx)
+{
+  XEvent evt;
+
+  nk_input_begin(ctx);
+  while(XPending(dpy))
+  {
+    XNextEvent(dpy, &evt);
+    if(evt.type == ClientMessage)
+      return false;
+    if(XFilterEvent(&evt, win))
+      continue;
+    nk_xlib_handle_event(dpy, screen, win, &evt);
+  }
+  nk_input_end(ctx);
+
+  return true;
+}
+
+void NuklearRender()
+{
+  XClearWindow(dpy, win);
+  nk_xlib_render(win, nk_rgb(30, 30, 30));
+  XFlush(dpy);
+}
+
+void NuklearShutdown()
+{
+  nk_xfont_del(dpy, font);
+  nk_xlib_shutdown();
+  XUnmapWindow(dpy, win);
+  XFreeColormap(dpy, cmap);
+  XDestroyWindow(dpy, win);
+  XCloseDisplay(dpy);
+}
 
 #endif
 
@@ -176,6 +251,10 @@ int main(int argc, char **argv)
     const int width = 400, height = 575;
 
     nk_context *ctx = NuklearInit(width, height, "RenderDoc Test Program");
+
+    if(!ctx)
+      return 1;
+
     int curtest = 0;
     bool allow[(int)TestAPI::Count] = {};
     const char *allow_names[] = {
@@ -309,7 +388,7 @@ int main(int argc, char **argv)
       }
       nk_end(ctx);
 
-      nk_gdi_render(nk_rgb(30, 30, 30));
+      NuklearRender();
     }
 
     NuklearShutdown();

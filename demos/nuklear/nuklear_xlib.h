@@ -496,7 +496,7 @@ NK_INTERN void
 nk_xsurf_draw_image(XSurface *surf, short x, short y, unsigned short w, unsigned short h,
     struct nk_image img, struct nk_color col)
 {
-    XImageWithAlpha *aimage = img.handle.ptr;
+    XImageWithAlpha *aimage = (XImageWithAlpha *)img.handle.ptr;
     if (aimage){
         if (aimage->clipMask){
             XSetClipMask(surf->dpy, surf->gc, aimage->clipMask);
@@ -510,8 +510,8 @@ nk_xsurf_draw_image(XSurface *surf, short x, short y, unsigned short w, unsigned
 void
 nk_xsurf_image_free(struct nk_image* image)
 {
-    XSurface *surf = xlib.surf;
-    XImageWithAlpha *aimage = image->handle.ptr;
+    XSurface *surf = (XSurface *)xlib.surf;
+    XImageWithAlpha *aimage = (XImageWithAlpha *)image->handle.ptr;
     if (!aimage) return;
     XDestroyImage(aimage->ximage);
     XFreePixmap(surf->dpy, aimage->clipMask);
@@ -673,7 +673,7 @@ nk_xlib_copy(nk_handle handle, const char* str, int len)
     NK_UNUSED(handle);
     free(xlib.clipboard_data);
     xlib.clipboard_len = 0;
-    xlib.clipboard_data = malloc((size_t)len);
+    xlib.clipboard_data = (char *)malloc((size_t)len);
     if (xlib.clipboard_data) {
         memcpy(xlib.clipboard_data, str, (size_t)len);
         xlib.clipboard_len = len;
