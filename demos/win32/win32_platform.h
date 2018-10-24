@@ -40,6 +40,3 @@
 #define popen _popen
 #define pclose _pclose
 #define strcasestr StrStrIA
-
-bool FixedAlloc(void *ptr, size_t size);
-void FreeFixedAlloc(void *ptr, size_t size);

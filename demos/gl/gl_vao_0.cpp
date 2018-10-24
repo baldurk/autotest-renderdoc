@@ -82,29 +82,9 @@ void main()
 
     uint32_t idxs[3] = {0, 1, 2};
 
-    void *fixedAlloc = (void *)0x456000000;
-    size_t fixedSize = 1024;
-
-    // to avoid serialising random pointer values, try to allocate some fixed memory
-    bool fixed = FixedAlloc(fixedAlloc, fixedSize);
-
-    DefaultA2V *tri = (DefaultA2V *)fixedAlloc;
-    uint32_t *idx = (uint32_t *)(tri + 3);
-
-    if(fixed)
-    {
-      memcpy(tri, DefaultTri, sizeof(DefaultTri));
-      memcpy(idx, idxs, sizeof(idxs));
-    }
-    else
-    {
-      tri = (DefaultA2V *)DefaultTri;
-      idx = idxs;
-    }
-
     GLuint vb = MakeBuffer();
     glBindBuffer(GL_ARRAY_BUFFER, vb);
-    glBufferStorage(GL_ARRAY_BUFFER, sizeof(DefaultTri), tri, 0);
+    glBufferStorage(GL_ARRAY_BUFFER, sizeof(DefaultTri), DefaultTri, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), (void *)(0));
@@ -118,7 +98,7 @@ void main()
 
     GLuint ib = MakeBuffer();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
-    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 3, idx, 0);
+    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 3, idxs, 0);
 
     GLuint program = MakeProgram(common + vertex, common + pixel);
     glObjectLabel(GL_PROGRAM, program, -1, "Full program");
@@ -129,10 +109,6 @@ void main()
       glClearBufferfv(GL_COLOR, 0, col);
 
       glUseProgram(program);
-
-      if(!fixed)
-        glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0,
-                             GL_DEBUG_SEVERITY_HIGH, -1, "No fixed allocation available");
 
       // use both buffers
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
@@ -149,15 +125,15 @@ void main()
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
       glViewport(screenWidth / 2, 0, GLsizei(screenWidth) / 2, GLsizei(screenHeight) / 2);
-      glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, idx);
+      glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, idxs);
 
       // use direct pointers for vertices
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &tri[0].pos);
-      glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &tri[0].col);
-      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &tri[0].uv);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &DefaultTri[0].pos);
+      glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &DefaultTri[0].col);
+      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &DefaultTri[0].uv);
 
       glViewport(0, screenHeight / 2, GLsizei(screenWidth) / 2, GLsizei(screenHeight) / 2);
       glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
@@ -167,13 +143,10 @@ void main()
 
       glViewport(screenWidth / 2, screenHeight / 2, GLsizei(screenWidth) / 2,
                  GLsizei(screenHeight) / 2);
-      glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, idx);
+      glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, idxs);
 
       Present();
     }
-
-    if(fixed)
-      FreeFixedAlloc(fixedAlloc, fixedSize);
 
     return 0;
   }
