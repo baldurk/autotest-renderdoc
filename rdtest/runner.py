@@ -70,6 +70,8 @@ def _run_test(testclass, failedcases: list):
 def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests: bool):
     start_time = time.time()
 
+    rd.InitGlobalEnv(rd.GlobalEnvironment(), [])
+
     # On windows, disable error reporting
     if 'windll' in dir(ctypes):
         ctypes.windll.kernel32.SetErrorMode(1 | 2)  # SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX
