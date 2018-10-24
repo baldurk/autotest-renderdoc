@@ -2,6 +2,8 @@ import rdtest
 
 
 class GL_DX_Interop(rdtest.TestCase):
+    platform = 'win32'
+
     def get_capture(self):
         return rdtest.run_and_capture("demos_x64", "DX_Interop", 7)
 
