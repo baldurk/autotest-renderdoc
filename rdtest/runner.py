@@ -67,7 +67,7 @@ def _run_test(testclass, failedcases: list):
                            .format(test_run.returncode))
 
 
-def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
+def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests: bool):
     start_time = time.time()
 
     # On windows, disable error reporting
@@ -93,11 +93,15 @@ def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
 
     log.header("Tests running for RenderDoc Version {} ({})".format(rd.GetVersionString(), rd.GetCommitHash()))
 
-    log.print("Running tests matching '{}'".format(test_filter))
-
     testcases = get_tests()
 
-    regexp = re.compile(test_filter, re.IGNORECASE)
+    include_regexp = re.compile(test_include, re.IGNORECASE)
+    exclude_regexp = None
+    if test_exclude != '':
+        exclude_regexp = re.compile(test_exclude, re.IGNORECASE)
+        log.print("Running tests matching '{}' and not matching '{}'".format(test_include, test_exclude))
+    else:
+        log.print("Running tests matching '{}'".format(test_include))
 
     failedcases = []
     skippedcases = []
@@ -114,8 +118,13 @@ def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
             skippedcases.append(testclass)
             continue
 
-        if not regexp.search(name):
-            log.print("Skipping {} as it doesn't match '{}'".format(name, test_filter))
+        if not include_regexp.search(name):
+            log.print("Skipping {} as it doesn't match '{}'".format(name, test_include))
+            skippedcases.append(testclass)
+            continue
+
+        if exclude_regexp is not None and exclude_regexp.search(name):
+            log.print("Skipping {} as it matches '{}'".format(name, test_exclude))
             skippedcases.append(testclass)
             continue
 
