@@ -5,7 +5,7 @@ import renderdoc as rd
 
 class VK_Indirect(rdtest.TestCase):
     def get_capture(self):
-        return rdtest.run_and_capture("demos_x64.exe", "VK_Indirect", 5)
+        return rdtest.run_and_capture("demos_x64", "VK_Indirect", 5)
 
     def check_overlay(self, eventId: int, out: rd.ReplayOutput, tex: rd.TextureDisplay, save_data: rd.TextureSave):
         pipe: rd.PipeState = self.controller.GetPipelineState()

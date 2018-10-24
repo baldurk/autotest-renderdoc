@@ -4,7 +4,7 @@ import renderdoc as rd
 
 class VK_CBuffer_Zoo(rdtest.TestCase):
     def get_capture(self):
-        return rdtest.run_and_capture("demos_x64.exe", "VK_CBuffer_Zoo", 5)
+        return rdtest.run_and_capture("demos_x64", "VK_CBuffer_Zoo", 5)
 
     def check_capture(self):
         draw = self.find_draw("Draw")

@@ -4,7 +4,7 @@ import renderdoc as rd
 
 class VK_Secondary_CmdBuf(rdtest.TestCase):
     def get_capture(self):
-        return rdtest.run_and_capture("demos_x64.exe", "Secondary_CmdBuf", 5)
+        return rdtest.run_and_capture("demos_x64", "Secondary_CmdBuf", 5)
 
     def check_capture(self):
         self.check_final_backbuffer()
