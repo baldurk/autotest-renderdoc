@@ -240,6 +240,13 @@ int main(int argc, char **argv)
     return 1;
   }
 
+  if(tests.empty())
+  {
+    fprintf(stderr, "No tests registered\n");
+    fflush(stderr);
+    return 1;
+  }
+
   std::string testchoice;
 
   if(argc >= 2)
