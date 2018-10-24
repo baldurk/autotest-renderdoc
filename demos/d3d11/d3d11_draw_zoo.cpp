@@ -26,7 +26,7 @@
 
 struct D3D11_Draw_Zoo : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Draws several variants using different vertex/index offsets.";
 
   std::string common = R"EOSHADER(

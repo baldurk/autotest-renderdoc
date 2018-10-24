@@ -26,7 +26,7 @@
 
 struct Empty_Drawcall : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test a drawcall of 0 size";
+  static constexpr const char *Description = "Test a drawcall of 0 size";
 
   int main(int argc, char **argv)
   {

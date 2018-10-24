@@ -26,7 +26,7 @@
 
 struct Midframe_Context_Create : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Creates a context and activates it in the middle of rendering.";
 
   std::string common = R"EOSHADER(

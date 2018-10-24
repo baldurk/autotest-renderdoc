@@ -26,7 +26,7 @@
 
 struct VK_Simple_Triangle : VulkanGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Just draws a simple triangle, using normal pipeline. Basic test that can be used "
       "for any dead-simple tests that don't require any particular API use";
 

@@ -26,7 +26,7 @@
 
 struct Array_Interpolator : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test passing an array of float2 to make sure the interpolator packing is handled by "
       "shader debugging";
 

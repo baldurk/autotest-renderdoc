@@ -26,7 +26,7 @@
 
 struct Refcount_Check : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Ensures that the device etc doesn't delete itself when there are still outstanding "
       "references, and also that it *does* delete itself when any cycle is detected.";
 

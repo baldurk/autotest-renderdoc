@@ -26,7 +26,7 @@
 
 struct Simple_Dispatch : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test that just does a dispatch and some copies, for checking basic compute stuff";
 
   std::string compute = R"EOSHADER(

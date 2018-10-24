@@ -26,7 +26,7 @@
 
 struct VK_Draw_Zoo : VulkanGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Draws several variants using different vertex/index offsets.";
 
   std::string common = R"EOSHADER(

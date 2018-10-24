@@ -26,7 +26,7 @@
 
 struct Saturate : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Tests using saturate, originally for a bug report";
+  static constexpr const char *Description = "Tests using saturate, originally for a bug report";
 
   std::string pixel = R"EOSHADER(
 

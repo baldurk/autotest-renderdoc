@@ -26,7 +26,7 @@
 
 struct Counter_Query_Pred : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Tests use of D3D11 counters, queries and predication. "
       "for any dead-simple tests that don't require any particular API use";
 

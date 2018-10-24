@@ -26,7 +26,7 @@
 
 struct D3D11_Midframe_Create : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Tests creating resources mid-frame to make sure that they and their contents are "
       "correctly tracked.";
 

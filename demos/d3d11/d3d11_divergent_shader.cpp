@@ -26,7 +26,7 @@
 
 struct Divergent_Shader : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test running a shader that diverges across a quad and then expects derivatives to "
       "still be valid after converging.";
 

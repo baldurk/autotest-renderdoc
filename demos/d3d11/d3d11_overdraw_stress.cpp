@@ -26,7 +26,7 @@
 
 struct Overdraw_Stress : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Renders a lot of overlapping triangles";
+  static constexpr const char *Description = "Renders a lot of overlapping triangles";
 
   int main(int argc, char **argv)
   {

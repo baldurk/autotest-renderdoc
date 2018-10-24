@@ -26,7 +26,7 @@
 
 struct Deferred_UpdateSubresource : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test that does UpdateSubresource on a deferred context which might need some "
       "workaround code.";
 

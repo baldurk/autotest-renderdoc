@@ -26,7 +26,7 @@
 
 struct DepthStencil_FBO : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Creates a depth-stencil FBO and writes both depth and stencil to it";
 
   std::string common = R"EOSHADER(

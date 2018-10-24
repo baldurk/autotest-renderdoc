@@ -26,7 +26,7 @@
 
 struct VK_Indirect : VulkanGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Tests different indirect drawing and dispatching functions, including parameters that are "
       "generated on the GPU and not known on the CPU at submit time";
 

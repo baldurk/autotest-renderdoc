@@ -26,7 +26,7 @@
 
 struct Unsized_MS_FBO_Attachment : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Creates a MS FBO with one attachment created with an unsized internal format";
 
   std::string common = R"EOSHADER(

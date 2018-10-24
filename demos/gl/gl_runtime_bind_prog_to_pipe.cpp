@@ -26,7 +26,7 @@
 
 struct Runtime_Bind_Prog_To_Pipe : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Creates a single program pipeline and binds different programs to it mid-frame";
 
   std::string common = R"EOSHADER(

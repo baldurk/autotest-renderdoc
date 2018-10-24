@@ -26,7 +26,7 @@
 
 struct Many_UAVs : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test using more than 8 compute shader UAVs (D3D11.1 feature)";
 
   std::string compute = R"EOSHADER(

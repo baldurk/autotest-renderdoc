@@ -26,7 +26,7 @@
 
 struct StreamOut : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test using D3D11's streamout feature";
+  static constexpr const char *Description = "Test using D3D11's streamout feature";
 
   int main(int argc, char **argv)
   {

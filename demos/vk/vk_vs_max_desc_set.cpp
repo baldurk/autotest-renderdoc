@@ -26,7 +26,7 @@
 
 struct VS_Max_Desc_Set : VulkanGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Uses the device's maximum number of descriptor sets in the vertex shader.";
 
   std::string common = R"EOSHADER(

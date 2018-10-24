@@ -26,7 +26,7 @@
 
 struct Empty_Compute_Dispatch : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test dispatching with one threadgroup count set to 0";
+  static constexpr const char *Description = "Test dispatching with one threadgroup count set to 0";
 
   std::string compute = R"EOSHADER(
 

@@ -26,7 +26,8 @@
 
 struct Empty_Viewports : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test setting some viewports that are empty, but enabled";
+  static constexpr const char *Description =
+      "Test setting some viewports that are empty, but enabled";
 
   int main(int argc, char **argv)
   {

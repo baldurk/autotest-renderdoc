@@ -26,7 +26,7 @@
 
 struct D3D11_Map_Overrun : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test overrunning the bounds of a Map() call";
+  static constexpr const char *Description = "Test overrunning the bounds of a Map() call";
 
   std::string common = R"EOSHADER(
 

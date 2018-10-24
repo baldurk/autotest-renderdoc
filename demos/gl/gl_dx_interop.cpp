@@ -31,7 +31,7 @@
 
 struct DX_Interop : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test interop between GL and DX (Create and render to a DX surface and include into "
       "GL rendering)";
 

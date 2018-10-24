@@ -26,7 +26,7 @@
 
 struct Secondary_CmdBuf : VulkanGraphicsTest
 {
-  static constexpr char *Description = "Draw using secondary command buffers";
+  static constexpr const char *Description = "Draw using secondary command buffers";
 
   std::string common = R"EOSHADER(
 

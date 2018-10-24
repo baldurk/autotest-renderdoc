@@ -26,7 +26,7 @@
 
 struct Binding_Hazards : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test of D3D11 hazard tracking write/read bindings";
+  static constexpr const char *Description = "Test of D3D11 hazard tracking write/read bindings";
 
   std::string compute = R"EOSHADER(
 

@@ -26,7 +26,7 @@
 
 struct Mip_Gen_RT : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Tests rendering from one mip to another to do a downsample chain";
 
   std::string common = R"EOSHADER(

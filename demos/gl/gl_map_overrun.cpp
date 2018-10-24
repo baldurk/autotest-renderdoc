@@ -26,7 +26,7 @@
 
 struct GL_Map_Overrun : OpenGLGraphicsTest
 {
-  static constexpr char *Description = "Test overrunning the bounds of a Map() call";
+  static constexpr const char *Description = "Test overrunning the bounds of a Map() call";
 
   std::string common = R"EOSHADER(
 

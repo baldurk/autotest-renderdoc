@@ -26,7 +26,7 @@
 
 struct Large_BCn_Arrays : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test creating large texture 2D arrays of BC4, BC5, BC6, BC7 textures";
 
   std::string common = R"EOSHADER(

@@ -26,7 +26,7 @@
 
 struct Buffer_Updates : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Test of buffer updates, both buffers that are updated regularly and get marked as "
       "dirty, as well as buffers updated mid-frame";
 

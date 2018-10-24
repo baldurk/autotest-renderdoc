@@ -26,7 +26,8 @@
 
 struct Primitive_Restart : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test of primitive restart in triangle strips with -1 index";
+  static constexpr const char *Description =
+      "Test of primitive restart in triangle strips with -1 index";
 
   int main(int argc, char **argv)
   {

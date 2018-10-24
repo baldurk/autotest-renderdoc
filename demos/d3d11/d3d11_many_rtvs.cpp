@@ -26,7 +26,7 @@
 
 struct Many_RTVs : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test repeatedly creating and destroying RTVs";
+  static constexpr const char *Description = "Test repeatedly creating and destroying RTVs";
 
   std::string pixel = R"EOSHADER(
 

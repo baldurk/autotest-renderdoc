@@ -26,7 +26,7 @@
 
 struct D3D11_Overlay_Test : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Makes a couple of draws that show off all the overlays in some way";
 
   int main(int argc, char **argv)

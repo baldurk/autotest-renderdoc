@@ -26,7 +26,7 @@
 
 struct Multi_Window : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Render to two different windows to test out different contexts and window resolutions.";
 
   std::string common = R"EOSHADER(

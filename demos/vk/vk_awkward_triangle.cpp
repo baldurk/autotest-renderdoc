@@ -26,7 +26,7 @@
 
 struct Awkward_Triangle : VulkanGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Draws a triangle but using vertex buffers in formats that only support VBs and not "
       "any other type of buffer use (i.e. requiring manual decode)";
 

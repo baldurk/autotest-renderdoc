@@ -26,7 +26,8 @@
 
 struct Structured_Buffer_MisalignedDirty : D3D11GraphicsTest
 {
-  static constexpr char *Description = "Test updating a misaligned chunk of a structured buffer";
+  static constexpr const char *Description =
+      "Test updating a misaligned chunk of a structured buffer";
 
   std::string pixel = R"EOSHADER(
 

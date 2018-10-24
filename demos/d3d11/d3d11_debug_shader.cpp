@@ -26,7 +26,7 @@
 
 struct Debug_Shader : D3D11GraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Tests simple shader debugging identities by rendering many small triangles and "
       "performing one calculation to each to an F32 target";
 

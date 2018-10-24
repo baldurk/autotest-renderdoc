@@ -26,7 +26,7 @@
 
 struct GL_CBuffer_Zoo : OpenGLGraphicsTest
 {
-  static constexpr char *Description =
+  static constexpr const char *Description =
       "Tests every kind of constant that can be in a cbuffer to make sure it's decoded "
       "correctly";
 

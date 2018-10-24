@@ -26,7 +26,7 @@
 
 struct SPIRV_Shader : OpenGLGraphicsTest
 {
-  static constexpr char *Description = "Draws using a SPIR-V shader pipeline.";
+  static constexpr const char *Description = "Draws using a SPIR-V shader pipeline.";
 
   std::string vertex = R"EOSHADER(
 #version 420 core
