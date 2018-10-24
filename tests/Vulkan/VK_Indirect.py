@@ -24,7 +24,7 @@ class VK_Indirect(rdtest.TestCase):
 
         if not rdtest.image_compare(overlay_path, ref_path):
             raise rdtest.TestFailureException("Reference and output image differ @ EID {}".format(str(eventId)),
-                                              overlay_path, ref_path)
+                                              ref_path, overlay_path)
 
     def check_capture(self):
         self.check_final_backbuffer()

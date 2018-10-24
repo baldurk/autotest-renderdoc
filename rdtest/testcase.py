@@ -257,7 +257,7 @@ class TestCase:
         self.controller.SaveTexture(save_data, img_path)
 
         if not util.image_compare(img_path, ref_path):
-            raise TestFailureException("Reference and output backbuffer image differ", img_path, ref_path)
+            raise TestFailureException("Reference and output backbuffer image differ", ref_path, img_path)
 
         log.success("Backbuffer is identical to reference")
 
@@ -294,7 +294,7 @@ class TestCase:
         origrdc.Convert(xml_out_path, 'xml', stripped_sdfile, None)
 
         if not util.md5_compare(xml_out_path, xml_ref_path):
-            raise TestFailureException("Reference and output XML differ", xml_out_path, xml_ref_path)
+            raise TestFailureException("Reference and output XML differ", xml_ref_path, xml_out_path)
 
         log.success("Exported XML format is identical to reference")
 
