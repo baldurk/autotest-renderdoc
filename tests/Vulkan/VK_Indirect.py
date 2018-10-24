@@ -29,8 +29,6 @@ class VK_Indirect(rdtest.TestCase):
     def check_capture(self):
         self.check_final_backbuffer()
 
-        self.check_export(self.capture_filename)
-
         dispatches = self.find_draw("Dispatches")
 
         # Set up a ReplayOutput and TextureSave for quickly testing the drawcall highlight overlay
