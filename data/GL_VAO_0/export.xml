@@ -4859,7 +4859,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709760</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1636" name="glVertexAttribPointer" length="41" threadID="999" timestamp="124140" duration="5">
 			<ResourceId name="vaobj" typename="GLResource" width="8" string="ResourceId::27">27</ResourceId>
@@ -4869,7 +4869,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709772</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1636" name="glVertexAttribPointer" length="41" threadID="999" timestamp="124150" duration="5">
 			<ResourceId name="vaobj" typename="GLResource" width="8" string="ResourceId::27">27</ResourceId>
@@ -4879,7 +4879,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709788</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1066" name="glViewport" length="16" threadID="999" timestamp="124160" duration="5">
 			<int name="x" typename="int32_t" width="4">0</int>
@@ -4966,7 +4966,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709760</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1636" name="glVertexAttribPointer" length="41" threadID="999" timestamp="124290" duration="5">
 			<ResourceId name="vaobj" typename="GLResource" width="8" string="ResourceId::27">27</ResourceId>
@@ -4976,7 +4976,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709772</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1636" name="glVertexAttribPointer" length="41" threadID="999" timestamp="124300" duration="5">
 			<ResourceId name="vaobj" typename="GLResource" width="8" string="ResourceId::27">27</ResourceId>
@@ -4986,7 +4986,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709788</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1398" name="glBindBuffer" length="12" threadID="999" timestamp="124310" duration="5">
 			<enum name="target" typename="RDCGLenum" string="GL_ARRAY_BUFFER">34962</enum>
@@ -5095,7 +5095,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709760</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1636" name="glVertexAttribPointer" length="41" threadID="999" timestamp="124490" duration="5">
 			<ResourceId name="vaobj" typename="GLResource" width="8" string="ResourceId::27">27</ResourceId>
@@ -5105,7 +5105,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709772</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1636" name="glVertexAttribPointer" length="41" threadID="999" timestamp="124500" duration="5">
 			<ResourceId name="vaobj" typename="GLResource" width="8" string="ResourceId::27">27</ResourceId>
@@ -5115,7 +5115,7 @@ void main()
 			<enum name="type" typename="RDCGLenum" string="GL_FLOAT">5126</enum>
 			<bool name="normalized" typename="bool">false</bool>
 			<int name="stride" typename="int32_t" width="4">36</int>
-			<uint name="offset" typename="uint64_t" width="8">18622709788</uint>
+			<uint name="offset" typename="uint64_t" width="8">3735928559</uint>
 		</chunk>
 		<chunk id="1398" name="glBindBuffer" length="12" threadID="999" timestamp="124510" duration="5">
 			<enum name="target" typename="RDCGLenum" string="GL_ARRAY_BUFFER">34962</enum>
