@@ -57,9 +57,11 @@ bool SpvCompilationSupported()
   if(!pipe)
     return false;
 
+  msleep(20);
+
   int code = pclose(pipe);
 
-  return code == 0;
+  return WEXITSTATUS(code) == 0;
 }
 
 std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderLang lang,
@@ -111,6 +113,8 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
     TEST_ERROR("Couldn't run shaderc to compile shaders.");
     return ret;
   }
+
+  msleep(100);
 
   int code = pclose(pipe);
 

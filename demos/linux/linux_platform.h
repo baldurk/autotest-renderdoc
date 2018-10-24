@@ -30,3 +30,5 @@
 #define DEBUG_BREAK() raise(SIGTRAP)
 
 #define MAX_PATH 256
+
+#define msleep(time) usleep((time)*1000)

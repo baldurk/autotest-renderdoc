@@ -40,3 +40,7 @@
 #define popen _popen
 #define pclose _pclose
 #define strcasestr StrStrIA
+
+#define msleep(time) Sleep(time)
+
+#define WEXITSTATUS(code) code
