@@ -343,6 +343,16 @@ bool VulkanGraphicsTest::IsSupported()
   if(volkGetInstanceVersion() > 0)
     return true;
 
+  static bool glslcChecked = false;
+
+  if(!glslcChecked)
+  {
+    static bool glslcSupported = SpvCompilationSupported();
+
+    if(!glslcSupported)
+      return false;
+  }
+
   return volkInitialize() == VK_SUCCESS;
 }
 
