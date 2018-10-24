@@ -100,6 +100,7 @@ def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
     regexp = re.compile(test_filter, re.IGNORECASE)
 
     failedcases = []
+    skippedcases = []
 
     plat = os.name
     if plat == 'nt' or 'Windows' in platform.platform():
@@ -110,14 +111,17 @@ def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
 
         if testclass.platform != plat and testclass.platform != '':
             log.print("Skipping {} as it's not supported on this platform '{}'".format(name, plat))
+            skippedcases.append(testclass)
             continue
 
         if not regexp.search(name):
             log.print("Skipping {} as it doesn't match '{}'".format(name, test_filter))
+            skippedcases.append(testclass)
             continue
 
         if not slow_tests and testclass.slow_test:
             log.print("Skipping {} as it is a slow test, which are not enabled".format(name))
+            skippedcases.append(testclass)
             continue
 
         # Print header (and footer) outside the exec so we know they will always be printed successfully
@@ -143,8 +147,8 @@ def run_tests(test_filter: str, in_process: bool, slow_tests: bool):
     minutes = round(duration / 60) % 60
     seconds = round(duration % 60)
 
-    log.header("Tests complete: {} passed out of {} run in {}:{:02}:{:02}"
-               .format(len(testcases)-len(failedcases), len(testcases), hours, minutes, seconds))
+    log.header("Tests complete: {} passed out of {} run from {} total in {}:{:02}:{:02}"
+               .format(len(testcases)-len(skippedcases)-len(failedcases), len(testcases)-len(skippedcases), len(testcases), hours, minutes, seconds))
     if len(failedcases) > 0:
         log.print("Failed tests:")
     for testclass in failedcases:
