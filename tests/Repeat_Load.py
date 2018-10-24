@@ -13,7 +13,11 @@ class Repeat_Load(rdtest.TestCase):
         for i in range(20):
             rdtest.log.print("Loading for iteration {}".format(i))
 
-            controller = rdtest.open_capture(path)
+            try:
+                controller = rdtest.open_capture(path)
+            except RuntimeError as err:
+                rdtest.log.print("Skipping. Can't open {}: {}".format(path, err))
+                return
 
             # Do nothing, just ensure it's loaded
 

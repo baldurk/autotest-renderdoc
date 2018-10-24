@@ -167,7 +167,11 @@ class Iter_Test(rdtest.TestCase):
             self.controller.SetFrameEvent(draw.eventId, True)
 
     def iter_test(self, path):
-        self.controller = rdtest.open_capture(path)
+        try:
+            self.controller = rdtest.open_capture(path)
+        except RuntimeError as err:
+            rdtest.log.print("Skipping. Can't open {}: {}".format(path, err))
+            return
 
         # Handy tweaks when running locally to disable certain things
 
