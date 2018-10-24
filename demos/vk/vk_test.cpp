@@ -23,7 +23,6 @@
 ******************************************************************************/
 
 #include "../test_common.h"
-#include "vulkan/volk.h"
 
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
@@ -33,11 +32,10 @@
 #pragma warning(push)
 #pragma warning(disable : 4127)
 
-#include "vulkan/vk_mem_alloc.h"
+#include "vk_headers.h"
 
 #pragma warning(pop)
 
-#include "../win32/win32_window.h"
 #include "vk_test.h"
 
 static VkBool32 VKAPI_PTR vulkanCallback(VkDebugReportFlagsEXT flags,

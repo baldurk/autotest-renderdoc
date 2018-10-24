@@ -313,5 +313,6 @@
     <ClInclude Include="vk\vulkan\vulkan_xlib.h">
       <Filter>Vulkan\vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="vk\vk_headers.h" />
   </ItemGroup>
 </Project>

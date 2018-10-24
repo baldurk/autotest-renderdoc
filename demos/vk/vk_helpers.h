@@ -30,7 +30,6 @@
 
 #include <algorithm>
 #include <vector>
-#include "vulkan/volk.h"
 
 namespace vkh
 {

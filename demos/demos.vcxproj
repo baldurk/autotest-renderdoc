@@ -190,6 +190,7 @@
     <ClInclude Include="nuklear\nuklear_gdi.h" />
     <ClInclude Include="nuklear\nuklear_xlib.h" />
     <ClInclude Include="test_common.h" />
+    <ClInclude Include="vk\vk_headers.h" />
     <ClInclude Include="vk\vk_helpers.h" />
     <ClInclude Include="vk\vk_test.h" />
     <ClInclude Include="vk\vulkan\vk_mem_alloc.h" />

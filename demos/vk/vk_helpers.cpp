@@ -22,9 +22,11 @@
 * THE SOFTWARE.
 ******************************************************************************/
 
-#include "vk_helpers.h"
 #include <assert.h>
 #include <algorithm>
+#include "vk_headers.h"
+
+#include "vk_helpers.h"
 
 namespace vkh
 {
