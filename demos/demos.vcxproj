@@ -157,6 +157,9 @@
     <ClCompile Include="linux\linux_platform.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="linux\linux_window.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="lz4.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_common.cpp" />
@@ -183,6 +186,9 @@
     <ClInclude Include="gl\glad\khrplatform.h" />
     <ClInclude Include="gl\gl_test.h" />
     <ClInclude Include="linux\linux_platform.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="linux\linux_window.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="lz4.h" />

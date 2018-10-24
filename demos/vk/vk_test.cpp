@@ -38,6 +38,12 @@
 
 #include "vk_test.h"
 
+#if defined(WIN32)
+#include "../win32/win32_window.h"
+#else
+#include "../linux/linux_window.h"
+#endif
+
 static VkBool32 VKAPI_PTR vulkanCallback(VkDebugReportFlagsEXT flags,
                                          VkDebugReportObjectTypeEXT objectType, uint64_t object,
                                          size_t location, int32_t messageCode,
@@ -75,6 +81,10 @@ bool VulkanGraphicsTest::Init(int argc, char **argv)
 
 #if defined(WIN32)
   instExts.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#else
+  instExts.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+
+  X11Window::Init();
 #endif
 
   if(debugDevice)
@@ -338,7 +348,11 @@ bool VulkanGraphicsTest::IsSupported()
 
 GraphicsWindow *VulkanGraphicsTest::MakeWindow(int width, int height, const char *title)
 {
+#if defined(WIN32)
   return new Win32Window(width, height, title);
+#else
+  return new X11Window(width, height, title);
+#endif
 }
 
 VulkanGraphicsTest::~VulkanGraphicsTest()
@@ -838,6 +852,15 @@ VkResult VulkanGraphicsTest::CreateSurface(GraphicsWindow *win, VkSurfaceKHR *ou
 
   return vkCreateWin32SurfaceKHR(instance, &createInfo, NULL, outSurf);
 #else
+  VkXcbSurfaceCreateInfoKHR createInfo;
+
+  createInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+  createInfo.pNext = NULL;
+  createInfo.flags = 0;
+  createInfo.connection = ((X11Window *)win)->xcb.connection;
+  createInfo.window = ((X11Window *)win)->xcb.window;
+
+  return vkCreateXcbSurfaceKHR(instance, &createInfo, NULL, outSurf);
 #endif
 }
 

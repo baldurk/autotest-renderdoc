@@ -202,6 +202,9 @@
     <ClCompile Include="vk\vk_indirect.cpp">
       <Filter>Vulkan\demos</Filter>
     </ClCompile>
+    <ClCompile Include="linux\linux_window.cpp">
+      <Filter>Linux</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -312,6 +315,9 @@
     </ClInclude>
     <ClInclude Include="vk\vulkan\vulkan_xlib.h">
       <Filter>Vulkan\vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="linux\linux_window.h">
+      <Filter>Linux</Filter>
     </ClInclude>
     <ClInclude Include="vk\vk_headers.h" />
   </ItemGroup>
