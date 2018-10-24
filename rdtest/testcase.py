@@ -291,7 +291,16 @@ class TestCase:
             timestamp += 10
             stripped_sdfile.chunks.append(chunk)
 
-        origrdc.Convert(xml_out_path, 'xml', stripped_sdfile, None)
+        # Create a pristine capture file for exporting to XML, so we can sanitise the metadata
+        xmlexport = rd.OpenCaptureFile()
+
+        thumb: rd.Thumbnail = origrdc.GetThumbnail(rd.FileType.JPG, 0)
+
+        xmlexport.SetMetadata(origrdc.DriverName(), 0, thumb.type, thumb.width, thumb.height, thumb.data)
+
+        xmlexport.Convert(xml_out_path, 'xml', stripped_sdfile, None)
+
+        xmlexport.Shutdown()
 
         if not util.md5_compare(xml_out_path, xml_ref_path):
             raise TestFailureException("Reference and output XML differ", xml_ref_path, xml_out_path)

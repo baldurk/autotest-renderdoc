@@ -2,7 +2,7 @@
 <rdc>
 	<header>
 		<driver id="1">D3D11</driver>
-		<machineIdent>8449</machineIdent>
+		<machineIdent>0</machineIdent>
 		<thumbnail width="400" height="300">thumb.jpg</thumbnail>
 	</header>
 	<chunks version="16">
