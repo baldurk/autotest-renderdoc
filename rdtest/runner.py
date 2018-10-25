@@ -177,6 +177,8 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
 def internal_run_test(test_name):
     testcases = get_tests()
 
+    rd.InitGlobalEnv(rd.GlobalEnvironment(), [])
+
     for testclass in testcases:
         if testclass.__name__ == test_name:
             log.begin_test(test_name, print_header=False)
