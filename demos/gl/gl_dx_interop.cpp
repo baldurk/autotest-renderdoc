@@ -81,12 +81,12 @@ float4 main(v2f IN) : SV_Target0
 
 #version 420 core
 
-struct v2f
-{
-	vec4 pos;
-	vec4 col;
-	vec4 uv;
-};
+#define v2f v2f_block \
+{                     \
+	vec4 pos;           \
+	vec4 col;           \
+	vec4 uv;            \
+}
 
 )EOSHADER";
 
@@ -96,7 +96,7 @@ layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
 layout(location = 2) in vec2 UV;
 
-layout(location = 0) out v2f vertOut;
+out v2f vertOut;
 
 uniform vec2 wave;
 
@@ -113,7 +113,7 @@ void main()
 
   std::string pixel = R"EOSHADER(
 
-layout(location = 0) in v2f vertIn;
+in v2f vertIn;
 
 layout(binding = 0) uniform sampler2D tex2D;
 
