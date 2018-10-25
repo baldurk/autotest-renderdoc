@@ -262,9 +262,6 @@ class TestCase:
         log.success("Backbuffer is identical to reference")
 
     def check_export(self, capture_filename):
-        xml_out_path = util.get_tmp_path('export.xml')
-        xml_ref_path = self.get_ref_path('export.xml')
-
         recomp_path = util.get_tmp_path('recompressed.rdc')
         conv_zipxml_path = util.get_tmp_path('conv.zip.xml')
         conv_path = util.get_tmp_path('conv.rdc')
@@ -273,39 +270,6 @@ class TestCase:
         status = origrdc.OpenFile(capture_filename, '', None)
 
         self.check(status == rd.ReplayStatus.Succeeded, "Couldn't open '{}': {}".format(capture_filename, str(status)))
-
-        sdfile: rd.SDFile = origrdc.GetStructuredData()
-
-        # Use the same buffers & version
-        stripped_sdfile = rd.SDFile()
-        stripped_sdfile.version = sdfile.version
-
-        # Copy the chunks but replace metadata with deterministic values
-        c: rd.SDChunk
-        timestamp = 123450
-        for c in sdfile.chunks:
-            chunk: rd.SDChunk = c.Duplicate()
-            chunk.metadata.durationMicro = 5
-            chunk.metadata.timestampMicro = timestamp
-            chunk.metadata.threadID = 999
-            timestamp += 10
-            stripped_sdfile.chunks.append(chunk)
-
-        # Create a pristine capture file for exporting to XML, so we can sanitise the metadata
-        xmlexport = rd.OpenCaptureFile()
-
-        thumb: rd.Thumbnail = origrdc.GetThumbnail(rd.FileType.JPG, 0)
-
-        xmlexport.SetMetadata(origrdc.DriverName(), 0, thumb.type, thumb.width, thumb.height, thumb.data)
-
-        xmlexport.Convert(xml_out_path, 'xml', stripped_sdfile, None)
-
-        xmlexport.Shutdown()
-
-        if not util.md5_compare(xml_out_path, xml_ref_path):
-            raise TestFailureException("Reference and output XML differ", xml_ref_path, xml_out_path)
-
-        log.success("Exported XML format is identical to reference")
 
         # Export to rdc, to recompress
         origrdc.Convert(recomp_path, '', None, None)
