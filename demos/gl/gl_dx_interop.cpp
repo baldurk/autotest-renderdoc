@@ -163,7 +163,7 @@ void main()
         {Vec3f(0.8f, 0.8f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 1.0f)},
     };
 
-    ID3D11BufferPtr buf = d3d.MakeBuffer().Constant().Data(quad);
+    ID3D11BufferPtr buf = d3d.MakeBuffer().Vertex().Data(quad);
 
     GLuint vao = MakeVAO();
     glBindVertexArray(vao);
@@ -173,10 +173,14 @@ void main()
 
     HANDLE interop_dev = wglDXOpenDeviceNV(d3d.dev);
 
-    HANDLE interop_d3dbuf =
-        wglDXRegisterObjectNV(interop_dev, buf, vb, GL_NONE, WGL_ACCESS_READ_ONLY_NV);
+    HANDLE interop_d3dbuf = NULL;
+    interop_d3dbuf = wglDXRegisterObjectNV(interop_dev, buf.GetInterfacePtr(), vb, GL_NONE,
+                                           WGL_ACCESS_READ_ONLY_NV);
 
-    // glBufferStorage(GL_ARRAY_BUFFER, sizeof(triangle), triangle, 0);
+    TEST_ASSERT(interop_d3dbuf, "wglDXRegisterObjectNV buffer failed");
+
+    if(!interop_d3dbuf)
+      glBufferStorage(GL_ARRAY_BUFFER, sizeof(quad), quad, 0);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), (void *)(0));
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), (void *)(sizeof(Vec3f)));
@@ -191,12 +195,17 @@ void main()
     glObjectLabel(GL_PROGRAM, program, -1, "Full program");
 
     GLuint gl_fromd3d = MakeTexture();
-    HANDLE interop_fromd3d = wglDXRegisterObjectNV(interop_dev, d3d_fromd3d, gl_fromd3d,
-                                                   GL_TEXTURE_2D, WGL_ACCESS_READ_ONLY_NV);
+    HANDLE interop_fromd3d =
+        wglDXRegisterObjectNV(interop_dev, d3d_fromd3d.GetInterfacePtr(), gl_fromd3d, GL_TEXTURE_2D,
+                              WGL_ACCESS_READ_ONLY_NV);
+
+    TEST_ASSERT(interop_fromd3d, "wglDXRegisterObjectNV texture fromd3d failed");
 
     GLuint gl_tod3d = MakeTexture();
-    HANDLE interop_tod3d = wglDXRegisterObjectNV(interop_dev, d3d_tod3d, gl_tod3d, GL_TEXTURE_2D,
-                                                 WGL_ACCESS_READ_WRITE_NV);
+    HANDLE interop_tod3d = wglDXRegisterObjectNV(interop_dev, d3d_tod3d.GetInterfacePtr(), gl_tod3d,
+                                                 GL_TEXTURE_2D, WGL_ACCESS_READ_WRITE_NV);
+
+    TEST_ASSERT(interop_tod3d, "wglDXRegisterObjectNV texture tod3d failed");
 
     GLuint fbo = MakeFBO();
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -220,7 +229,13 @@ void main()
     {
       frame++;
 
-      wglDXLockObjectsNV(interop_dev, 1, &interop_d3dbuf);
+      BOOL res;
+      if(interop_d3dbuf)
+        res = wglDXLockObjectsNV(interop_dev, 1, &interop_d3dbuf);
+      else
+        res = TRUE;
+
+      TEST_ASSERT(res, "wglDXLockObjectsNV buffer failed");
 
       float col2[] = {0.6f, 0.4f, 0.6f, 1.0f};
       ctx->ClearRenderTargetView(rtv, col2);
@@ -241,7 +256,9 @@ void main()
 
       ctx->ClearState();
 
-      wglDXLockObjectsNV(interop_dev, ARRAY_COUNT(lockHandles), lockHandles);
+      res = wglDXLockObjectsNV(interop_dev, ARRAY_COUNT(lockHandles), lockHandles);
+
+      TEST_ASSERT(res, "wglDXLockObjectsNV textures failed");
 
       glBindVertexArray(vao);
 
@@ -271,9 +288,16 @@ void main()
 
       glBindTexture(GL_TEXTURE_2D, 0);
 
-      wglDXUnlockObjectsNV(interop_dev, ARRAY_COUNT(lockHandles), lockHandles);
+      res = wglDXUnlockObjectsNV(interop_dev, ARRAY_COUNT(lockHandles), lockHandles);
 
-      wglDXUnlockObjectsNV(interop_dev, 1, &interop_d3dbuf);
+      TEST_ASSERT(res, "wglDXUnlockObjectsNV textures failed");
+
+      if(interop_d3dbuf)
+        res = wglDXUnlockObjectsNV(interop_dev, 1, &interop_d3dbuf);
+      else
+        res = TRUE;
+
+      TEST_ASSERT(res, "wglDXUnlockObjectsNV buffer failed");
 
       Present();
     }
