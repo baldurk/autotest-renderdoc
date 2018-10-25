@@ -148,7 +148,7 @@ def run_executable(exe: str, cmdline: str,
     return res.ident
 
 
-def run_and_capture(exe: str, cmdline: str, frame: int, capture_name=None):
+def run_and_capture(exe: str, cmdline: str, frame: int, capture_name=None, opts=rd.GetDefaultCaptureOptions()):
     """
     Helper function to run an executable with a command line, capture a particular frame, and exit.
 
@@ -166,7 +166,7 @@ def run_and_capture(exe: str, cmdline: str, frame: int, capture_name=None):
     if capture_name is None:
         capture_name = 'capture'
 
-    control = TargetControl(run_executable(exe, cmdline, cappath=util.get_tmp_path(capture_name)))
+    control = TargetControl(run_executable(exe, cmdline, cappath=util.get_tmp_path(capture_name), opts=opts))
 
     # Capture frame
     control.queue_capture(frame)
