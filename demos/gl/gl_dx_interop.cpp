@@ -208,10 +208,6 @@ void main()
     glDepthFunc(GL_ALWAYS);
     glDisable(GL_DEPTH_TEST);
 
-    GLenum fbostatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-    TEST_ASSERT(fbostatus != GL_FRAMEBUFFER_COMPLETE, "FBO is not complete");
-
     ID3D11DeviceContextPtr ctx = d3d.ctx;
 
     HANDLE lockHandles[] = {interop_tod3d, interop_fromd3d};
