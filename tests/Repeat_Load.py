@@ -8,7 +8,7 @@ class Repeat_Load(rdtest.TestCase):
     slow_test = True
 
     def repeat_load(self, path):
-        memory_baseline = 0
+        memory_peak = memory_baseline = 0
 
         for i in range(20):
             rdtest.log.print("Loading for iteration {}".format(i))
@@ -20,21 +20,21 @@ class Repeat_Load(rdtest.TestCase):
                 return
 
             # Do nothing, just ensure it's loaded
+            memory_usage: int = psutil.Process(os.getpid()).memory_info().rss
+
+            # We measure the baseline memory usage during the second peak to avoid any persistent caches etc that might
+            # not be full
+            if i == 1:
+                memory_baseline = memory_usage
+            memory_peak = max(memory_peak, memory_usage)
 
             controller.Shutdown()
 
-            memory_usage: int = psutil.Process(os.getpid()).memory_info().rss
+            rdtest.log.success("Succeeded iteration {}, memory usage was {}".format(i, memory_usage))
 
-            # We measure the baseline memory usage after loading and shutting down the first time (since we don't want
-            # to measure the change from nothing to after one capture has been loaded - some persistent caches may have
-            # been initialised)
-            if memory_baseline == 0:
-                memory_baseline = memory_usage
-            elif memory_baseline * 1.01 < memory_usage:
-                raise rdtest.TestFailureException('In iteration {} memory usage was {}, greater than baseline {}'
-                                                  .format(i, memory_usage, memory_baseline))
-
-            rdtest.log.success("Succeeded iteration {}, memory usage is {}".format(i, memory_usage))
+        if memory_baseline * 1.25 < memory_peak:
+            raise rdtest.TestFailureException('peak memory usage was {}, compared to baseline {}'
+                    .format(memory_peak, memory_baseline))
 
     def run(self):
         dir_path = self.get_ref_path('', extra=True)
