@@ -118,13 +118,13 @@ void main()
       glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V),
                             (void *)(sizeof(Vec3f) + sizeof(Vec4f)));
 
-      glViewport(0, 0, GLsizei(screenWidth) / 2, GLsizei(screenHeight) / 2);
+      glViewport(0, 0, GLsizei(screenWidth) / 4, GLsizei(screenHeight));
       glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
 
       // use direct pointers for indices
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-      glViewport(screenWidth / 2, 0, GLsizei(screenWidth) / 2, GLsizei(screenHeight) / 2);
+      glViewport(screenWidth / 4, 0, GLsizei(screenWidth) / 4, GLsizei(screenHeight));
       glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, idxs);
 
       // use direct pointers for vertices
@@ -135,14 +135,13 @@ void main()
       glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &DefaultTri[0].col);
       glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(DefaultA2V), &DefaultTri[0].uv);
 
-      glViewport(0, screenHeight / 2, GLsizei(screenWidth) / 2, GLsizei(screenHeight) / 2);
+      glViewport(screenWidth / 2, 0, GLsizei(screenWidth) / 4, GLsizei(screenHeight));
       glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
 
       // use direct pointers for both
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-      glViewport(screenWidth / 2, screenHeight / 2, GLsizei(screenWidth) / 2,
-                 GLsizei(screenHeight) / 2);
+      glViewport((screenWidth * 3) / 4, 0, GLsizei(screenWidth) / 4, GLsizei(screenHeight));
       glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, idxs);
 
       Present();
