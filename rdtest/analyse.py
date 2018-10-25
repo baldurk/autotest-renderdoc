@@ -60,7 +60,7 @@ def fetch_indices(controller: rd.ReplayController, mesh: rd.MeshFormat, index_of
         index_fmt = 'I'
 
     # Duplicate the format by the number of indices
-    index_fmt = str(num_indices) + index_fmt
+    index_fmt = '=' + str(num_indices) + index_fmt
 
     # If we have an index buffer
     if mesh.indexResourceId != rd.ResourceId.Null():
@@ -159,7 +159,7 @@ def unpack_data(fmt: rd.ResourceFormat, data: bytes, data_offset: int):
     format_chars[rd.CompType.Double] = format_chars[rd.CompType.Float]
 
     # We need to fetch compCount components
-    vertex_format = str(fmt.compCount) + format_chars[fmt.compType][fmt.compByteWidth]
+    vertex_format = '=' + str(fmt.compCount) + format_chars[fmt.compType][fmt.compByteWidth]
 
     # Unpack the data
     try:

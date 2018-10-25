@@ -72,7 +72,9 @@ class VK_Indirect(rdtest.TestCase):
         ssbo: rd.BoundResource = pipe.GetReadWriteResources(rd.ShaderStage.Compute)[0].resources[0]
         data: bytes = self.controller.GetBufferData(ssbo.resourceId, 0, 0)
 
-        uints = [struct.unpack_from('4L', data, offs) for offs in range(0, len(data), 16)]
+        rdtest.log.print("Got {} bytes of uints".format(len(data)))
+
+        uints = [struct.unpack_from('=4L', data, offs) for offs in range(0, len(data), 16)]
 
         for x in range(0, 6):  # 3 groups of 2 threads each
             for y in range(0, 8):  # 3 groups of 2 threads each
