@@ -124,7 +124,7 @@ def image_compare(test_img: str, ref_img: str):
     # Subtract 1 from the difference, to allow for off-by-1 errors that can be caused by rounding.
     # For example clearing to 0.5, 0.5, 0.5 has two valid representations: 127,127,127 and 128,128,128
     # which are equally far from true 0.5.
-    tolerance = 1
+    tolerance = 2
     diff = ImageChops.subtract(diff, Image.new(diff.mode, (diff.width, diff.height), (tolerance, tolerance, tolerance, tolerance)))
 
     # If the diff fails, dump the difference to a file
