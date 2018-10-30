@@ -836,22 +836,22 @@ struct ClearColorValue
 
 struct ClearValue
 {
+  ClearValue() {}
   ClearValue(float r, float g, float b, float a)
   {
-    color.float32[0] = r;
-    color.float32[1] = g;
-    color.float32[2] = b;
-    color.float32[3] = a;
+    clear.color.float32[0] = r;
+    clear.color.float32[1] = g;
+    clear.color.float32[2] = b;
+    clear.color.float32[3] = a;
   }
 
   ClearValue(float d, uint32_t s)
   {
-    depthStencil.depth = d;
-    depthStencil.stencil = s;
+    clear.depthStencil.depth = d;
+    clear.depthStencil.stencil = s;
   }
 
-  VkClearColorValue color;
-  VkClearDepthStencilValue depthStencil;
+  VkClearValue clear;
 
   operator const VkClearValue *() const { return (VkClearValue *)this; }
   operator const VkClearValue &() const { return (VkClearValue &)*this; }
