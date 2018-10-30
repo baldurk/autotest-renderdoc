@@ -202,7 +202,7 @@ class TestCase:
 
             for key in ref:
                 if key not in data:
-                    raise TestFailureException('PostVS data[{}] doesn\'t contain data {} as expected'.format(idx, key))
+                    raise TestFailureException('PostVS data[{}] doesn\'t contain data {} as expected. Data is: {}'.format(idx, key, list(data.keys())))
 
                 if not util.value_compare(ref[key], data[key]):
                     raise TestFailureException('PostVS data \'{}\': {} is not as expected: {}'.format(key, data[key], ref[key]))
