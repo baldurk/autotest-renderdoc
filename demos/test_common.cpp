@@ -50,8 +50,26 @@ void DebugPrint(const char *fmt, ...)
 #endif
 }
 
+#include "shaderc.h"
+
+// this define toggles on/off using the linked shaderc. This can be useful if e.g. on windows the
+// shaderc in VULKAN_SDK is broken.
+#define USE_LINKED_SHADERC (0 && defined(HAVE_SHADERC))
+
+static shaderc_compiler_t shaderc = NULL;
+
 bool SpvCompilationSupported()
 {
+  if(shaderc)
+    return true;
+
+#if USE_LINKED_SHADERC
+  shaderc = shaderc_compiler_initialize();
+#endif
+
+  if(shaderc)
+    return true;
+
   FILE *pipe = popen("glslc --help", "r");
 
   if(!pipe)
@@ -68,6 +86,63 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
                                          ShaderStage stage, const char *entry_point)
 {
   std::vector<uint32_t> ret;
+
+  if(shaderc)
+  {
+#if USE_LINKED_SHADERC
+    shaderc_compile_options_t opts = shaderc_compile_options_initialize();
+
+    if(lang == ShaderLang::glsl)
+      shaderc_compile_options_set_source_language(opts, shaderc_source_language_glsl);
+    else if(lang == ShaderLang::hlsl)
+      shaderc_compile_options_set_source_language(opts, shaderc_source_language_hlsl);
+
+    shaderc_compile_options_set_generate_debug_info(opts);
+    shaderc_compile_options_set_optimization_level(opts, shaderc_optimization_level_zero);
+
+    shaderc_shader_kind shader_kind = shaderc_glsl_vertex_shader;
+
+    switch(stage)
+    {
+      case ShaderStage::vert: shader_kind = shaderc_vertex_shader; break;
+      case ShaderStage::frag: shader_kind = shaderc_fragment_shader; break;
+      case ShaderStage::tesscontrol: shader_kind = shaderc_tess_control_shader; break;
+      case ShaderStage::tesseval: shader_kind = shaderc_tess_evaluation_shader; break;
+      case ShaderStage::geom: shader_kind = shaderc_geometry_shader; break;
+      case ShaderStage::comp: shader_kind = shaderc_compute_shader; break;
+    }
+
+    shaderc_compilation_result_t res = shaderc_compile_into_spv(
+        shaderc, source_text.c_str(), source_text.size(), shader_kind, "inshader", entry_point, opts);
+
+    shaderc_compilation_status status = shaderc_result_get_compilation_status(res);
+
+    if(status != shaderc_compilation_status_success)
+    {
+      TEST_ERROR("Couldn't compile shader with built-in shaderc: %s",
+                 shaderc_result_get_error_message(res));
+
+      if(res)
+        shaderc_result_release(res);
+
+      return ret;
+    }
+
+    size_t sz = shaderc_result_get_length(res);
+
+    TEST_ASSERT((sz % 4) == 0, "shaderc result isn't 4-byte aligned");
+
+    ret.resize(sz / 4);
+
+    memcpy(&ret[0], shaderc_result_get_bytes(res), sz);
+
+    shaderc_result_release(res);
+
+    shaderc_compile_options_release(opts);
+
+    return ret;
+#endif
+  }
 
   std::string command_line = "glslc -g -O0";
 

@@ -94,6 +94,22 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="$(Platform)=='x64' and exists('$(VULKAN_SDK)/lib/shaderc_combined.lib')">
+    <ClCompile>
+      <PreprocessorDefinitions>HAVE_SHADERC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(VULKAN_SDK)/lib/shaderc_combined.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="$(Platform)=='Win32' and exists('$(VULKAN_SDK)/lib32/shaderc_combined.lib')">
+    <ClCompile>
+      <PreprocessorDefinitions>HAVE_SHADERC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(VULKAN_SDK)/lib32/shaderc_combined.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="d3d11\d3d11_1_many_uavs.cpp" />
     <ClCompile Include="d3d11\d3d11_array_interpolator.cpp" />
@@ -199,6 +215,7 @@
     <ClInclude Include="vk\vk_headers.h" />
     <ClInclude Include="vk\vk_helpers.h" />
     <ClInclude Include="vk\vk_test.h" />
+    <ClInclude Include="vk\vulkan\shaderc.h" />
     <ClInclude Include="vk\vulkan\vk_mem_alloc.h" />
     <ClInclude Include="vk\vulkan\vk_platform.h" />
     <ClInclude Include="vk\vulkan\volk.h" />

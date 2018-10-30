@@ -320,5 +320,6 @@
       <Filter>Linux</Filter>
     </ClInclude>
     <ClInclude Include="vk\vk_headers.h" />
+    <ClInclude Include="vk\vulkan\shaderc.h" />
   </ItemGroup>
 </Project>
