@@ -253,61 +253,6 @@ private:
   UINT *firstSlice = NULL, *numSlices = NULL;
 };
 
-class UAVCreator
-{
-public:
-  UAVCreator(D3D11GraphicsTest *test, ID3D11Buffer *buf);
-  UAVCreator(D3D11GraphicsTest *test, ID3D11Texture1D *tex);
-  UAVCreator(D3D11GraphicsTest *test, ID3D11Texture2D *tex);
-  UAVCreator(D3D11GraphicsTest *test, ID3D11Texture3D *tex);
-
-  // common params
-  UAVCreator &Format(DXGI_FORMAT format);
-
-  // buffer params
-  UAVCreator &FirstElement(UINT el);
-  UAVCreator &NumElements(UINT num);
-
-private:
-  D3D11GraphicsTest *m_Test;
-
-  ID3D11Resource *m_Res;
-  D3D11_UNORDERED_ACCESS_VIEW_DESC m_Desc = {};
-};
-
-class RTVCreator
-{
-public:
-  RTVCreator(D3D11GraphicsTest *test, ID3D11Texture1D *tex);
-  RTVCreator(D3D11GraphicsTest *test, ID3D11Texture2D *tex);
-  RTVCreator(D3D11GraphicsTest *test, ID3D11Texture3D *tex);
-
-  // common params
-  RTVCreator &Format(DXGI_FORMAT format);
-
-private:
-  D3D11GraphicsTest *m_Test;
-
-  ID3D11Resource *m_Res;
-  D3D11_RENDER_TARGET_VIEW_DESC m_Desc = {};
-};
-
-class DSVCreator
-{
-public:
-  DSVCreator(D3D11GraphicsTest *test, ID3D11Texture1D *tex);
-  DSVCreator(D3D11GraphicsTest *test, ID3D11Texture2D *tex);
-
-  // common params
-  DSVCreator &Format(DXGI_FORMAT format);
-
-private:
-  D3D11GraphicsTest *m_Test;
-
-  ID3D11Resource *m_Res;
-  D3D11_DEPTH_STENCIL_VIEW_DESC m_Desc = {};
-};
-
 #define GET_REFCOUNT(val, obj) \
   do                           \
   {                            \
