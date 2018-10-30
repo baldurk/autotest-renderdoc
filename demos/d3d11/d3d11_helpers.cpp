@@ -204,7 +204,7 @@ const UINT formatStrides[] = {
     0,        // DXGI_FORMAT_B4G4R4A4_UNORM
 };
 
-BufferCreator::BufferCreator(D3D11GraphicsTest *test) : m_Test(test)
+D3D11BufferCreator::D3D11BufferCreator(D3D11GraphicsTest *test) : m_Test(test)
 {
   m_BufDesc.ByteWidth = 0;
   m_BufDesc.MiscFlags = 0;
@@ -214,43 +214,43 @@ BufferCreator::BufferCreator(D3D11GraphicsTest *test) : m_Test(test)
   m_BufDesc.BindFlags = 0;
 }
 
-BufferCreator &BufferCreator::Vertex()
+D3D11BufferCreator &D3D11BufferCreator::Vertex()
 {
   m_BufDesc.BindFlags |= D3D11_BIND_VERTEX_BUFFER;
   return *this;
 }
 
-BufferCreator &BufferCreator::Index()
+D3D11BufferCreator &D3D11BufferCreator::Index()
 {
   m_BufDesc.BindFlags |= D3D11_BIND_INDEX_BUFFER;
   return *this;
 }
 
-BufferCreator &BufferCreator::Constant()
+D3D11BufferCreator &D3D11BufferCreator::Constant()
 {
   m_BufDesc.BindFlags |= D3D11_BIND_CONSTANT_BUFFER;
   return *this;
 }
 
-BufferCreator &BufferCreator::StreamOut()
+D3D11BufferCreator &D3D11BufferCreator::StreamOut()
 {
   m_BufDesc.BindFlags |= D3D11_BIND_STREAM_OUTPUT;
   return *this;
 }
 
-BufferCreator &BufferCreator::SRV()
+D3D11BufferCreator &D3D11BufferCreator::SRV()
 {
   m_BufDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
   return *this;
 }
 
-BufferCreator &BufferCreator::UAV()
+D3D11BufferCreator &D3D11BufferCreator::UAV()
 {
   m_BufDesc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
   return *this;
 }
 
-BufferCreator &BufferCreator::Structured(UINT structStride)
+D3D11BufferCreator &D3D11BufferCreator::Structured(UINT structStride)
 {
   if(structStride > 0 && (m_BufDesc.ByteWidth % structStride) != 0)
     TEST_FATAL("Invalid structure size - not divisor of byte size");
@@ -260,27 +260,27 @@ BufferCreator &BufferCreator::Structured(UINT structStride)
   return *this;
 }
 
-BufferCreator &BufferCreator::ByteAddressed()
+D3D11BufferCreator &D3D11BufferCreator::ByteAddressed()
 {
   m_BufDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
   return *this;
 }
 
-BufferCreator &BufferCreator::Mappable()
+D3D11BufferCreator &D3D11BufferCreator::Mappable()
 {
   m_BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
   m_BufDesc.Usage = D3D11_USAGE_DYNAMIC;
   return *this;
 }
 
-BufferCreator &BufferCreator::Staging()
+D3D11BufferCreator &D3D11BufferCreator::Staging()
 {
   m_BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
   m_BufDesc.Usage = D3D11_USAGE_STAGING;
   return *this;
 }
 
-BufferCreator &BufferCreator::Data(const void *data)
+D3D11BufferCreator &D3D11BufferCreator::Data(const void *data)
 {
   m_Initdata.pSysMem = data;
   m_Initdata.SysMemPitch = m_BufDesc.ByteWidth;
@@ -288,7 +288,7 @@ BufferCreator &BufferCreator::Data(const void *data)
   return *this;
 }
 
-BufferCreator &BufferCreator::Size(UINT size)
+D3D11BufferCreator &D3D11BufferCreator::Size(UINT size)
 {
   if(m_BufDesc.BindFlags & D3D11_BIND_CONSTANT_BUFFER)
     size = (size + 15) & ~0xf;
@@ -300,15 +300,15 @@ BufferCreator &BufferCreator::Size(UINT size)
   return *this;
 }
 
-BufferCreator::operator ID3D11Buffer *() const
+D3D11BufferCreator::operator ID3D11Buffer *() const
 {
   ID3D11Buffer *buf = NULL;
   CHECK_HR(m_Test->dev->CreateBuffer(&m_BufDesc, m_Initdata.pSysMem ? &m_Initdata : NULL, &buf));
   return buf;
 }
 
-TextureCreator::TextureCreator(D3D11GraphicsTest *test, DXGI_FORMAT format, UINT width, UINT height,
-                               UINT depth)
+D3D11TextureCreator::D3D11TextureCreator(D3D11GraphicsTest *test, DXGI_FORMAT format, UINT width,
+                                         UINT height, UINT depth)
     : m_Test(test)
 {
   Format = format;
@@ -317,64 +317,64 @@ TextureCreator::TextureCreator(D3D11GraphicsTest *test, DXGI_FORMAT format, UINT
   depth = depth;
 }
 
-TextureCreator &TextureCreator::Mips(UINT mips)
+D3D11TextureCreator &D3D11TextureCreator::Mips(UINT mips)
 {
   MipLevels = mips;
   return *this;
 }
 
-TextureCreator &TextureCreator::Array(UINT size)
+D3D11TextureCreator &D3D11TextureCreator::Array(UINT size)
 {
   ArraySize = size;
   return *this;
 }
 
-TextureCreator &TextureCreator::Multisampled(UINT count, UINT quality)
+D3D11TextureCreator &D3D11TextureCreator::Multisampled(UINT count, UINT quality)
 {
   SampleDesc.Count = count;
   SampleDesc.Quality = quality;
   return *this;
 }
 
-TextureCreator &TextureCreator::SRV()
+D3D11TextureCreator &D3D11TextureCreator::SRV()
 {
   BindFlags |= D3D11_BIND_SHADER_RESOURCE;
   return *this;
 }
 
-TextureCreator &TextureCreator::UAV()
+D3D11TextureCreator &D3D11TextureCreator::UAV()
 {
   BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
   return *this;
 }
 
-TextureCreator &TextureCreator::RTV()
+D3D11TextureCreator &D3D11TextureCreator::RTV()
 {
   BindFlags |= D3D11_BIND_RENDER_TARGET;
   return *this;
 }
 
-TextureCreator &TextureCreator::DSV()
+D3D11TextureCreator &D3D11TextureCreator::DSV()
 {
   BindFlags |= D3D11_BIND_DEPTH_STENCIL;
   return *this;
 }
 
-TextureCreator &TextureCreator::Mappable()
+D3D11TextureCreator &D3D11TextureCreator::Mappable()
 {
   CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
   Usage = D3D11_USAGE_DYNAMIC;
   return *this;
 }
 
-TextureCreator &TextureCreator::Staging()
+D3D11TextureCreator &D3D11TextureCreator::Staging()
 {
   CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
   Usage = D3D11_USAGE_STAGING;
   return *this;
 }
 
-TextureCreator::operator ID3D11Texture1D *() const
+D3D11TextureCreator::operator ID3D11Texture1D *() const
 {
   D3D11_TEXTURE1D_DESC texdesc;
 
@@ -392,7 +392,7 @@ TextureCreator::operator ID3D11Texture1D *() const
   return tex;
 }
 
-TextureCreator::operator ID3D11Texture2D *() const
+D3D11TextureCreator::operator ID3D11Texture2D *() const
 {
   D3D11_TEXTURE2D_DESC texdesc;
 
@@ -413,7 +413,7 @@ TextureCreator::operator ID3D11Texture2D *() const
   return tex;
 }
 
-TextureCreator::operator ID3D11Texture3D *() const
+D3D11TextureCreator::operator ID3D11Texture3D *() const
 {
   D3D11_TEXTURE3D_DESC texdesc;
 
@@ -432,13 +432,13 @@ TextureCreator::operator ID3D11Texture3D *() const
   return tex;
 }
 
-ViewCreator::ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Buffer *buf)
+D3D11ViewCreator::D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Buffer *buf)
     : m_Test(test), m_Type(viewType), m_Res(buf)
 {
   SetupDescriptors(viewType, ResourceType::Buffer);
 }
 
-ViewCreator::ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture1D *tex)
+D3D11ViewCreator::D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture1D *tex)
     : m_Test(test), m_Type(viewType), m_Res(tex)
 {
   D3D11_TEXTURE1D_DESC texdesc;
@@ -454,7 +454,7 @@ ViewCreator::ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Textu
   Format(texdesc.Format);
 }
 
-ViewCreator::ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture2D *tex)
+D3D11ViewCreator::D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture2D *tex)
     : m_Test(test), m_Type(viewType), m_Res(tex)
 {
   D3D11_TEXTURE2D_DESC texdesc;
@@ -480,7 +480,7 @@ ViewCreator::ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Textu
   Format(texdesc.Format);
 }
 
-ViewCreator::ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture3D *tex)
+D3D11ViewCreator::D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture3D *tex)
     : m_Test(test), m_Type(viewType), m_Res(tex)
 {
   D3D11_TEXTURE3D_DESC texdesc;
@@ -491,7 +491,7 @@ ViewCreator::ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Textu
   Format(texdesc.Format);
 }
 
-void ViewCreator::SetupDescriptors(ViewType viewType, ResourceType resType)
+void D3D11ViewCreator::SetupDescriptors(ViewType viewType, ResourceType resType)
 {
   memset(&desc, 0, sizeof(desc));
 
@@ -722,21 +722,21 @@ void ViewCreator::SetupDescriptors(ViewType viewType, ResourceType resType)
   }
 }
 
-ViewCreator &ViewCreator::Format(DXGI_FORMAT f)
+D3D11ViewCreator &D3D11ViewCreator::Format(DXGI_FORMAT f)
 {
   // this is always in the same place, just write it once
   desc.srv.Format = f;
   return *this;
 }
 
-ViewCreator &ViewCreator::FirstElement(UINT el)
+D3D11ViewCreator &D3D11ViewCreator::FirstElement(UINT el)
 {
   if(firstElement)
     *firstElement = el;
   return *this;
 }
 
-ViewCreator &ViewCreator::NumElements(UINT num)
+D3D11ViewCreator &D3D11ViewCreator::NumElements(UINT num)
 {
   if(numElements)
     *numElements = num;
@@ -745,7 +745,7 @@ ViewCreator &ViewCreator::NumElements(UINT num)
   return *this;
 }
 
-ViewCreator &ViewCreator::FirstMip(UINT mip)
+D3D11ViewCreator &D3D11ViewCreator::FirstMip(UINT mip)
 {
   if(firstMip)
     *firstMip = mip;
@@ -754,7 +754,7 @@ ViewCreator &ViewCreator::FirstMip(UINT mip)
   return *this;
 }
 
-ViewCreator &ViewCreator::NumMips(UINT num)
+D3D11ViewCreator &D3D11ViewCreator::NumMips(UINT num)
 {
   if(numMips)
     *numMips = num;
@@ -763,7 +763,7 @@ ViewCreator &ViewCreator::NumMips(UINT num)
   return *this;
 }
 
-ViewCreator &ViewCreator::FirstSlice(UINT mip)
+D3D11ViewCreator &D3D11ViewCreator::FirstSlice(UINT mip)
 {
   if(firstSlice)
     *firstSlice = mip;
@@ -772,7 +772,7 @@ ViewCreator &ViewCreator::FirstSlice(UINT mip)
   return *this;
 }
 
-ViewCreator &ViewCreator::NumSlices(UINT num)
+D3D11ViewCreator &D3D11ViewCreator::NumSlices(UINT num)
 {
   if(numSlices)
     *numSlices = num;
@@ -781,19 +781,19 @@ ViewCreator &ViewCreator::NumSlices(UINT num)
   return *this;
 }
 
-ViewCreator &ViewCreator::ReadOnlyDepth()
+D3D11ViewCreator &D3D11ViewCreator::ReadOnlyDepth()
 {
   desc.dsv.Flags |= D3D11_DSV_READ_ONLY_DEPTH;
   return *this;
 }
 
-ViewCreator &ViewCreator::ReadOnlyStencil()
+D3D11ViewCreator &D3D11ViewCreator::ReadOnlyStencil()
 {
   desc.dsv.Flags |= D3D11_DSV_READ_ONLY_STENCIL;
   return *this;
 }
 
-ViewCreator::operator ID3D11ShaderResourceView *()
+D3D11ViewCreator::operator ID3D11ShaderResourceView *()
 {
   if(desc.srv.ViewDimension == D3D11_SRV_DIMENSION_BUFFER)
   {
@@ -826,7 +826,7 @@ ViewCreator::operator ID3D11ShaderResourceView *()
   return srv;
 }
 
-ViewCreator::operator ID3D11UnorderedAccessView *()
+D3D11ViewCreator::operator ID3D11UnorderedAccessView *()
 {
   if(desc.uav.ViewDimension == D3D11_UAV_DIMENSION_BUFFER)
   {
@@ -856,7 +856,7 @@ ViewCreator::operator ID3D11UnorderedAccessView *()
   return uav;
 }
 
-ViewCreator::operator ID3D11RenderTargetView *()
+D3D11ViewCreator::operator ID3D11RenderTargetView *()
 {
   TEST_ASSERT(m_Res, "Must have resource");
   TEST_ASSERT(m_Type == ViewType::RTV, "Casting non-RTV ViewCreator to RTV");
@@ -866,7 +866,7 @@ ViewCreator::operator ID3D11RenderTargetView *()
   return rtv;
 }
 
-ViewCreator::operator ID3D11DepthStencilView *()
+D3D11ViewCreator::operator ID3D11DepthStencilView *()
 {
   TEST_ASSERT(m_Res, "Must have resource");
   TEST_ASSERT(m_Type == ViewType::DSV, "Casting non-DSV ViewCreator to DSV");

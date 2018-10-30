@@ -81,34 +81,34 @@ extern std::string DefaultPixel;
 
 struct D3D11GraphicsTest;
 
-class BufferCreator
+class D3D11BufferCreator
 {
 public:
-  BufferCreator(D3D11GraphicsTest *test);
+  D3D11BufferCreator(D3D11GraphicsTest *test);
 
-  BufferCreator &Vertex();
-  BufferCreator &Index();
-  BufferCreator &Constant();
-  BufferCreator &StreamOut();
-  BufferCreator &SRV();
-  BufferCreator &UAV();
+  D3D11BufferCreator &Vertex();
+  D3D11BufferCreator &Index();
+  D3D11BufferCreator &Constant();
+  D3D11BufferCreator &StreamOut();
+  D3D11BufferCreator &SRV();
+  D3D11BufferCreator &UAV();
 
-  BufferCreator &Structured(UINT structStride);
-  BufferCreator &ByteAddressed();
-  BufferCreator &Mappable();
-  BufferCreator &Staging();
+  D3D11BufferCreator &Structured(UINT structStride);
+  D3D11BufferCreator &ByteAddressed();
+  D3D11BufferCreator &Mappable();
+  D3D11BufferCreator &Staging();
 
-  BufferCreator &Data(const void *data);
-  BufferCreator &Size(UINT size);
+  D3D11BufferCreator &Data(const void *data);
+  D3D11BufferCreator &Size(UINT size);
 
   template <typename T, size_t N>
-  BufferCreator &Data(const T (&data)[N])
+  D3D11BufferCreator &Data(const T (&data)[N])
   {
     return Data(&data[0]).Size(UINT(N * sizeof(T)));
   }
 
   template <typename T>
-  BufferCreator &Data(const std::vector<T> &data)
+  D3D11BufferCreator &Data(const std::vector<T> &data)
   {
     return Data(data.data()).Size(UINT(data.size() * sizeof(T)));
   }
@@ -122,22 +122,23 @@ private:
   D3D11_SUBRESOURCE_DATA m_Initdata = {};
 };
 
-class TextureCreator
+class D3D11TextureCreator
 {
 public:
-  TextureCreator(D3D11GraphicsTest *test, DXGI_FORMAT format, UINT width, UINT height, UINT depth);
+  D3D11TextureCreator(D3D11GraphicsTest *test, DXGI_FORMAT format, UINT width, UINT height,
+                      UINT depth);
 
-  TextureCreator &Mips(UINT mips);
-  TextureCreator &Array(UINT size);
-  TextureCreator &Multisampled(UINT count, UINT quality = 0);
+  D3D11TextureCreator &Mips(UINT mips);
+  D3D11TextureCreator &Array(UINT size);
+  D3D11TextureCreator &Multisampled(UINT count, UINT quality = 0);
 
-  TextureCreator &SRV();
-  TextureCreator &UAV();
-  TextureCreator &RTV();
-  TextureCreator &DSV();
+  D3D11TextureCreator &SRV();
+  D3D11TextureCreator &UAV();
+  D3D11TextureCreator &RTV();
+  D3D11TextureCreator &DSV();
 
-  TextureCreator &Mappable();
-  TextureCreator &Staging();
+  D3D11TextureCreator &Mappable();
+  D3D11TextureCreator &Staging();
 
   operator ID3D11Texture1D *() const;
   operator ID3D11Texture1DPtr() const { return ID3D11Texture1DPtr((ID3D11Texture1D *)*this); }
@@ -181,30 +182,30 @@ enum class ViewType
   UAV,
 };
 
-class ViewCreator
+class D3D11ViewCreator
 {
 public:
-  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Buffer *buf);
-  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture1D *tex);
-  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture2D *tex);
-  ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture3D *tex);
+  D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Buffer *buf);
+  D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture1D *tex);
+  D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture2D *tex);
+  D3D11ViewCreator(D3D11GraphicsTest *test, ViewType viewType, ID3D11Texture3D *tex);
 
   // common params
-  ViewCreator &Format(DXGI_FORMAT format);
+  D3D11ViewCreator &Format(DXGI_FORMAT format);
 
   // buffer params
-  ViewCreator &FirstElement(UINT el);
-  ViewCreator &NumElements(UINT num);
+  D3D11ViewCreator &FirstElement(UINT el);
+  D3D11ViewCreator &NumElements(UINT num);
 
   // texture params
-  ViewCreator &FirstMip(UINT mip);
-  ViewCreator &NumMips(UINT num);
-  ViewCreator &FirstSlice(UINT mip);
-  ViewCreator &NumSlices(UINT num);
+  D3D11ViewCreator &FirstMip(UINT mip);
+  D3D11ViewCreator &NumMips(UINT num);
+  D3D11ViewCreator &FirstSlice(UINT mip);
+  D3D11ViewCreator &NumSlices(UINT num);
 
   // depth stencil only
-  ViewCreator &ReadOnlyDepth();
-  ViewCreator &ReadOnlyStencil();
+  D3D11ViewCreator &ReadOnlyDepth();
+  D3D11ViewCreator &ReadOnlyStencil();
 
   operator ID3D11ShaderResourceView *();
   operator ID3D11ShaderResourceViewPtr()

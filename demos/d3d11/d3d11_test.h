@@ -84,39 +84,39 @@ struct D3D11GraphicsTest : public GraphicsTest
 
   void CreateDefaultInputLayout(ID3DBlobPtr vsblob);
 
-  BufferCreator MakeBuffer() { return BufferCreator(this); }
-  TextureCreator MakeTexture(DXGI_FORMAT format, UINT width)
+  D3D11BufferCreator MakeBuffer() { return D3D11BufferCreator(this); }
+  D3D11TextureCreator MakeTexture(DXGI_FORMAT format, UINT width)
   {
-    return TextureCreator(this, format, width, 1, 1);
+    return D3D11TextureCreator(this, format, width, 1, 1);
   }
-  TextureCreator MakeTexture(DXGI_FORMAT format, UINT width, UINT height)
+  D3D11TextureCreator MakeTexture(DXGI_FORMAT format, UINT width, UINT height)
   {
-    return TextureCreator(this, format, width, height, 1);
+    return D3D11TextureCreator(this, format, width, height, 1);
   }
-  TextureCreator MakeTexture(DXGI_FORMAT format, UINT width, UINT height, UINT depth)
+  D3D11TextureCreator MakeTexture(DXGI_FORMAT format, UINT width, UINT height, UINT depth)
   {
-    return TextureCreator(this, format, width, height, depth);
+    return D3D11TextureCreator(this, format, width, height, depth);
   }
 
   template <typename T>
-  ViewCreator MakeSRV(T res)
+  D3D11ViewCreator MakeSRV(T res)
   {
-    return ViewCreator(this, ViewType::SRV, res);
+    return D3D11ViewCreator(this, ViewType::SRV, res);
   }
   template <typename T>
-  ViewCreator MakeRTV(T res)
+  D3D11ViewCreator MakeRTV(T res)
   {
-    return ViewCreator(this, ViewType::RTV, res);
+    return D3D11ViewCreator(this, ViewType::RTV, res);
   }
   template <typename T>
-  ViewCreator MakeDSV(T res)
+  D3D11ViewCreator MakeDSV(T res)
   {
-    return ViewCreator(this, ViewType::DSV, res);
+    return D3D11ViewCreator(this, ViewType::DSV, res);
   }
   template <typename T>
-  ViewCreator MakeUAV(T res)
+  D3D11ViewCreator MakeUAV(T res)
   {
-    return ViewCreator(this, ViewType::UAV, res);
+    return D3D11ViewCreator(this, ViewType::UAV, res);
   }
 
   std::vector<byte> GetBufferData(ID3D11Buffer *buf, uint32_t offset = 0, uint32_t len = 0);
