@@ -49,7 +49,7 @@ class TestLogger:
 
     def add_output(self, o, header='', footer=''):
         os.makedirs(os.path.dirname(o), exist_ok=True)
-        self.outputs.append(open(o, "w"))
+        self.outputs.append(open(o, "a"))
 
     def print(self, line: str, with_stdout=True):
         self.rawprint('.. ' + line, with_stdout)

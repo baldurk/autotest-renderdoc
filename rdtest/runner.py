@@ -42,7 +42,6 @@ def _run_test(testclass, failedcases: list):
 
     try:
         out,err = test_run.communicate(timeout=120)
-        log.subprocess_print(out)
     except subprocess.TimeoutExpired as timeout:
         log.failure('Timed out, 120s elapsed')
         test_run.kill()
@@ -178,6 +177,8 @@ def internal_run_test(test_name):
     testcases = get_tests()
 
     rd.InitGlobalEnv(rd.GlobalEnvironment(), [])
+
+    log.add_output(util.get_artifact_path("output.log.html"))
 
     for testclass in testcases:
         if testclass.__name__ == test_name:
