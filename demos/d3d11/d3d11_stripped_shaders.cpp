@@ -38,8 +38,8 @@ struct Stripped_Shaders : D3D11GraphicsTest
     ID3DBlobPtr vsblobUnstripped = NULL;
     ID3DBlobPtr psblobUnstripped = NULL;
 
-    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0", &vsblobUnstripped);
-    ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_5_0", &psblobUnstripped);
+    ID3DBlobPtr vsblob = Compile(D3DDefaultVertex, "main", "vs_5_0", &vsblobUnstripped);
+    ID3DBlobPtr psblob = Compile(D3DDefaultPixel, "main", "ps_5_0", &psblobUnstripped);
 
     WriteBlob(GetCWD() + "/shader_debug.vs", vsblobUnstripped, false);
     WriteBlob(GetCWD() + "/shader_debug.ps", psblobUnstripped, true);

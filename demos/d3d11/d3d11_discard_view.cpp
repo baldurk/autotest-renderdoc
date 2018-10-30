@@ -50,7 +50,7 @@ float4 main() : SV_Target0
     if(!Init(argc, argv))
       return 3;
 
-    ID3DBlobPtr vsblob = Compile(FullscreenQuadVertex, "main", "vs_5_0");
+    ID3DBlobPtr vsblob = Compile(D3DFullscreenQuadVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     ID3D11VertexShaderPtr vs = CreateVS(vsblob);

@@ -144,6 +144,7 @@
     <ClCompile Include="d3d11\d3d11_structured_buffer_read.cpp" />
     <ClCompile Include="d3d11\d3d11_test.cpp" />
     <ClCompile Include="d3d11\d3d11_texture_3d.cpp" />
+    <ClCompile Include="dx\d3d_helpers.cpp" />
     <ClCompile Include="gl\glad\glad.c" />
     <ClCompile Include="gl\glad\glad_egl.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -195,6 +196,7 @@
   <ItemGroup>
     <ClInclude Include="d3d11\d3d11_helpers.h" />
     <ClInclude Include="d3d11\d3d11_test.h" />
+    <ClInclude Include="dx\d3d_helpers.h" />
     <ClInclude Include="dx\official\d3d11.h" />
     <ClInclude Include="dx\official\d3d11sdklayers.h" />
     <ClInclude Include="dx\official\d3d11_1.h" />

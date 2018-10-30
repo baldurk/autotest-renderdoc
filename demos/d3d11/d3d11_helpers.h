@@ -24,7 +24,10 @@
 
 #pragma once
 
+#include "../test_common.h"
+
 #include <comdef.h>
+#include "dx/d3d_helpers.h"
 #include "dx/official/d3d11.h"
 #include "dx/official/d3d11_1.h"
 #include "dx/official/d3d11_2.h"
@@ -74,10 +77,6 @@ COM_SMARTPTR(ID3D11DepthStencilView);
 
 COM_SMARTPTR(ID3D11InfoQueue);
 COM_SMARTPTR(ID3DUserDefinedAnnotation);
-
-extern std::string FullscreenQuadVertex;
-extern std::string DefaultVertex;
-extern std::string DefaultPixel;
 
 struct D3D11GraphicsTest;
 

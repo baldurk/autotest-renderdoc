@@ -35,8 +35,8 @@ struct Primitive_Restart : D3D11GraphicsTest
     if(!Init(argc, argv))
       return 3;
 
-    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
-    ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_5_0");
+    ID3DBlobPtr vsblob = Compile(D3DDefaultVertex, "main", "vs_5_0");
+    ID3DBlobPtr psblob = Compile(D3DDefaultPixel, "main", "ps_5_0");
 
     CreateDefaultInputLayout(vsblob);
 

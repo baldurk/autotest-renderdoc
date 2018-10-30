@@ -60,7 +60,7 @@ float4 main() : SV_Target0
     if(!opts.MapNoOverwriteOnDynamicBufferSRV)
       TEST_ERROR("Can't run Structured_Buffer_MisalignedDirty test without mappable SRVs");
 
-    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
+    ID3DBlobPtr vsblob = Compile(D3DDefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     CreateDefaultInputLayout(vsblob);

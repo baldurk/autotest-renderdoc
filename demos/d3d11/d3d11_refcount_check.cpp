@@ -41,8 +41,8 @@ struct Refcount_Check : D3D11GraphicsTest
 
     dbg->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 
-    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_4_0");
-    ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_4_0");
+    ID3DBlobPtr vsblob = Compile(D3DDefaultVertex, "main", "vs_4_0");
+    ID3DBlobPtr psblob = Compile(D3DDefaultPixel, "main", "ps_4_0");
 
     CreateDefaultInputLayout(vsblob);
 

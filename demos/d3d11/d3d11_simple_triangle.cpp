@@ -36,8 +36,8 @@ struct D3D11_Simple_Triangle : D3D11GraphicsTest
     if(!Init(argc, argv))
       return 3;
 
-    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_4_0");
-    ID3DBlobPtr psblob = Compile(DefaultPixel, "main", "ps_4_0");
+    ID3DBlobPtr vsblob = Compile(D3DDefaultVertex, "main", "vs_4_0");
+    ID3DBlobPtr psblob = Compile(D3DDefaultPixel, "main", "ps_4_0");
 
     CreateDefaultInputLayout(vsblob);
 

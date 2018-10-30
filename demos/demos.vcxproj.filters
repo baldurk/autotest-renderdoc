@@ -205,6 +205,9 @@
     <ClCompile Include="linux\linux_window.cpp">
       <Filter>Linux</Filter>
     </ClCompile>
+    <ClCompile Include="dx\d3d_helpers.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -240,8 +243,11 @@
     <Filter Include="nuklear">
       <UniqueIdentifier>{6d28f38e-2a5c-442b-88d0-87ef4c8f77e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DX Official">
+    <Filter Include="D3D">
       <UniqueIdentifier>{200ba06c-394d-4759-84f8-b499013b4167}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\official">
+      <UniqueIdentifier>{91707a1b-5bdd-455f-874f-0dd6ec31aefb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -325,79 +331,82 @@
     <ClInclude Include="vk\vk_headers.h" />
     <ClInclude Include="vk\vulkan\shaderc.h" />
     <ClInclude Include="dx\official\d3d8.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d8caps.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d8types.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d9.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d9caps.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d9types.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d11.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d11_1.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d11_2.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d11_3.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d11_4.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d11sdklayers.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d12.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3d12sdklayers.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3dcommon.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\d3dcompiler.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgi.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgi1_2.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgi1_3.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgi1_4.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgi1_5.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgi1_6.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgiformat.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\dxgitype.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
     </ClInclude>
     <ClInclude Include="dx\official\winapifamily.h">
-      <Filter>DX Official</Filter>
+      <Filter>D3D\official</Filter>
+    </ClInclude>
+    <ClInclude Include="dx\d3d_helpers.h">
+      <Filter>D3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

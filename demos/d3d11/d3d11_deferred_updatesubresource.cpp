@@ -58,7 +58,7 @@ float4 main(v2f IN) : SV_Target0
     ID3D11DeviceContextPtr defctx;
     dev->CreateDeferredContext(0, &defctx);
 
-    ID3DBlobPtr vsblob = Compile(DefaultVertex, "main", "vs_5_0");
+    ID3DBlobPtr vsblob = Compile(D3DDefaultVertex, "main", "vs_5_0");
     ID3DBlobPtr psblob = Compile(pixel, "main", "ps_5_0");
 
     CreateDefaultInputLayout(vsblob);

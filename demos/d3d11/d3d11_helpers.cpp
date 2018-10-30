@@ -22,70 +22,10 @@
 * THE SOFTWARE.
 ******************************************************************************/
 
+#include "d3d11_helpers.h"
 #include "d3d11_test.h"
 
-std::string FullscreenQuadVertex = R"EOSHADER(
-
-float4 main(uint vid : SV_VertexID) : SV_POSITION
-{
-	float2 positions[] = {
-		float2(-1.0f,  1.0f),
-		float2( 1.0f,  1.0f),
-		float2(-1.0f, -1.0f),
-		float2( 1.0f, -1.0f),
-	};
-
-	return float4(positions[vid], 0, 1);
-}
-
-)EOSHADER";
-
-std::string DefaultVertex = R"EOSHADER(
-
-struct vertin
-{
-	float3 pos : POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
-};
-
-struct v2f
-{
-	float4 pos : SV_POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
-};
-
-v2f main(vertin IN, uint vid : SV_VertexID)
-{
-	v2f OUT = (v2f)0;
-
-	OUT.pos = float4(IN.pos.xyz, 1);
-	OUT.col = IN.col;
-	OUT.uv = IN.uv;
-
-	return OUT;
-}
-
-)EOSHADER";
-
-std::string DefaultPixel = R"EOSHADER(
-
-struct v2f
-{
-	float4 pos : SV_POSITION;
-	float4 col : COLOR0;
-	float2 uv : TEXCOORD0;
-};
-
-float4 main(v2f IN) : SV_Target0
-{
-	return IN.col;
-}
-
-)EOSHADER";
-
-const UINT formatStrides[] = {
+static const UINT formatStrides[] = {
     0,        // DXGI_FORMAT_UNKNOWN
     4 * 4,    // DXGI_FORMAT_R32G32B32A32_TYPELESS
     4 * 4,    // DXGI_FORMAT_R32G32B32A32_FLOAT
