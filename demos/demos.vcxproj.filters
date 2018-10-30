@@ -205,6 +205,15 @@
     <ClCompile Include="linux\linux_window.cpp">
       <Filter>Linux</Filter>
     </ClCompile>
+    <ClCompile Include="d3d12\d3d12_helpers.cpp">
+      <Filter>D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d12\d3d12_test.cpp">
+      <Filter>D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d12\d3d12_simple_triangle.cpp">
+      <Filter>D3D12\demos</Filter>
+    </ClCompile>
     <ClCompile Include="dx\d3d_helpers.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
@@ -242,6 +251,12 @@
     </Filter>
     <Filter Include="nuklear">
       <UniqueIdentifier>{6d28f38e-2a5c-442b-88d0-87ef4c8f77e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D12">
+      <UniqueIdentifier>{1ce198b8-2024-4567-b8e2-086dd27725e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D12\demos">
+      <UniqueIdentifier>{18e43376-43e9-4a0c-b1a9-031b399e9ede}</UniqueIdentifier>
     </Filter>
     <Filter Include="D3D">
       <UniqueIdentifier>{200ba06c-394d-4759-84f8-b499013b4167}</UniqueIdentifier>
@@ -330,6 +345,12 @@
     </ClInclude>
     <ClInclude Include="vk\vk_headers.h" />
     <ClInclude Include="vk\vulkan\shaderc.h" />
+    <ClInclude Include="d3d12\d3d12_helpers.h">
+      <Filter>D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d12\d3d12_test.h">
+      <Filter>D3D12</Filter>
+    </ClInclude>
     <ClInclude Include="dx\official\d3d8.h">
       <Filter>D3D\official</Filter>
     </ClInclude>

@@ -149,6 +149,7 @@ enum class TestAPI
   D3D11,
   Vulkan,
   OpenGL,
+  D3D12,
   Count,
 };
 
@@ -174,6 +175,7 @@ struct TestMetadata
       case TestAPI::D3D11: return "D3D11";
       case TestAPI::Vulkan: return "VK";
       case TestAPI::OpenGL: return "GL";
+      case TestAPI::D3D12: return "D3D12";
     }
 
     return "???";

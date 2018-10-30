@@ -265,7 +265,7 @@ int main(int argc, char **argv)
     int curtest = 0;
     bool allow[(int)TestAPI::Count] = {};
     const char *allow_names[] = {
-        "D3D11", "Vulkan", "OpenGL",
+        "D3D11", "Vulkan", "OpenGL", "D3D12",
     };
 
     for(size_t i = 0; i < ARRAY_COUNT(allow); i++)
@@ -282,7 +282,7 @@ int main(int argc, char **argv)
         nk_layout_row_dynamic(ctx, 100, 1);
         if(nk_group_begin(ctx, "Test Filter", NK_WINDOW_BORDER | NK_WINDOW_TITLE))
         {
-          nk_layout_row_dynamic(ctx, 30, 4);
+          nk_layout_row_dynamic(ctx, 30, ARRAY_COUNT(allow_names) + 1);
 
           nk_label(ctx, "Filter tests:", NK_TEXT_LEFT);
 
