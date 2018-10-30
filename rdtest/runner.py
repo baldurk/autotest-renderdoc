@@ -111,11 +111,22 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
     if plat == 'nt' or 'Windows' in platform.platform():
         plat = 'win32'
 
+    ver = 0
+
+    if plat == 'win32':
+        try:
+            ver = sys.getwindowsversion().major
+            if ver == 6:
+                ver = 7  # Windows 7 is 6.1
+        except AttributeError:
+            pass
+
     for testclass in testcases:
         name = testclass.__name__
 
-        if testclass.platform != plat and testclass.platform != '':
-            log.print("Skipping {} as it's not supported on this platform '{}'".format(name, plat))
+        if ((testclass.platform != '' and testclass.platform != plat) or
+                (testclass.platform_version != 0 and testclass.platform_version > ver)):
+            log.print("Skipping {} as it's not supported on this platform '{} version {}'".format(name, plat, ver))
             skippedcases.append(testclass)
             continue
 
