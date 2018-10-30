@@ -311,13 +311,16 @@ int main(int argc, char **argv)
 
           nk_layout_row_dynamic(ctx, 20, 1);
 
+          std::string lower_filter = strlower(name_filter);
+
           for(int i = 0; i < (int)tests.size(); i++)
           {
             std::string name = tests[i].QualifiedName();
+            std::string lower_name = strlower(name);
 
             // apply filters
             if(!allow[(int)tests[i].API] ||
-               (name_filter[0] != 0 && !strcasestr(name.c_str(), name_filter)))
+               (!lower_filter.empty() && !strstr(lower_name.c_str(), lower_filter.c_str())))
             {
               // if this was the selected test, unselect it. The next unfiltered test will grab it
               if(curtest == i)

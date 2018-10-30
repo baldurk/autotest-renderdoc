@@ -27,7 +27,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_DEPRECATE
 #define NOMINMAX
-#include <shlwapi.h>
 #include <windows.h>
 
 #define DEBUG_BREAK()       \
@@ -39,7 +38,6 @@
 
 #define popen _popen
 #define pclose _pclose
-#define strcasestr StrStrIA
 
 #define msleep(time) Sleep(time)
 

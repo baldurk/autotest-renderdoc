@@ -24,12 +24,52 @@
 
 #include "test_common.h"
 #include <stdarg.h>
+#include <algorithm>
 
 const DefaultA2V DefaultTri[3] = {
     {Vec3f(-0.5f, -0.5f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
     {Vec3f(0.0f, 0.5f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
     {Vec3f(0.5f, -0.5f, 0.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
 };
+
+// since tolower is int -> int, this warns below. make a char -> char alternative
+char toclower(char c)
+{
+  return (char)tolower(c);
+}
+
+char tocupper(char c)
+{
+  return (char)toupper(c);
+}
+
+std::string strlower(const std::string &str)
+{
+  std::string newstr(str);
+  std::transform(newstr.begin(), newstr.end(), newstr.begin(), toclower);
+  return newstr;
+}
+
+std::string strupper(const std::string &str)
+{
+  std::string newstr(str);
+  std::transform(newstr.begin(), newstr.end(), newstr.begin(), tocupper);
+  return newstr;
+}
+
+std::string trim(const std::string &str)
+{
+  const char *whitespace = "\t \n\r";
+  size_t start = str.find_first_not_of(whitespace);
+  size_t end = str.find_last_not_of(whitespace);
+
+  // no non-whitespace characters, return the empty string
+  if(start == std::string::npos)
+    return "";
+
+  // searching from the start found something, so searching from the end must have too.
+  return str.substr(start, end - start + 1);
+}
 
 static char printBuf[4096] = {};
 

@@ -222,6 +222,10 @@ std::string GetCWD();
 
 #define RANDF(mn, mx) ((float(rand()) / float(RAND_MAX)) * ((mx) - (mn)) + (mn))
 
+std::string strlower(const std::string &str);
+std::string strupper(const std::string &str);
+std::string trim(const std::string &str);
+
 void DebugPrint(const char *fmt, ...);
 
 #define TEST_ASSERT(cond, fmt, ...)                                                               \
