@@ -65,7 +65,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)vk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)vk;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -195,6 +195,31 @@
   <ItemGroup>
     <ClInclude Include="d3d11\d3d11_helpers.h" />
     <ClInclude Include="d3d11\d3d11_test.h" />
+    <ClInclude Include="dx\official\d3d11.h" />
+    <ClInclude Include="dx\official\d3d11sdklayers.h" />
+    <ClInclude Include="dx\official\d3d11_1.h" />
+    <ClInclude Include="dx\official\d3d11_2.h" />
+    <ClInclude Include="dx\official\d3d11_3.h" />
+    <ClInclude Include="dx\official\d3d11_4.h" />
+    <ClInclude Include="dx\official\d3d12.h" />
+    <ClInclude Include="dx\official\d3d12sdklayers.h" />
+    <ClInclude Include="dx\official\d3d8.h" />
+    <ClInclude Include="dx\official\d3d8caps.h" />
+    <ClInclude Include="dx\official\d3d8types.h" />
+    <ClInclude Include="dx\official\d3d9.h" />
+    <ClInclude Include="dx\official\d3d9caps.h" />
+    <ClInclude Include="dx\official\d3d9types.h" />
+    <ClInclude Include="dx\official\d3dcommon.h" />
+    <ClInclude Include="dx\official\d3dcompiler.h" />
+    <ClInclude Include="dx\official\dxgi.h" />
+    <ClInclude Include="dx\official\dxgi1_2.h" />
+    <ClInclude Include="dx\official\dxgi1_3.h" />
+    <ClInclude Include="dx\official\dxgi1_4.h" />
+    <ClInclude Include="dx\official\dxgi1_5.h" />
+    <ClInclude Include="dx\official\dxgi1_6.h" />
+    <ClInclude Include="dx\official\dxgiformat.h" />
+    <ClInclude Include="dx\official\dxgitype.h" />
+    <ClInclude Include="dx\official\winapifamily.h" />
     <ClInclude Include="gl\glad\glad.h" />
     <ClInclude Include="gl\glad\glad_egl.h" />
     <ClInclude Include="gl\glad\glad_glx.h" />

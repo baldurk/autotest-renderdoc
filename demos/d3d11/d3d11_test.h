@@ -26,8 +26,8 @@
 
 #include "../test_common.h"
 
-#include <d3dcompiler.h>
-#include <dxgi.h>
+#include "dx/official/d3dcompiler.h"
+#include "dx/official/dxgi.h"
 #include "d3d11_helpers.h"
 
 typedef HRESULT(WINAPI *pD3DStripShader)(_In_reads_bytes_(BytecodeLength) LPCVOID pShaderBytecode,

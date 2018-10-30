@@ -25,9 +25,9 @@
 #pragma once
 
 #include <comdef.h>
-#include <d3d11.h>
-#include <d3d11_1.h>
-#include <d3d11_2.h>
+#include "dx/official/d3d11.h"
+#include "dx/official/d3d11_1.h"
+#include "dx/official/d3d11_2.h"
 
 #define COM_SMARTPTR(classname) _COM_SMARTPTR_TYPEDEF(classname, __uuidof(classname))
 
