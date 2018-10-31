@@ -104,7 +104,7 @@ def sanitise_filename(name: str):
     return re.sub('^/', '', name)
 
 
-def image_compare(test_img: str, ref_img: str):
+def image_compare(test_img: str, ref_img: str, tolerance: int = 2):
     try:
         out = Image.open(test_img)
     except Exception as ex:
@@ -121,11 +121,11 @@ def image_compare(test_img: str, ref_img: str):
     # Generate the difference
     diff = ImageChops.difference(out, ref)
 
-    # Subtract 1 from the difference, to allow for off-by-1 errors that can be caused by rounding.
+    # Subtract N from the difference, to allow for off-by-N errors that can be caused by rounding.
     # For example clearing to 0.5, 0.5, 0.5 has two valid representations: 127,127,127 and 128,128,128
     # which are equally far from true 0.5.
-    tolerance = 2
-    diff = ImageChops.subtract(diff, Image.new(diff.mode, (diff.width, diff.height), (tolerance, tolerance, tolerance, tolerance)))
+    diff = ImageChops.subtract(diff, Image.new(diff.mode, (diff.width, diff.height),
+                                               (tolerance, tolerance, tolerance, tolerance)))
 
     # If the diff fails, dump the difference to a file
     diff_file = get_tmp_path('diff.png')
