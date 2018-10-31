@@ -1,7 +1,7 @@
 /******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Baldur Karlsson
+ * Copyright (c) 2018 Baldur Karlsson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,9 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
-#include "d3d11_test.h"
+#include "d3d12_test.h"
 
-struct D3D11_Overlay_Test : D3D11GraphicsTest
+struct D3D12_Overlay_Test : D3D12GraphicsTest
 {
   static constexpr const char *Description =
       "Makes a couple of draws that show off all the overlays in some way";
@@ -37,11 +37,6 @@ struct D3D11_Overlay_Test : D3D11GraphicsTest
 
     ID3DBlobPtr vsblob = Compile(D3DDefaultVertex, "main", "vs_4_0");
     ID3DBlobPtr psblob = Compile(D3DDefaultPixel, "main", "ps_4_0");
-
-    CreateDefaultInputLayout(vsblob);
-
-    ID3D11VertexShaderPtr vs = CreateVS(vsblob);
-    ID3D11PixelShaderPtr ps = CreatePS(psblob);
 
     const DefaultA2V VBData[] = {
         // this triangle occludes in depth
@@ -76,7 +71,7 @@ struct D3D11_Overlay_Test : D3D11GraphicsTest
         {Vec3f(0.5f, 0.2f, 0.5f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec2f(1.0f, 0.0f)},
 
         // small triangles
-        // size=0.01
+        // size=0.005
         {Vec3f(0.0f, 0.4f, 0.5f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 0.0f)},
         {Vec3f(0.0f, 0.41f, 0.5f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(0.0f, 1.0f)},
         {Vec3f(0.01f, 0.4f, 0.5f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec2f(1.0f, 0.0f)},
@@ -97,63 +92,93 @@ struct D3D11_Overlay_Test : D3D11GraphicsTest
         {Vec3f(0.025f, 0.7f, 0.5f), Vec4f(1.0f, 0.5f, 1.0f, 1.0f), Vec2f(1.0f, 0.0f)},
     };
 
-    ID3D11BufferPtr vb = MakeBuffer().Vertex().Data(VBData);
+    ID3D12ResourcePtr vb = MakeBuffer().Data(VBData);
 
-    ID3D11Texture2DPtr depthtex =
+    ID3D12RootSignaturePtr sig = MakeSig({});
+
+    D3D12PSOCreator creator = MakePSO().RootSig(sig).InputLayout().VS(vsblob).PS(psblob).DSV(
+        DXGI_FORMAT_D32_FLOAT_S8X24_UINT);
+
+    creator.GraphicsDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+
+    creator.GraphicsDesc.DepthStencilState.DepthEnable = TRUE;
+    creator.GraphicsDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+    creator.GraphicsDesc.DepthStencilState.StencilEnable = FALSE;
+    creator.GraphicsDesc.DepthStencilState.FrontFace.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+    creator.GraphicsDesc.DepthStencilState.FrontFace.StencilPassOp = D3D12_STENCIL_OP_REPLACE;
+    creator.GraphicsDesc.DepthStencilState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
+    creator.GraphicsDesc.DepthStencilState.FrontFace.StencilFailOp = D3D12_STENCIL_OP_KEEP;
+    creator.GraphicsDesc.DepthStencilState.BackFace =
+        creator.GraphicsDesc.DepthStencilState.FrontFace;
+    creator.GraphicsDesc.DepthStencilState.StencilReadMask = 0xff;
+    creator.GraphicsDesc.DepthStencilState.StencilWriteMask = 0xff;
+
+    creator.GraphicsDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+    ID3D12PipelineStatePtr depthWritePipe = creator;
+
+    creator.GraphicsDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+    creator.GraphicsDesc.DepthStencilState.StencilEnable = TRUE;
+    ID3D12PipelineStatePtr stencilWritePipe = creator;
+
+    creator.GraphicsDesc.DepthStencilState.StencilEnable = FALSE;
+    ID3D12PipelineStatePtr backgroundPipe = creator;
+
+    creator.GraphicsDesc.DepthStencilState.StencilEnable = TRUE;
+    creator.GraphicsDesc.DepthStencilState.FrontFace.StencilFunc = D3D12_COMPARISON_FUNC_GREATER;
+    ID3D12PipelineStatePtr pipe = creator;
+
+    ResourceBarrier(vb, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+    ID3D12ResourcePtr dsv =
         MakeTexture(DXGI_FORMAT_D32_FLOAT_S8X24_UINT, screenWidth, screenHeight).DSV();
-    ID3D11DepthStencilViewPtr dsv = MakeDSV(depthtex);
 
     while(Running())
     {
-      IASetVertexBuffer(vb, sizeof(DefaultA2V), 0);
-      ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      ctx->IASetInputLayout(defaultLayout);
+      ID3D12GraphicsCommandListPtr cmd = GetCommandBuffer();
 
-      ctx->VSSetShader(vs, NULL, 0);
-      ctx->PSSetShader(ps, NULL, 0);
+      Reset(cmd);
 
-      D3D11_DEPTH_STENCIL_DESC depth = GetDepthState();
+      ID3D12ResourcePtr bb = StartUsingBackbuffer(cmd, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-      depth.StencilEnable = FALSE;
-      depth.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-      depth.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+      D3D12_CPU_DESCRIPTOR_HANDLE rtv = MakeRTV(bb).Format(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB).Create(0);
 
-      SetDepthState(depth);
-      SetStencilRef(0x55);
+      cmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+      IASetVertexBuffer(cmd, vb, sizeof(DefaultA2V), 0);
+      cmd->SetGraphicsRootSignature(sig);
 
       RSSetViewport(
-          {10.0f, 10.0f, (float)screenWidth - 20.0f, (float)screenHeight - 20.0f, 0.0f, 1.0f});
+          cmd, {10.0f, 10.0f, (float)screenWidth - 20.0f, (float)screenHeight - 20.0f, 0.0f, 1.0f});
+      RSSetScissorRect(cmd, {0, 0, screenWidth, screenHeight});
 
-      ctx->OMSetRenderTargets(1, &bbRTV.GetInterfacePtr(), dsv);
+      OMSetRenderTargets(cmd, {rtv}, MakeDSV(dsv).Create(0));
 
-      ClearRenderTargetView(bbRTV, {0.4f, 0.5f, 0.6f, 1.0f});
-      ctx->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+      ClearRenderTargetView(cmd, rtv, {0.4f, 0.5f, 0.6f, 1.0f});
+      ClearDepthStencilView(cmd, dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0);
+
+      cmd->OMSetStencilRef(0x55);
 
       // draw the setup triangles
+      cmd->SetPipelineState(depthWritePipe);
+      cmd->DrawInstanced(3, 1, 0, 0);
 
-      // 1: write depth
-      depth.DepthFunc = D3D11_COMPARISON_ALWAYS;
-      SetDepthState(depth);
-      ctx->Draw(3, 0);
+      cmd->SetPipelineState(stencilWritePipe);
+      cmd->DrawInstanced(3, 1, 3, 0);
 
-      // 2: write stencil
-      depth.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-      depth.StencilEnable = TRUE;
-      SetDepthState(depth);
-      ctx->Draw(3, 3);
-
-      // 3: write background
-      depth.StencilEnable = FALSE;
-      SetDepthState(depth);
-      ctx->Draw(3, 6);
+      cmd->SetPipelineState(backgroundPipe);
+      cmd->DrawInstanced(3, 1, 6, 0);
 
       // add a marker so we can easily locate this draw
-      annot->SetMarker(L"Test Begin");
+      cmd->SetMarker(1, "Test Begin", sizeof("Test Begin"));
 
-      depth.StencilEnable = TRUE;
-      depth.FrontFace.StencilFunc = D3D11_COMPARISON_GREATER;
-      SetDepthState(depth);
-      ctx->Draw(21, 9);
+      cmd->SetPipelineState(pipe);
+      cmd->DrawInstanced(21, 1, 9, 0);
+
+      FinishUsingBackbuffer(cmd, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+      cmd->Close();
+
+      Submit({cmd});
 
       Present();
     }
@@ -162,4 +187,4 @@ struct D3D11_Overlay_Test : D3D11GraphicsTest
   }
 };
 
-REGISTER_TEST(D3D11_Overlay_Test);
+REGISTER_TEST(D3D12_Overlay_Test);

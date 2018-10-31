@@ -2,11 +2,11 @@ import rdtest
 import renderdoc as rd
 
 
-class D3D11_Overlay_Test(rdtest.TestCase):
+class GL_Overlay_Test(rdtest.TestCase):
     platform = 'win32'
 
     def get_capture(self):
-        return rdtest.run_and_capture("demos_x64", "D3D11_Overlay_Test", 5)
+        return rdtest.run_and_capture("demos_x64", "GL_Overlay_Test", 5)
 
     def check_capture(self):
         self.check_final_backbuffer()

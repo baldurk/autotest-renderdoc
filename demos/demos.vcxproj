@@ -146,6 +146,7 @@
     <ClCompile Include="d3d11\d3d11_texture_3d.cpp" />
     <ClCompile Include="d3d12\d3d12_cbuffer_zoo.cpp" />
     <ClCompile Include="d3d12\d3d12_helpers.cpp" />
+    <ClCompile Include="d3d12\d3d12_overlay_test.cpp" />
     <ClCompile Include="d3d12\d3d12_simple_triangle.cpp" />
     <ClCompile Include="d3d12\d3d12_test.cpp" />
     <ClCompile Include="dx\d3d_helpers.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="gl\gl_map_overrun.cpp" />
     <ClCompile Include="gl\gl_midframe_context_create.cpp" />
     <ClCompile Include="gl\gl_multi_window.cpp" />
+    <ClCompile Include="gl\gl_overlay_test.cpp" />
     <ClCompile Include="gl\gl_runtime_bind_prog_to_pipe.cpp" />
     <ClCompile Include="gl\gl_simple_triangle.cpp" />
     <ClCompile Include="gl\gl_spirv_shader.cpp" />
@@ -189,6 +191,7 @@
     <ClCompile Include="vk\vk_draw_zoo.cpp" />
     <ClCompile Include="vk\vk_helpers.cpp" />
     <ClCompile Include="vk\vk_indirect.cpp" />
+    <ClCompile Include="vk\vk_overlay_test.cpp" />
     <ClCompile Include="vk\vk_secondary_cmdbuf.cpp" />
     <ClCompile Include="vk\vk_vs_max_desc_set.cpp" />
     <ClCompile Include="vk\vk_simple_triangle.cpp" />

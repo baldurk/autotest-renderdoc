@@ -220,6 +220,15 @@
     <ClCompile Include="d3d12\d3d12_cbuffer_zoo.cpp">
       <Filter>D3D12\demos</Filter>
     </ClCompile>
+    <ClCompile Include="vk\vk_overlay_test.cpp">
+      <Filter>Vulkan\demos</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\gl_overlay_test.cpp">
+      <Filter>OpenGL\demos</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d12\d3d12_overlay_test.cpp">
+      <Filter>D3D12\demos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
