@@ -356,7 +356,6 @@
       <Filter>Linux</Filter>
     </ClInclude>
     <ClInclude Include="vk\vk_headers.h" />
-    <ClInclude Include="vk\vulkan\shaderc.h" />
     <ClInclude Include="d3d12\d3d12_helpers.h">
       <Filter>D3D12</Filter>
     </ClInclude>
@@ -441,5 +440,6 @@
     <ClInclude Include="dx\d3d_helpers.h">
       <Filter>D3D</Filter>
     </ClInclude>
+    <ClInclude Include="shaderc.h" />
   </ItemGroup>
 </Project>
