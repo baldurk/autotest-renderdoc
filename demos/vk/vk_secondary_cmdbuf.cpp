@@ -51,7 +51,7 @@ layout(location = 0) out v2f vertOut;
 
 void main()
 {
-	vertOut.pos = vec4(Position.xyz, 1);
+	vertOut.pos = vec4(Position.xyz*vec3(1,-1,1), 1);
 	gl_Position = vertOut.pos;
 	vertOut.col = Color;
 	vertOut.uv = vec4(UV.xy, 0, 1);
