@@ -239,11 +239,11 @@ document.body.onload = function() {
     (function(imgcomp)
     {
       img.addEventListener('load', function() {
-        imgcomp.style.height = img.height;
+        imgcomp.style.height = Math.max(300, img.height);
         var slider = imgcomp.previousElementSibling;
         while(slider && !slider.classList.contains("img-slider"))
           slider = slider.previousElementSibling;
-        slider.style.width = img.width;
+        slider.style.width = Math.max(400, img.width);
       });
     }) (imgcomps[i]);
   }
