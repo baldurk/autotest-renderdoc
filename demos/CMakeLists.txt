@@ -4,33 +4,35 @@ set(PROJECT demos)
 
 set(VULKAN_SRC
         vk/vulkan/volk.c
-        vk/vk_test.cpp
+        vk/vk_awkward_triangle.cpp
+        vk/vk_cbuffer_zoo.cpp
         vk/vk_draw_zoo.cpp
         vk/vk_helpers.cpp
-        vk/vk_secondary_cmdbuf.cpp
         vk/vk_indirect.cpp
-        vk/vk_awkward_triangle.cpp
+        vk/vk_overlay_test.cpp
+        vk/vk_secondary_cmdbuf.cpp
         vk/vk_simple_triangle.cpp
-        vk/vk_cbuffer_zoo.cpp
+        vk/vk_test.cpp
         vk/vk_vs_max_desc_set.cpp)
 
 set(OPENGL_SRC
         gl/glad/glad.c
         gl/glad/glad_glx.c
-        gl/gl_test_linux.cpp
-        gl/gl_vao_0.cpp
+        gl/gl_buffer_updates.cpp
+        gl/gl_cbuffer_zoo.cpp
+        gl/gl_depthstencil_fbo.cpp
         gl/gl_large_bcn_arrays.cpp
-        gl/gl_runtime_bind_prog_to_pipe.cpp
         gl/gl_map_overrun.cpp
-        gl/gl_unsized_ms_fbo_attachment.cpp
+        gl/gl_midframe_context_create.cpp
+        gl/gl_multi_window.cpp
+        gl/gl_overlay_test.cpp
+        gl/gl_runtime_bind_prog_to_pipe.cpp
+        gl/gl_simple_triangle.cpp
         gl/gl_spirv_shader.cpp
         gl/gl_test.cpp
-        gl/gl_multi_window.cpp
-        gl/gl_depthstencil_fbo.cpp
-        gl/gl_cbuffer_zoo.cpp
-        gl/gl_buffer_updates.cpp
-        gl/gl_simple_triangle.cpp
-        gl/gl_midframe_context_create.cpp)
+        gl/gl_test_linux.cpp
+        gl/gl_unsized_ms_fbo_attachment.cpp
+        gl/gl_vao_0.cpp)
 
 set(SRC main.cpp
         test_common.cpp
