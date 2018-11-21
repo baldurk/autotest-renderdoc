@@ -3,8 +3,6 @@ import renderdoc as rd
 
 
 class VK_Overlay_Test(rdtest.TestCase):
-    platform = 'win32'
-
     def get_capture(self):
         return rdtest.run_and_capture("demos_x64", "VK_Overlay_Test", 5)
 

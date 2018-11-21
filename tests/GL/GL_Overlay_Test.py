@@ -3,8 +3,6 @@ import renderdoc as rd
 
 
 class GL_Overlay_Test(rdtest.TestCase):
-    platform = 'win32'
-
     def get_capture(self):
         return rdtest.run_and_capture("demos_x64", "GL_Overlay_Test", 5)
 
