@@ -28,17 +28,19 @@ def get_tests():
     return testcases
 
 
-RUNNER_TIMEOUT = 30  # Require output every 30 seconds
-RUNNER_DEBUG = False # Debug test runner running by printing messages to track it
+RUNNER_TIMEOUT = 30    # Require output every 30 seconds
+RUNNER_DEBUG = False   # Debug test runner running by printing messages to track it
 
 
-def _enqueue_output(out, q: queue.Queue):
+def _enqueue_output(process: subprocess.Popen, out, q: queue.Queue):
     try:
         for line in iter(out.readline, b''):
             q.put(line)
+
+            if process.returncode is not None:
+                break
     except Exception:
         pass
-    out.close()
 
 
 def _run_test(testclass, failedcases: list):
@@ -55,15 +57,21 @@ def _run_test(testclass, failedcases: list):
 
     test_run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
+    output_threads = []
+
     test_stdout = queue.Queue()
-    t = threading.Thread(target=_enqueue_output, args=(test_run.stdout, test_stdout))
+    t = threading.Thread(target=_enqueue_output, args=(test_run, test_run.stdout, test_stdout))
     t.daemon = True  # thread dies with the program
     t.start()
 
+    output_threads.append(t)
+
     test_stderr = queue.Queue()
-    t = threading.Thread(target=_enqueue_output, args=(test_run.stderr, test_stderr))
+    t = threading.Thread(target=_enqueue_output, args=(test_run, test_run.stderr, test_stderr))
     t.daemon = True  # thread dies with the program
     t.start()
+
+    output_threads.append(t)
 
     if RUNNER_DEBUG:
         print("Waiting for test runner to complete...")
@@ -78,22 +86,28 @@ def _run_test(testclass, failedcases: list):
             out = test_stdout.get(timeout=RUNNER_TIMEOUT)
             while not test_stdout.empty():
                 out += test_stdout.get_nowait()
+
+                if test_run.poll() is not None:
+                    break
         except queue.Empty:
-            pass  # No output
+            out = None  # No output
 
         try:
             while not test_stderr.empty():
                 err += test_stderr.get_nowait()
-        except queue.Empty:
-            pass  # No output
 
-        if RUNNER_DEBUG and out != "":
+                if test_run.poll() is not None:
+                    break
+        except queue.Empty:
+            err = None  # No output
+
+        if RUNNER_DEBUG and out is not None:
             print("Test stdout: {}".format(out))
 
-        if RUNNER_DEBUG and err != "":
+        if RUNNER_DEBUG and err is not None:
             print("Test stderr: {}".format(err))
 
-        if out is None and err is None:
+        if out is None and err is None and test_run.poll() is None:
             log.error('Timed out, no output within {}s elapsed'.format(RUNNER_TIMEOUT))
             test_run.kill()
             test_run.communicate()
@@ -108,8 +122,15 @@ def _run_test(testclass, failedcases: list):
         test_run.kill()
         test_run.communicate()
         raise RuntimeError('INTERNAL ERROR: Couldn\'t get test return code')
+
+    for t in output_threads:
+        t.join(10)
+
+        if t.is_alive():
+            raise RuntimeError('INTERNAL ERROR: Subprocess output thread couldn\'t be closed')
+
     # Return code of 0 means we exited cleanly, nothing to do
-    elif test_run.returncode == 0:
+    if test_run.returncode == 0:
         pass
     # Return code of 1 means the test failed, but we have already logged the exception
     # so we just need to mark this test as failed
