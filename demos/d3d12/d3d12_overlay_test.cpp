@@ -129,8 +129,9 @@ struct D3D12_Overlay_Test : D3D12GraphicsTest
 
     ResourceBarrier(vb, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-    ID3D12ResourcePtr dsv =
-        MakeTexture(DXGI_FORMAT_D32_FLOAT_S8X24_UINT, screenWidth, screenHeight).DSV();
+    ID3D12ResourcePtr dsv = MakeTexture(DXGI_FORMAT_D32_FLOAT_S8X24_UINT, screenWidth, screenHeight)
+                                .DSV()
+                                .InitialState(D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
     while(Running())
     {
