@@ -184,6 +184,7 @@ struct D3D12GraphicsTest : public GraphicsTest
   IDXGIFactory4Ptr m_Factory;
 
   ID3D12DebugPtr d3d12Debug;
+  ID3D12InfoQueuePtr infoqueue;
 
   ID3D12DevicePtr dev;
 

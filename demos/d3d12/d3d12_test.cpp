@@ -265,6 +265,21 @@ bool D3D12GraphicsTest::Init(int argc, char **argv)
     m_UploadBuffer->SetName(L"Upload buffer");
   }
 
+  // mute useless messages
+  D3D12_MESSAGE_ID mute[] = {
+      // super spammy, mostly just perf warning
+      D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
+      D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
+  };
+
+  dev->QueryInterface(__uuidof(ID3D12InfoQueue), (void **)&infoqueue);
+
+  D3D12_INFO_QUEUE_FILTER filter = {};
+  filter.DenyList.NumIDs = ARRAY_COUNT(mute);
+  filter.DenyList.pIDList = mute;
+
+  infoqueue->AddStorageFilterEntries(&filter);
+
   return true;
 }
 
