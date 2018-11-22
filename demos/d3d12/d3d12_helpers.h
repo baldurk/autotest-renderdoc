@@ -147,11 +147,14 @@ public:
   D3D12TextureCreator &Upload();
   D3D12TextureCreator &Readback();
 
+  D3D12TextureCreator &InitialState(D3D12_RESOURCE_STATES state);
+
   operator ID3D12Resource *() const;
   operator ID3D12ResourcePtr() const { return ID3D12ResourcePtr((ID3D12Resource *)*this); }
 protected:
   D3D12GraphicsTest *m_Test;
 
+  D3D12_RESOURCE_STATES m_InitialState;
   D3D12_RESOURCE_DESC m_TexDesc;
   D3D12_HEAP_PROPERTIES m_HeapDesc;
 };

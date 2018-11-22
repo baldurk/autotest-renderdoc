@@ -267,6 +267,8 @@ D3D12TextureCreator::D3D12TextureCreator(D3D12GraphicsTest *test, DXGI_FORMAT fo
                                          UINT height, UINT depth)
     : m_Test(test)
 {
+  m_InitialState = D3D12_RESOURCE_STATE_COMMON;
+
   m_TexDesc.Alignment = 0;
   m_TexDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
   if(height > 1)
@@ -339,12 +341,18 @@ D3D12TextureCreator &D3D12TextureCreator::Readback()
   return *this;
 }
 
+D3D12TextureCreator &D3D12TextureCreator::InitialState(D3D12_RESOURCE_STATES state)
+{
+  m_InitialState = state;
+  return *this;
+}
+
 D3D12TextureCreator::operator ID3D12Resource *() const
 {
   ID3D12Resource *tex = NULL;
   CHECK_HR(m_Test->dev->CreateCommittedResource(&m_HeapDesc, D3D12_HEAP_FLAG_NONE, &m_TexDesc,
-                                                D3D12_RESOURCE_STATE_COMMON, NULL,
-                                                __uuidof(ID3D12Resource), (void **)&tex));
+                                                m_InitialState, NULL, __uuidof(ID3D12Resource),
+                                                (void **)&tex));
   return tex;
 }
 
