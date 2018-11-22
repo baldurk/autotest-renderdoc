@@ -21,7 +21,7 @@ def get_tests():
             if isinstance(obj, type) and issubclass(obj, testcase.TestCase) and obj != testcase.TestCase:
                 testcases.append(obj)
 
-    testcases.sort(key=lambda t: t.__name__)
+    testcases.sort(key=lambda t: (t.slow_test,t.__name__))
 
     return testcases
 
