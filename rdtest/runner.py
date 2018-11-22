@@ -239,8 +239,8 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
 
     duration = time.time() - start_time
 
-    hours = round(duration / 3600)
-    minutes = round(duration / 60) % 60
+    hours = int(duration / 3600)
+    minutes = int(duration / 60) % 60
     seconds = round(duration % 60)
 
     log.comment("total={} fail={} skip={} time={}".format(len(testcases), len(failedcases), len(skippedcases), duration))
