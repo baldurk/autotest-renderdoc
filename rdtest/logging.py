@@ -54,6 +54,9 @@ class TestLogger:
     def print(self, line: str, with_stdout=True):
         self.rawprint('.. ' + line, with_stdout)
 
+    def comment(self, line: str):
+        self.rawprint('// ' + line)
+
     def header(self, text):
         self.rawprint('\n## ' + text + ' ##\n')
 

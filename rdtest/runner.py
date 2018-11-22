@@ -243,7 +243,8 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
     minutes = round(duration / 60) % 60
     seconds = round(duration % 60)
 
-    log.header("Tests complete: {} passed out of {} run from {} total in {}:{:02}:{:02}"
+    log.comment("total={} fail={} skip={} time={}".format(len(testcases), len(failedcases), len(skippedcases), duration))
+    log.header("Tests complete summary: {} passed out of {} run from {} total in {}:{:02}:{:02}"
                .format(len(testcases)-len(skippedcases)-len(failedcases), len(testcases)-len(skippedcases), len(testcases), hours, minutes, seconds))
     if len(failedcases) > 0:
         log.print("Failed tests:")

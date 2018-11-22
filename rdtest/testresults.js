@@ -64,7 +64,7 @@ document.body.onload = function() {
 
   for(var i=0; i < lines.length; i++) {
     var line = lines[i].replace(/\t/g, '  ');
-    var m = line.match(/ *([.<>!=*#$+-]{2}) (.*)/);
+    var m = line.match(/ *([.<>!=*#$+-\/]{2}) (.*)/);
 
     if(line.trim() == '')
       continue;
@@ -79,6 +79,8 @@ document.body.onload = function() {
         	document.title = title;
           commit = hash[2];
         }
+      } else if(m[1] == '//') {
+      	// comments, skip
       } else if(m[1] == '..') {
         html += '<div class="message">' + m[2] + '</div>';
       } else if(m[1] == '!+') {
