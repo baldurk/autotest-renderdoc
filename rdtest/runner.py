@@ -5,6 +5,8 @@ import sys
 import re
 import platform
 import subprocess
+import threading
+import queue
 import time
 import renderdoc as rd
 from . import util
@@ -26,6 +28,15 @@ def get_tests():
     return testcases
 
 
+def _enqueue_output(out, q: queue.Queue):
+    try:
+        for line in iter(out.readline, b''):
+            q.put(line)
+    except Exception:
+        pass
+    out.close()
+
+
 def _run_test(testclass, failedcases: list):
     name = testclass.__name__
 
@@ -40,13 +51,36 @@ def _run_test(testclass, failedcases: list):
 
     test_run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
-    try:
-        out,err = test_run.communicate(timeout=120)
-    except subprocess.TimeoutExpired as timeout:
-        log.failure('Timed out, 120s elapsed')
-        test_run.kill()
-        test_run.communicate()
-        raise timeout
+    test_stdout = queue.Queue()
+    t = threading.Thread(target=_enqueue_output, args=(test_run.stdout, test_stdout))
+    t.daemon = True  # thread dies with the program
+    t.start()
+
+    test_stderr = queue.Queue()
+    t = threading.Thread(target=_enqueue_output, args=(test_run.stderr, test_stderr))
+    t.daemon = True  # thread dies with the program
+    t.start()
+
+    limit = 30  # Require output every 30 seconds
+
+    while test_run.poll() is None:
+        out = err = None
+
+        try:
+            out = test_stdout.get(timeout=limit)
+        except queue.Empty:
+            pass  # No output
+
+        try:
+            err = test_stderr.get_nowait()
+        except queue.Empty:
+            pass  # No output
+
+        if out is None and err is None:
+            log.error('Timed out, no output within {}s elapsed'.format(limit))
+            test_run.kill()
+            test_run.communicate()
+            raise subprocess.TimeoutExpired(' '.join(args), limit)
 
     # If we couldn't get the return code, something went wrong in the timeout above
     # and the program never exited. Try once more to kill it then bail
