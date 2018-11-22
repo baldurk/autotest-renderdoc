@@ -806,7 +806,7 @@ D3D12PSOCreator::D3D12PSOCreator(D3D12GraphicsTest *test) : m_Test(test)
   GraphicsDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
   GraphicsDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
   GraphicsDesc.NumRenderTargets = 1;
-  GraphicsDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+  GraphicsDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
   GraphicsDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
   GraphicsDesc.BlendState.RenderTarget[0].BlendEnable = FALSE;
   GraphicsDesc.BlendState.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
