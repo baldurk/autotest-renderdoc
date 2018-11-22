@@ -28,6 +28,10 @@ def get_tests():
     return testcases
 
 
+RUNNER_TIMEOUT = 30  # Require output every 30 seconds
+RUNNER_DEBUG = False # Debug test runner running by printing messages to track it
+
+
 def _enqueue_output(out, q: queue.Queue):
     try:
         for line in iter(out.readline, b''):
@@ -61,26 +65,42 @@ def _run_test(testclass, failedcases: list):
     t.daemon = True  # thread dies with the program
     t.start()
 
-    limit = 30  # Require output every 30 seconds
+    if RUNNER_DEBUG:
+        print("Waiting for test runner to complete...")
 
     while test_run.poll() is None:
-        out = err = None
+        out = err = ""
+
+        if RUNNER_DEBUG:
+            print("Checking runner output...")
 
         try:
-            out = test_stdout.get(timeout=limit)
+            out = test_stdout.get(timeout=RUNNER_TIMEOUT)
+            while not test_stdout.empty():
+                out += test_stdout.get_nowait()
         except queue.Empty:
             pass  # No output
 
         try:
-            err = test_stderr.get_nowait()
+            while not test_stderr.empty():
+                err += test_stderr.get_nowait()
         except queue.Empty:
             pass  # No output
+
+        if RUNNER_DEBUG and out != "":
+            print("Test stdout: {}".format(out))
+
+        if RUNNER_DEBUG and err != "":
+            print("Test stderr: {}".format(err))
 
         if out is None and err is None:
-            log.error('Timed out, no output within {}s elapsed'.format(limit))
+            log.error('Timed out, no output within {}s elapsed'.format(RUNNER_TIMEOUT))
             test_run.kill()
             test_run.communicate()
-            raise subprocess.TimeoutExpired(' '.join(args), limit)
+            raise subprocess.TimeoutExpired(' '.join(args), RUNNER_TIMEOUT)
+
+    if RUNNER_DEBUG:
+        print("Test runner has finished")
 
     # If we couldn't get the return code, something went wrong in the timeout above
     # and the program never exited. Try once more to kill it then bail
