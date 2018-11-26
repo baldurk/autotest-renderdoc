@@ -168,6 +168,13 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
                  '<script id="logoutput" type="preformatted">\n\n\n', with_stdout=False)
 
     log.header("Tests running for RenderDoc Version {} ({})".format(rd.GetVersionString(), rd.GetCommitHash()))
+    log.header("On {}".format(platform.platform()))
+
+    log.comment("plat={} git={}".format(platform.platform(), rd.GetCommitHash()))
+
+    for api in rd.GraphicsAPI:
+        v = rd.GetDriverInformation(api)
+        log.print("{} driver: {} {}".format(str(api), str(v.vendor), v.version))
 
     testcases = get_tests()
 
