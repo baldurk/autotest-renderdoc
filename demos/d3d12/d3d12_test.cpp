@@ -553,7 +553,7 @@ void D3D12GraphicsTest::SetBufferData(ID3D12ResourcePtr buffer, D3D12_RESOURCE_S
 
     memcpy(ptr, data, (size_t)len);
 
-    range.End = len;
+    range.End = (size_t)len;
 
     buffer->Unmap(0, &range);
 
@@ -585,7 +585,7 @@ void D3D12GraphicsTest::SetBufferData(ID3D12ResourcePtr buffer, D3D12_RESOURCE_S
 
       memcpy(ptr, data + offset, (size_t)chunkSize);
 
-      range.End = chunkSize;
+      range.End = (size_t)chunkSize;
 
       m_UploadBuffer->Unmap(0, &range);
     }

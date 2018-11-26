@@ -250,7 +250,7 @@ void main()
                                                               VK_BUFFER_USAGE_TRANSFER_DST_BIT),
                          VmaAllocationCreateInfo({0, VMA_MEMORY_USAGE_CPU_TO_GPU}));
 
-    memset(ssbo.map(), 0, ssbo_size);
+    memset(ssbo.map(), 0, (size_t)ssbo_size);
     ssbo.unmap();
 
     VkDescriptorSet descset = allocateDescriptorSet(setlayout);
