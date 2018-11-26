@@ -60,7 +60,7 @@ document.body.onload = function() {
   var diff_text = '';
   var indent = 0;
   var commit = "v1.x";
-  var basepath = "test/";
+  var basepath = "util/test/";
 
   for(var i=0; i < lines.length; i++) {
     var line = lines[i].replace(/\t/g, '  ');
