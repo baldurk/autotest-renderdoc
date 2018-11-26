@@ -176,9 +176,18 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
 
     log.comment("plat={} git={}".format(platform.platform(), rd.GetCommitHash()))
 
+    driver = ""
+
     for api in rd.GraphicsAPI:
         v = rd.GetDriverInformation(api)
         log.print("{} driver: {} {}".format(str(api), str(v.vendor), v.version))
+
+        # Take the first version number we get, but prefer GL as it's universally available and
+        # Produces a nice version number & device combination
+        if (api == rd.GraphicsAPI.OpenGL or driver == "") and v.vendor != rd.GPUVendor.Unknown:
+            driver = v.version
+
+    log.comment("driver={}".format(driver))
 
     layerInfo = rd.VulkanLayerRegistrationInfo()
     if rd.NeedVulkanLayerRegistration(layerInfo):
