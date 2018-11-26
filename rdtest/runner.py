@@ -167,6 +167,10 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
                  '<script src="testresults.js"></script>' +
                  '<script id="logoutput" type="preformatted">\n\n\n', with_stdout=False)
 
+    plat = os.name
+    if plat == 'nt' or 'Windows' in platform.platform():
+        plat = 'win32'
+
     log.header("Tests running for RenderDoc Version {} ({})".format(rd.GetVersionString(), rd.GetCommitHash()))
     log.header("On {}".format(platform.platform()))
 
@@ -175,6 +179,41 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
     for api in rd.GraphicsAPI:
         v = rd.GetDriverInformation(api)
         log.print("{} driver: {} {}".format(str(api), str(v.vendor), v.version))
+
+    layerInfo = rd.VulkanLayerRegistrationInfo()
+    if rd.NeedVulkanLayerRegistration(layerInfo):
+        log.print("Vulkan layer needs to be registered: {}".format(str(layerInfo.flags)))
+        log.print("My JSONs: {}, Other JSONs: {}".format(layerInfo.myJSONs, layerInfo.otherJSONs))
+
+        # Update the layer registration without doing anything special first - if running automated we might have
+        # granted user-writable permissions to the system files needed to update. If possible we register at user
+        # level.
+        if layerInfo.flags & rd.VulkanLayerFlags.NeedElevation:
+            rd.UpdateVulkanLayerRegistration(True)
+        else:
+            rd.UpdateVulkanLayerRegistration(False)
+
+        # Check if it succeeded
+        reg_needed = rd.NeedVulkanLayerRegistration(layerInfo)
+
+        if reg_needed:
+            if plat == 'win32':
+                # On windows, try to elevate. This will mean a UAC prompt
+                args = sys.argv.copy()
+                args.append("--internal_vulkan_register")
+
+                ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, ' '.join(args), None, 1)
+
+                time.sleep(10)
+            else:
+                log.print("Couldn't register vulkan layer properly, might need admin rights")
+                sys.exit(1)
+
+        reg_needed = rd.NeedVulkanLayerRegistration(layerInfo)
+
+        if reg_needed:
+            log.print("Couldn't register vulkan layer properly, might need admin rights")
+            sys.exit(1)
 
     testcases = get_tests()
 
@@ -188,10 +227,6 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
 
     failedcases = []
     skippedcases = []
-
-    plat = os.name
-    if plat == 'nt' or 'Windows' in platform.platform():
-        plat = 'win32'
 
     ver = 0
 
@@ -265,6 +300,10 @@ def run_tests(test_include: str, test_exclude: str, in_process: bool, slow_tests
         sys.exit(1)
 
     sys.exit(0)
+
+
+def vulkan_register():
+    rd.UpdateVulkanLayerRegistration(True)
 
 
 def internal_run_test(test_name):

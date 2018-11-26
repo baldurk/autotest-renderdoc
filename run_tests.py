@@ -37,6 +37,8 @@ parser.add_argument('--temp', default="tmp",
                     help="The folder to put temporary run data in. Will be completely cleared.", type=str)
 # Internal command, when we fork out to run a test in a separate process
 parser.add_argument('--internal_run_test', help=argparse.SUPPRESS, type=str, required=False)
+# Internal command, when we re-run as admin to register vulkan layer
+parser.add_argument('--internal_vulkan_register', help=argparse.SUPPRESS, action="store_true", required=False)
 args = parser.parse_args()
 
 if args.renderdoc is not None:
@@ -89,7 +91,9 @@ rdtest.set_data_dir(os.path.realpath(args.data))
 rdtest.set_data_extra_dir(os.path.realpath(args.data_extra))
 rdtest.set_temp_dir(os.path.realpath(args.temp))
 
-if args.internal_run_test is not None:
+if args.internal_vulkan_register:
+    rdtest.vulkan_register()
+elif args.internal_run_test is not None:
     rdtest.internal_run_test(args.internal_run_test)
 else:
     rdtest.run_tests(args.test_include, args.test_exclude, args.in_process, args.slow_tests)
