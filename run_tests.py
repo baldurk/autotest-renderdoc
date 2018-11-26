@@ -67,7 +67,7 @@ artifacts_dir = os.path.realpath(args.artifacts)
 
 try:
     import rdtest
-except ImportError as ex:
+except (ModuleNotFoundError, ImportError) as ex:
     # very simple output, to ensure we have *something*
     import shutil
 
@@ -77,6 +77,12 @@ except ImportError as ex:
 
     with open(os.path.join(artifacts_dir, 'output.log.html'), "w") as f:
         f.write("<body><h1>Failed to import rdtest: {}</h1></body>".format(ex))
+
+    print("Couldn't import renderdoc module. Try specifying path to python module with --pyrenderdoc " +
+          "or the path to the native library with --renderdoc")
+    print(ex)
+
+    sys.exit(1)
 
 from tests import *
 
