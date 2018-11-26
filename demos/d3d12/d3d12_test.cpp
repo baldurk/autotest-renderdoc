@@ -274,11 +274,14 @@ bool D3D12GraphicsTest::Init(int argc, char **argv)
 
   dev->QueryInterface(__uuidof(ID3D12InfoQueue), (void **)&infoqueue);
 
-  D3D12_INFO_QUEUE_FILTER filter = {};
-  filter.DenyList.NumIDs = ARRAY_COUNT(mute);
-  filter.DenyList.pIDList = mute;
+  if(infoqueue)
+  {
+    D3D12_INFO_QUEUE_FILTER filter = {};
+    filter.DenyList.NumIDs = ARRAY_COUNT(mute);
+    filter.DenyList.pIDList = mute;
 
-  infoqueue->AddStorageFilterEntries(&filter);
+    infoqueue->AddStorageFilterEntries(&filter);
+  }
 
   return true;
 }
