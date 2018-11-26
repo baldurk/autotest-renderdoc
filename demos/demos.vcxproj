@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Development|Win32">
+    <ProjectConfiguration Include="Development|x86">
       <Configuration>Development</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
@@ -9,7 +9,7 @@
       <Configuration>Development</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
+    <ProjectConfiguration Include="Release|x86">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
@@ -102,7 +102,7 @@
       <AdditionalDependencies>$(VULKAN_SDK)/lib/shaderc_combined.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="$(Platform)=='Win32' and exists('$(VULKAN_SDK)/lib32/shaderc_combined.lib')">
+  <ItemDefinitionGroup Condition="$(Platform)=='x86' and exists('$(VULKAN_SDK)/lib32/shaderc_combined.lib')">
     <ClCompile>
       <PreprocessorDefinitions>HAVE_SHADERC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
