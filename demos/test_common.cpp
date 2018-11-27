@@ -110,7 +110,7 @@ bool SpvCompilationSupported()
   if(shaderc)
     return true;
 
-  FILE *pipe = popen("glslc --help", "r");
+  FILE *pipe = popen("glslc" EXECUTABLE_SUFFIX " --help", "r");
 
   if(!pipe)
     return false;
@@ -184,7 +184,7 @@ std::vector<uint32_t> CompileShaderToSpv(const std::string &source_text, ShaderL
 #endif
   }
 
-  std::string command_line = "glslc -g -O0";
+  std::string command_line = "glslc" EXECUTABLE_SUFFIX " -g -O0";
 
   command_line += " -fentry-point=";
   command_line += entry_point;

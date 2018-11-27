@@ -32,3 +32,5 @@
 #define MAX_PATH 256
 
 #define msleep(time) usleep((time)*1000)
+
+#define EXECUTABLE_SUFFIX ""

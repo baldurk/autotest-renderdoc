@@ -42,3 +42,5 @@
 #define msleep(time) Sleep(time)
 
 #define WEXITSTATUS(code) code
+
+#define EXECUTABLE_SUFFIX ".exe"
