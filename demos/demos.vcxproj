@@ -96,7 +96,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="$(Platform)=='x64' and exists('$(VULKAN_SDK)/lib/shaderc_combined.lib')">
     <ClCompile>
-      <PreprocessorDefinitions>HAVE_SHADERC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAVE_SHADERC=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(VULKAN_SDK)/lib/shaderc_combined.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -104,7 +104,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="$(Platform)=='x86' and exists('$(VULKAN_SDK)/lib32/shaderc_combined.lib')">
     <ClCompile>
-      <PreprocessorDefinitions>HAVE_SHADERC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAVE_SHADERC=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(VULKAN_SDK)/lib32/shaderc_combined.lib;%(AdditionalDependencies)</AdditionalDependencies>
