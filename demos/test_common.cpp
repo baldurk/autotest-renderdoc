@@ -94,7 +94,7 @@ void DebugPrint(const char *fmt, ...)
 
 // this define toggles on/off using the linked shaderc. This can be useful if e.g. on windows the
 // shaderc in VULKAN_SDK is broken.
-#define USE_LINKED_SHADERC (0 && defined(HAVE_SHADERC))
+#define USE_LINKED_SHADERC (1 && defined(HAVE_SHADERC))
 
 static shaderc_compiler_t shaderc = NULL;
 
