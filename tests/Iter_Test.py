@@ -124,7 +124,7 @@ class Iter_Test(rdtest.TestCase):
             target = pipe.GetOutputTargets()[0].resourceId
 
         if target == rd.ResourceId.Null():
-            target = pipe.GetDepthTarget().Id
+            target = pipe.GetDepthTarget().resourceId
 
         if target == rd.ResourceId.Null():
             rdtest.log.print("No targets bound! Can't fetch history at {}".format(draw.eventId))
