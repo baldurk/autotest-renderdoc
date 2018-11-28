@@ -61,6 +61,7 @@ document.body.onload = function() {
   var indent = 0;
   var commit = "v1.x";
   var basepath = "util/test/";
+  var last_test = '';
 
   for(var i=0; i < lines.length; i++) {
     var line = lines[i].replace(/\t/g, '  ');
@@ -159,6 +160,11 @@ document.body.onload = function() {
         } else if(words[0] == 'Test') {
           test_name = words[1];
           html += start ? '<div class="expandable test" id="' + test_name + '"><span class="expandtoggle"></span><div class="title">Test: ' + test_name + '</div><div class="contents">' : '</div></div>';
+
+          if(start)
+            last_test = test_name;
+          else
+            last_test = '';
         }
       } else if(m[1] == '$$') {
         if(m[2] == 'FAILED') {
@@ -188,6 +194,11 @@ document.body.onload = function() {
     var test = document.getElementById(failed_tests[i]);
     test.classList.add('expanded');
     test.classList.add('failed');
+  }
+
+  if(last_test != '') {
+    var test = document.getElementById(last_test);
+    test.classList.add('expanded');
   }
 
   var toggles = document.getElementsByClassName('expandtoggle');
