@@ -83,15 +83,15 @@ document.body.onload = function() {
       } else if(m[1] == '//') {
       	// comments, skip
       } else if(m[1] == '..') {
-        html += '<div class="message">' + m[2] + '</div>';
+        html += '<div class="message">' + htmlEntityEncode(m[2]) + '</div>';
       } else if(m[1] == '!+') {
-        html += '<div class="failure"><span class="message">' + m[2] + '</span>';
+        html += '<div class="failure"><span class="message">' + htmlEntityEncode(m[2]) + '</span>';
       } else if(m[1] == '!-') {
         html += '</div>';
       } else if(m[1] == '!!') {
-        html += '<div class="failure message">' + m[2] + '</div>';
+        html += '<div class="failure message">' + htmlEntityEncode(m[2]) + '</div>';
       } else if(m[1] == '**') {
-        html += '<div class="success message">' + m[2] + '</div>';
+        html += '<div class="success message">' + htmlEntityEncode(m[2]) + '</div>';
       } else if(m[1] == '==') {
         var comparison = m[2].match(/Compare: ([^ ]*)( \((.*)\))?/);
 
