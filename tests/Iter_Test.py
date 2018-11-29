@@ -232,4 +232,6 @@ class Iter_Test(rdtest.TestCase):
 
             self.iter_test(file.path)
 
+            rdtest.log.success("Iterated {}".format(file.name))
+
         rdtest.log.success("Iterated all files")
