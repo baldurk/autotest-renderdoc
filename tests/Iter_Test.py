@@ -104,7 +104,7 @@ class Iter_Test(rdtest.TestCase):
             rdtest.log.print("No pixel shader bound at {}: {}".format(draw.eventId, draw.name))
             return
 
-        if len(pipe.GetOutputTargets()) == 0 and pipe.GetDepthTarget() == rd.ResourceId.Null():
+        if len(pipe.GetOutputTargets()) == 0 and pipe.GetDepthTarget().resourceId == rd.ResourceId.Null():
             rdtest.log.print("No render targets bound at {}: {}".format(draw.eventId, draw.name))
             return
 
