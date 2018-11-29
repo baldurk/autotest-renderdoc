@@ -222,6 +222,9 @@ class Iter_Test(rdtest.TestCase):
         dir_path = self.get_ref_path('', extra=True)
 
         for file in os.scandir(dir_path):
+            if '.rdc' not in file.name:
+                continue
+
             # Ensure we are deterministic at least from run to run by seeding with the path
             random.seed(file.name)
 
