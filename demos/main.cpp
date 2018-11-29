@@ -38,12 +38,12 @@
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_ASSERT(expr) TEST_ASSERT(expr, "nuklear assertion failed")
-#include "nuklear/nuklear.h"
+#include "3rdparty/nuklear/nuklear.h"
 
 #if defined(WIN32)
 
 #define NK_GDI_IMPLEMENTATION
-#include "nuklear/nuklear_gdi.h"
+#include "3rdparty/nuklear/nuklear_gdi.h"
 
 static LRESULT CALLBACK NuklearWndProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -137,7 +137,7 @@ void NuklearShutdown()
 #else
 
 #define NK_XLIB_IMPLEMENTATION
-#include "nuklear/nuklear_xlib.h"
+#include "3rdparty/nuklear/nuklear_xlib.h"
 
 Display *dpy = NULL;
 Colormap cmap = 0;

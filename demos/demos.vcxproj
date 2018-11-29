@@ -65,7 +65,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)vk;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)vk\official;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VK_USE_PLATFORM_WIN32_KHR;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -73,7 +73,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;shlwapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;msimg32.lib;gdi32.lib;shell32.lib;shlwapi.lib</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -150,14 +150,14 @@
     <ClCompile Include="d3d12\d3d12_simple_triangle.cpp" />
     <ClCompile Include="d3d12\d3d12_test.cpp" />
     <ClCompile Include="dx\d3d_helpers.cpp" />
-    <ClCompile Include="gl\glad\glad.c" />
-    <ClCompile Include="gl\glad\glad_egl.c">
+    <ClCompile Include="3rdparty\glad\glad.c" />
+    <ClCompile Include="3rdparty\glad\glad_egl.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="gl\glad\glad_glx.c">
+    <ClCompile Include="3rdparty\glad\glad_glx.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="gl\glad\glad_wgl.c" />
+    <ClCompile Include="3rdparty\glad\glad_wgl.c" />
     <ClCompile Include="gl\gl_buffer_updates.cpp" />
     <ClCompile Include="gl\gl_cbuffer_zoo.cpp" />
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp" />
@@ -183,7 +183,7 @@
     <ClCompile Include="linux\linux_window.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="lz4.c" />
+    <ClCompile Include="3rdparty\lz4\lz4.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_common.cpp" />
     <ClCompile Include="vk\vk_awkward_triangle.cpp" />
@@ -196,11 +196,12 @@
     <ClCompile Include="vk\vk_vs_max_desc_set.cpp" />
     <ClCompile Include="vk\vk_simple_triangle.cpp" />
     <ClCompile Include="vk\vk_test.cpp" />
-    <ClCompile Include="vk\vulkan\volk.c" />
+    <ClCompile Include="3rdparty\volk\volk.c" />
     <ClCompile Include="win32\win32_platform.cpp" />
     <ClCompile Include="win32\win32_window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\VulkanMemoryAllocator\vk_mem_alloc.h" />
     <ClInclude Include="d3d11\d3d11_helpers.h" />
     <ClInclude Include="d3d11\d3d11_test.h" />
     <ClInclude Include="d3d12\d3d12_helpers.h" />
@@ -231,11 +232,11 @@
     <ClInclude Include="dx\official\dxgiformat.h" />
     <ClInclude Include="dx\official\dxgitype.h" />
     <ClInclude Include="dx\official\winapifamily.h" />
-    <ClInclude Include="gl\glad\glad.h" />
-    <ClInclude Include="gl\glad\glad_egl.h" />
-    <ClInclude Include="gl\glad\glad_glx.h" />
-    <ClInclude Include="gl\glad\glad_wgl.h" />
-    <ClInclude Include="gl\glad\khrplatform.h" />
+    <ClInclude Include="3rdparty\glad\glad.h" />
+    <ClInclude Include="3rdparty\glad\glad_egl.h" />
+    <ClInclude Include="3rdparty\glad\glad_glx.h" />
+    <ClInclude Include="3rdparty\glad\glad_wgl.h" />
+    <ClInclude Include="gl\official\khrplatform.h" />
     <ClInclude Include="gl\gl_test.h" />
     <ClInclude Include="linux\linux_platform.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -243,23 +244,22 @@
     <ClInclude Include="linux\linux_window.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="lz4.h" />
-    <ClInclude Include="nuklear\nuklear.h" />
-    <ClInclude Include="nuklear\nuklear_gdi.h" />
-    <ClInclude Include="nuklear\nuklear_xlib.h" />
-    <ClInclude Include="shaderc.h" />
+    <ClInclude Include="3rdparty\lz4\lz4.h" />
+    <ClInclude Include="3rdparty\nuklear\nuklear.h" />
+    <ClInclude Include="3rdparty\nuklear\nuklear_gdi.h" />
+    <ClInclude Include="3rdparty\nuklear\nuklear_xlib.h" />
+    <ClInclude Include="3rdparty\shaderc\shaderc.h" />
     <ClInclude Include="test_common.h" />
     <ClInclude Include="vk\vk_headers.h" />
     <ClInclude Include="vk\vk_helpers.h" />
     <ClInclude Include="vk\vk_test.h" />
-    <ClInclude Include="vk\vulkan\vk_mem_alloc.h" />
-    <ClInclude Include="vk\vulkan\vk_platform.h" />
-    <ClInclude Include="vk\vulkan\volk.h" />
-    <ClInclude Include="vk\vulkan\vulkan.h" />
-    <ClInclude Include="vk\vulkan\vulkan_core.h" />
-    <ClInclude Include="vk\vulkan\vulkan_win32.h" />
-    <ClInclude Include="vk\vulkan\vulkan_xcb.h" />
-    <ClInclude Include="vk\vulkan\vulkan_xlib.h" />
+    <ClInclude Include="3rdparty\volk\volk.h" />
+    <ClInclude Include="vk\official\vulkan\vk_platform.h" />
+    <ClInclude Include="vk\official\vulkan\vulkan.h" />
+    <ClInclude Include="vk\official\vulkan\vulkan_core.h" />
+    <ClInclude Include="vk\official\vulkan\vulkan_win32.h" />
+    <ClInclude Include="vk\official\vulkan\vulkan_xcb.h" />
+    <ClInclude Include="vk\official\vulkan\vulkan_xlib.h" />
     <ClInclude Include="win32\win32_platform.h" />
     <ClInclude Include="win32\win32_window.h" />
   </ItemGroup>

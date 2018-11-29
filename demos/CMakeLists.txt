@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.12)
 set(PROJECT demos)
 
 set(VULKAN_SRC
-        vk/vulkan/volk.c
+        3rdparty/volk/volk.c
         vk/vk_awkward_triangle.cpp
         vk/vk_cbuffer_zoo.cpp
         vk/vk_draw_zoo.cpp
@@ -16,8 +16,8 @@ set(VULKAN_SRC
         vk/vk_vs_max_desc_set.cpp)
 
 set(OPENGL_SRC
-        gl/glad/glad.c
-        gl/glad/glad_glx.c
+        3rdparty/glad/glad.c
+        3rdparty/glad/glad_glx.c
         gl/gl_buffer_updates.cpp
         gl/gl_cbuffer_zoo.cpp
         gl/gl_depthstencil_fbo.cpp
@@ -45,7 +45,7 @@ add_executable(demos ${SRC} ${VULKAN_SRC} ${OPENGL_SRC})
 install(TARGETS demos DESTINATION .)
 
 target_include_directories(demos
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/vk
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/vk/official
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_definitions(demos PRIVATE -DVK_USE_PLATFORM_XCB_KHR=1)
 target_link_libraries(demos PRIVATE -lX11 -lxcb -lX11-xcb ${CMAKE_DL_LIBS})

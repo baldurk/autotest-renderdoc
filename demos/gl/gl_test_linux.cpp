@@ -25,7 +25,7 @@
 #include "gl_test.h"
 #include <dlfcn.h>
 #include <stdio.h>
-#include "glad/glad_glx.h"
+#include "3rdparty/glad/glad_glx.h"
 
 #include "../linux/linux_window.h"
 

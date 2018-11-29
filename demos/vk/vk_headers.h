@@ -31,10 +31,10 @@
 #define VK_NO_PROTOTYPES
 
 // first include our local vulkan to ensure it's used over any system header
-#include "vulkan/vulkan.h"
+#include "official/vulkan/vulkan.h"
 
 // then include volk
-#include "vulkan/volk.h"
+#include "3rdparty/volk/volk.h"
 
 // finally VMA
-#include "vulkan/vk_mem_alloc.h"
+#include "3rdparty/VulkanMemoryAllocator/vk_mem_alloc.h"

@@ -26,7 +26,7 @@
 
 #include "../test_common.h"
 
-#include "glad/glad.h"
+#include "3rdparty/glad/glad.h"
 
 #include <vector>
 

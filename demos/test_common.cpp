@@ -90,7 +90,7 @@ void DebugPrint(const char *fmt, ...)
 #endif
 }
 
-#include "shaderc.h"
+#include "3rdparty/shaderc/shaderc.h"
 
 #ifndef HAVE_SHADERC
 #define HAVE_SHADERC 0

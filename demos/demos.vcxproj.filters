@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="d3d11\d3d11_simple_triangle.cpp">
       <Filter>D3D11\demos</Filter>
     </ClCompile>
@@ -50,14 +49,12 @@
     <ClCompile Include="gl\gl_depthstencil_fbo.cpp">
       <Filter>OpenGL\demos</Filter>
     </ClCompile>
-    <ClCompile Include="lz4.c" />
     <ClCompile Include="d3d11\d3d11_discard_view.cpp">
       <Filter>D3D11\demos</Filter>
     </ClCompile>
     <ClCompile Include="d3d11\d3d11_deferred_updatesubresource.cpp">
       <Filter>D3D11\demos</Filter>
     </ClCompile>
-    <ClCompile Include="test_common.cpp" />
     <ClCompile Include="d3d11\d3d11_stripped_shaders.cpp">
       <Filter>D3D11\demos</Filter>
     </ClCompile>
@@ -172,21 +169,6 @@
     <ClCompile Include="gl\gl_test_win32.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="vk\vulkan\volk.c">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="gl\glad\glad.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="gl\glad\glad_egl.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="gl\glad\glad_glx.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="gl\glad\glad_wgl.c">
-      <Filter>OpenGL\glad</Filter>
-    </ClCompile>
     <ClCompile Include="gl\gl_midframe_context_create.cpp">
       <Filter>OpenGL\demos</Filter>
     </ClCompile>
@@ -229,6 +211,26 @@
     <ClCompile Include="d3d12\d3d12_overlay_test.cpp">
       <Filter>D3D12\demos</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="test_common.cpp" />
+    <ClCompile Include="3rdparty\lz4\lz4.c">
+      <Filter>3rdparty\lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\glad\glad.c">
+      <Filter>3rdparty\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\glad\glad_egl.c">
+      <Filter>3rdparty\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\glad\glad_glx.c">
+      <Filter>3rdparty\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\glad\glad_wgl.c">
+      <Filter>3rdparty\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\volk\volk.c">
+      <Filter>3rdparty\volk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -255,15 +257,6 @@
     <Filter Include="Linux">
       <UniqueIdentifier>{9c5ec0e8-32a9-45b7-8cbc-e6507dfff362}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OpenGL\glad">
-      <UniqueIdentifier>{d1888d63-46c9-4ff3-a81f-d470bfa0465d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vulkan\vulkan">
-      <UniqueIdentifier>{c46e8d15-ce7e-42d4-ae59-1a960527567c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="nuklear">
-      <UniqueIdentifier>{6d28f38e-2a5c-442b-88d0-87ef4c8f77e1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="D3D12">
       <UniqueIdentifier>{1ce198b8-2024-4567-b8e2-086dd27725e4}</UniqueIdentifier>
     </Filter>
@@ -276,10 +269,32 @@
     <Filter Include="D3D\official">
       <UniqueIdentifier>{91707a1b-5bdd-455f-874f-0dd6ec31aefb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdparty">
+      <UniqueIdentifier>{2c14abdb-f558-4bc3-8f4a-186690f1beb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\lz4">
+      <UniqueIdentifier>{45c27b46-1f27-407a-9cf3-8f30dd23156c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\nuklear">
+      <UniqueIdentifier>{06e64450-43b4-42d5-bbf3-290c721ae555}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\shaderc">
+      <UniqueIdentifier>{e641fa6b-a639-49af-9bc3-387b87bdb066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\glad">
+      <UniqueIdentifier>{526cfb18-bd0f-41b7-ac73-30a2fc90f449}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\volk">
+      <UniqueIdentifier>{831fcf8f-1d85-4684-a16e-273475a869b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\vma">
+      <UniqueIdentifier>{56a97009-9e25-4860-bcf1-76d915260697}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan\official">
+      <UniqueIdentifier>{c46e8d15-ce7e-42d4-ae59-1a960527567c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test_common.h" />
-    <ClInclude Include="lz4.h" />
     <ClInclude Include="d3d11\d3d11_helpers.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -304,58 +319,9 @@
     <ClInclude Include="gl\gl_test.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="vk\vulkan\vk_mem_alloc.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="vk\vulkan\vk_platform.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="vk\vulkan\volk.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="vk\vulkan\vulkan.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="gl\glad\glad.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="gl\glad\glad_egl.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="gl\glad\glad_glx.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="gl\glad\glad_wgl.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="gl\glad\khrplatform.h">
-      <Filter>OpenGL\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="nuklear\nuklear.h">
-      <Filter>nuklear</Filter>
-    </ClInclude>
-    <ClInclude Include="nuklear\nuklear_gdi.h">
-      <Filter>nuklear</Filter>
-    </ClInclude>
-    <ClInclude Include="nuklear\nuklear_xlib.h">
-      <Filter>nuklear</Filter>
-    </ClInclude>
-    <ClInclude Include="vk\vulkan\vulkan_core.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="vk\vulkan\vulkan_win32.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="vk\vulkan\vulkan_xcb.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="vk\vulkan\vulkan_xlib.h">
-      <Filter>Vulkan\vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="linux\linux_window.h">
       <Filter>Linux</Filter>
     </ClInclude>
-    <ClInclude Include="vk\vk_headers.h" />
     <ClInclude Include="d3d12\d3d12_helpers.h">
       <Filter>D3D12</Filter>
     </ClInclude>
@@ -440,6 +406,63 @@
     <ClInclude Include="dx\d3d_helpers.h">
       <Filter>D3D</Filter>
     </ClInclude>
-    <ClInclude Include="shaderc.h" />
+    <ClInclude Include="test_common.h" />
+    <ClInclude Include="vk\vk_headers.h">
+      <Filter>Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\lz4\lz4.h">
+      <Filter>3rdparty\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\nuklear\nuklear.h">
+      <Filter>3rdparty\nuklear</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\nuklear\nuklear_gdi.h">
+      <Filter>3rdparty\nuklear</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\nuklear\nuklear_xlib.h">
+      <Filter>3rdparty\nuklear</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\shaderc\shaderc.h">
+      <Filter>3rdparty\shaderc</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\official\khrplatform.h">
+      <Filter>3rdparty\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\glad\glad.h">
+      <Filter>3rdparty\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\glad\glad_egl.h">
+      <Filter>3rdparty\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\glad\glad_glx.h">
+      <Filter>3rdparty\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\glad\glad_wgl.h">
+      <Filter>3rdparty\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\volk\volk.h">
+      <Filter>3rdparty\volk</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\official\vulkan\vk_platform.h">
+      <Filter>Vulkan\official</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\official\vulkan\vulkan.h">
+      <Filter>Vulkan\official</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\official\vulkan\vulkan_core.h">
+      <Filter>Vulkan\official</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\official\vulkan\vulkan_win32.h">
+      <Filter>Vulkan\official</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\official\vulkan\vulkan_xcb.h">
+      <Filter>Vulkan\official</Filter>
+    </ClInclude>
+    <ClInclude Include="vk\official\vulkan\vulkan_xlib.h">
+      <Filter>Vulkan\official</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\VulkanMemoryAllocator\vk_mem_alloc.h">
+      <Filter>3rdparty\vma</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -26,7 +26,7 @@
 
 #include "d3d11_test.h"
 #include <stdio.h>
-#include "../lz4.h"
+#include "../3rdparty/lz4/lz4.h"
 #include "../renderdoc_app.h"
 #include "../win32/win32_window.h"
 

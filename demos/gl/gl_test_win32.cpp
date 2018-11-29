@@ -24,7 +24,7 @@
 
 #include "gl_test.h"
 #include <stdio.h>
-#include "glad/glad_wgl.h"
+#include "3rdparty/glad/glad_wgl.h"
 
 #include "../win32/win32_window.h"
 

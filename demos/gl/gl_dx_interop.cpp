@@ -27,7 +27,7 @@
 #include "../d3d11/d3d11_test.h"
 #include "gl_test.h"
 
-#include "glad/glad_wgl.h"
+#include "3rdparty/glad/glad_wgl.h"
 
 struct DX_Interop : OpenGLGraphicsTest
 {
