@@ -30,11 +30,21 @@ class Repeat_Load(rdtest.TestCase):
 
             controller.Shutdown()
 
-            rdtest.log.success("Succeeded iteration {}, memory usage was {}".format(i, memory_usage))
+            pct_over = 'N/A'
+
+            if memory_baseline > 0:
+                pct_over = '{:.2f}%'.format((memory_usage / memory_baseline)*100)
+
+            rdtest.log.success("Succeeded iteration {}, memory usage was {} ({} of baseline)"
+                               .format(i, memory_usage, pct_over))
+
+        pct_over = '{:.2f}%'.format((memory_peak / memory_baseline)*100)
+        msg = 'peak memory usage was {}, {} compared to baseline {}'.format(memory_peak, pct_over, memory_baseline)
 
         if memory_baseline * 1.25 < memory_peak:
-            raise rdtest.TestFailureException('peak memory usage was {}, compared to baseline {}'
-                    .format(memory_peak, memory_baseline))
+            raise rdtest.TestFailureException(msg)
+        else:
+            rdtest.log.success(msg)
 
     def run(self):
         dir_path = self.get_ref_path('', extra=True)
